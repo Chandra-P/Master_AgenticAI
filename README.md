@@ -1,36 +1,71 @@
 # Master_AgenticAI
 
-This repository contains a collection of AI-assisted learning and experimentation projects focused on practical, student-friendly applications.
+This repository is a portfolio-style collection of AI-assisted learning projects. The main project in this repo is KidSpark, a browser-based educational app that helps students practice real-world decision-making through short, game-like challenges.
 
-## What this project is
+## Project overview
 
-Master_AgenticAI is a portfolio-style repository for building interactive tools that use AI-driven workflows to create useful, engaging experiences. The main project in this repo is KidSpark, an educational learning app designed to help students practice real-world decision-making skills in a low-pressure, game-like environment.
-
-## KidSpark
-
-KidSpark is a browser-based learning app where students complete short challenges related to:
+KidSpark is built for middle and high school learners. Students work through short scenarios involving:
 
 - budgeting
 - scam awareness
 - event planning
 
-Each challenge includes guided choices, hints, explanations, progress tracking, and saved results so students can learn while making real-world decisions in a simple and approachable format.
+Each challenge includes guided choices, hints, explanations, progress tracking, and saved results so learners can practice practical judgment in a low-pressure environment.
 
-## Why it matters
+## Important: where the app actually lives
 
-The goal is to make learning more active and relevant. Instead of passive reading or abstract exercises, KidSpark turns everyday decisions into short, meaningful scenarios that help students build critical thinking and practical judgment.
+The working project is nested in the `kidspark/` directory. The app entry file is:
+
+- `kidspark/app.py`
+
+If someone tries to run the app from the repository root without entering the nested project folder, they will hit the `File does not exist: app.py` issue that occurs when `app.py` is not present in the current working directory.
 
 ## Repository structure
 
-- `kidspark/` — the main KidSpark app and supporting project files
-- `docs/` — project documentation, planning notes, and submission materials
-- `src/` — application logic and supporting code
-- `tests/` — validation and regression tests
+- `README.md` — repo-level overview
+- `kidspark/` — actual KidSpark project and application code
+- `kidspark/README.md` — project-specific setup and usage guide
+- `kidspark/app.py` — Streamlit app entry point
+- `kidspark/data/` — local data and saved database files
+- `kidspark/src/` — application code
+- `kidspark/tests/` — automated validation tests
 
-## Tools and workflow
+## How to recreate and run the app
 
-This project was developed using Python, Streamlit, and AI-assisted coding workflows. The app is structured to support iteration, testing, and rapid improvement while keeping the experience easy to use.
+From the repository root, either run the app directly with the nested path:
+
+```powershell
+streamlit run kidspark/app.py
+```
+
+Or enter the actual project folder first:
+
+```powershell
+cd .\kidspark
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e .
+python -m streamlit run app.py
+```
+
+On macOS/Linux:
+
+```bash
+cd kidspark
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
+python -m streamlit run app.py
+```
+
+## Why this project matters
+
+KidSpark turns everyday decision-making into short learning experiences. Instead of passive reading, it helps students explore realistic trade-offs, evaluate information, and build confidence with practical problem-solving.
+
+## Workflow and tools
+
+This project was developed using Python, Streamlit, and an AI-assisted coding workflow. The application is structured to support iteration, testing, and rapid refinement while keeping the experience easy to use for students and reviewers.
 
 ## Status
 
-The repository includes a working KidSpark app, supporting documentation, and tested functionality for the challenge flow and learning experience.
+This repository contains a working KidSpark app, supporting project documentation, and validated functionality for the challenge flow and learning experience.
