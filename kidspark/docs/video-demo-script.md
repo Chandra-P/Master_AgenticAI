@@ -10,7 +10,7 @@
 
 ## 1-minute workflow with AI tools
 
-"I used AI-assisted coding tools as part of the development workflow. In VS Code, I used GitHub Copilot and other AI coding support to scaffold the app structure, generate the challenge logic, draft the educational content, and iterate on the user experience quickly. I also used AI to help refine the prompts, fix bugs, improve the app flow, and check logic against the tests. That let me move faster while still validating the behavior with real code and test runs."
+"We used ChatGPT Codex as an AI coding assistant during the development workflow. In VS Code, it helped us scaffold the app structure, generate the challenge logic, draft the educational content, and iterate on the user experience quickly. We also used it to refine prompts, fix bugs, improve the app flow, and check the logic against the tests. That let us move faster while still validating the behavior with real code and test runs."
 
 ## 2-minute live demo
 
@@ -24,4 +24,4 @@
 
 ## Short spoken version
 
-"Hi everyone, this is KidSpark, an educational learning app I built to help students practice real-world decision-making through short, interactive challenges. The app focuses on budgeting, scam awareness, and event planning, and it turns those topics into engaging scenarios with hints, explanations, and progress tracking. I used AI-assisted coding tools, especially GitHub Copilot in VS Code, to help scaffold the app, refine the content, and iterate quickly during development. I also used Python and Streamlit to build the interface and validate the experience with tests. In the live demo, I’ll show how a student enters a nickname, plays a round, gets feedback, and sees their saved progress and recommendations. The goal is to make learning practical, approachable, and more engaging than a traditional worksheet."
+"Hi everyone, this is KidSpark, an educational learning app we built to help students practice real-world decision-making through short, interactive challenges. The app focuses on budgeting, scam awareness, and event planning, and it turns those topics into engaging scenarios with hints, explanations, and progress tracking. We used ChatGPT Codex as an AI coding assistant to help scaffold the app, refine the content, and iterate quickly during development. We also used Python and Streamlit to build the interface and validate the experience with tests. In the live demo, I’ll show how a student enters a nickname, plays a round, gets feedback, and sees their saved progress and recommendations. The goal is to make learning practical, approachable, and more engaging than a traditional worksheet."
