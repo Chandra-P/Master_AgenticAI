@@ -1,0 +1,41 @@
+learner,mission_id,mission,category,completed,stars
+Ava,S1,Build a paper bridge,Science,true,5
+Ava,S2,Observe a growing seed,Science,true,5
+Ava,M1,Solve five number puzzles,Math,true,5
+Ava,M2,Find shapes around you,Math,false,5
+Ava,R1,Read a short story,Reading,true,5
+Ava,R2,Share your favorite character,Reading,true,5
+Ava,A1,Draw your dream planet,Art,true,5
+Ava,A2,Make a colorful bookmark,Art,false,5
+Ava,K1,Write a thank-you note,Kindness,true,5
+Ava,K2,Help tidy a shared space,Kindness,false,5
+Ben,S1,Build a paper bridge,Science,true,5
+Ben,S2,Observe a growing seed,Science,false,5
+Ben,M1,Solve five number puzzles,Math,true,5
+Ben,M2,Find shapes around you,Math,true,5
+Ben,R1,Read a short story,Reading,true,5
+Ben,R2,Share your favorite character,Reading,false,5
+Ben,A1,Draw your dream planet,Art,true,5
+Ben,A2,Make a colorful bookmark,Art,false,5
+Ben,K1,Write a thank-you note,Kindness,false,5
+Ben,K2,Help tidy a shared space,Kindness,true,5
+Cora,S1,Build a paper bridge,Science,false,5
+Cora,S2,Observe a growing seed,Science,true,5
+Cora,M1,Solve five number puzzles,Math,true,5
+Cora,M2,Find shapes around you,Math,false,5
+Cora,R1,Read a short story,Reading,true,5
+Cora,R2,Share your favorite character,Reading,false,5
+Cora,A1,Draw your dream planet,Art,true,5
+Cora,A2,Make a colorful bookmark,Art,true,5
+Cora,K1,Write a thank-you note,Kindness,true,5
+Cora,K2,Help tidy a shared space,Kindness,false,5
+Drew,S1,Build a paper bridge,Science,true,5
+Drew,S2,Observe a growing seed,Science,false,5
+Drew,M1,Solve five number puzzles,Math,false,5
+Drew,M2,Find shapes around you,Math,true,5
+Drew,R1,Read a short story,Reading,true,5
+Drew,R2,Share your favorite character,Reading,false,5
+Drew,A1,Draw your dream planet,Art,true,5
+Drew,A2,Make a colorful bookmark,Art,false,5
+Drew,K1,Write a thank-you note,Kindness,true,5
+Drew,K2,Help tidy a shared space,Kindness,false,5

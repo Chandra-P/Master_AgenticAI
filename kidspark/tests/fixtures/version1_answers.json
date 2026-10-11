@@ -1,0 +1,122 @@
+{
+  "sm1": {
+    "correct_index": 0,
+    "skill": "Unit prices"
+  },
+  "sm2": {
+    "correct_index": 1,
+    "skill": "Unit prices"
+  },
+  "sm3": {
+    "correct_index": 2,
+    "skill": "Discounts"
+  },
+  "sm4": {
+    "correct_index": 1,
+    "skill": "Budgeting"
+  },
+  "sm5": {
+    "correct_index": 2,
+    "skill": "Budgeting"
+  },
+  "sh1": {
+    "correct_index": 1,
+    "skill": "Unit prices"
+  },
+  "sh2": {
+    "correct_index": 0,
+    "skill": "Discounts"
+  },
+  "sh3": {
+    "correct_index": 2,
+    "skill": "Discounts"
+  },
+  "sh4": {
+    "correct_index": 1,
+    "skill": "Budgeting"
+  },
+  "sh5": {
+    "correct_index": 0,
+    "skill": "Budgeting"
+  },
+  "cm1": {
+    "correct_index": 2,
+    "skill": "Verification"
+  },
+  "cm2": {
+    "correct_index": 0,
+    "skill": "Privacy"
+  },
+  "cm3": {
+    "correct_index": 1,
+    "skill": "Verification"
+  },
+  "cm4": {
+    "correct_index": 2,
+    "skill": "Evaluating claims"
+  },
+  "cm5": {
+    "correct_index": 0,
+    "skill": "Verification"
+  },
+  "ch1": {
+    "correct_index": 1,
+    "skill": "Verification"
+  },
+  "ch2": {
+    "correct_index": 2,
+    "skill": "Verification"
+  },
+  "ch3": {
+    "correct_index": 0,
+    "skill": "Evaluating claims"
+  },
+  "ch4": {
+    "correct_index": 1,
+    "skill": "Evaluating claims"
+  },
+  "ch5": {
+    "correct_index": 2,
+    "skill": "Privacy"
+  },
+  "em1": {
+    "correct_index": 1,
+    "skill": "Event planning"
+  },
+  "em2": {
+    "correct_index": 0,
+    "skill": "Event planning"
+  },
+  "em3": {
+    "correct_index": 2,
+    "skill": "Budgeting"
+  },
+  "em4": {
+    "correct_index": 2,
+    "skill": "Event planning"
+  },
+  "em5": {
+    "correct_index": 0,
+    "skill": "Budgeting"
+  },
+  "eh1": {
+    "correct_index": 1,
+    "skill": "Event planning"
+  },
+  "eh2": {
+    "correct_index": 0,
+    "skill": "Event planning"
+  },
+  "eh3": {
+    "correct_index": 2,
+    "skill": "Discounts"
+  },
+  "eh4": {
+    "correct_index": 1,
+    "skill": "Budgeting"
+  },
+  "eh5": {
+    "correct_index": 0,
+    "skill": "Budgeting"
+  }
+}
