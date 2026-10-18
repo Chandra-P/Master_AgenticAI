@@ -1,4 +1,5 @@
 from campaign_hub.models import FALLBACK
+import json
 
 
 def render_report(report):
@@ -15,4 +16,5 @@ def render_report(report):
             if section.gap or not section.claims:
                 text+='\n\n'+(section.gap or FALLBACK)
         text+='\n\n'
+    text+='## Report provenance and input coverage\n\n```json\n'+json.dumps(report.provenance,indent=2)+'\n```\n'
     return text

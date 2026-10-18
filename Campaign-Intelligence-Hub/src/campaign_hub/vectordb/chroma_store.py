@@ -1,16 +1,19 @@
 import json
 import hashlib
 from pathlib import Path
+from importlib.metadata import version
 import chromadb
 from campaign_hub.models import Chunk, SearchHit
 
 
 class ChromaStore:
-    def __init__(self, root: Path, strategy: str, embedder):
+    def __init__(self, root: Path, strategy: str, embedder, chunking_config=None):
         self.root = Path(root)
         self.root.mkdir(parents=True,exist_ok=True)
         self.embedder = embedder
         self.strategy = strategy
+        self.chunking_config=chunking_config or {'tokenizer':'cl100k_base','tokenizer_version':version('tiktoken'),
+                                               'window':500,'overlap':50,'pipeline_version':1}
         identity = hashlib.sha256(json.dumps(embedder.identity,sort_keys=True).encode()).hexdigest()[:12]
         self.name = f'campaign-{strategy}-{identity}'
         self.client = chromadb.PersistentClient(path=str(root))
@@ -21,7 +24,9 @@ class ChromaStore:
         if not self.manifest_path.exists():
             raise ValueError('Index missing; rebuild the selected index')
         meta = json.loads(self.manifest_path.read_text())
-        if meta['corpus_hash'] != corpus_hash or meta['embedder'] != self.embedder.identity:
+        if (meta['corpus_hash'] != corpus_hash or meta['embedder'] != self.embedder.identity
+                or meta.get('chunking_config') != self.chunking_config
+                or (self.embedder.identity.get('dimensions') is not None and meta['dimensions'] != self.embedder.identity['dimensions'])):
             raise ValueError('Index incompatible; rebuild the selected index')
 
     def build(self, chunks, corpus_hash):
@@ -40,7 +45,7 @@ class ChromaStore:
             self.collection.upsert(ids=[c.chunk_id for c in batch], documents=[c.text for c in batch],
                 embeddings=vectors, metadatas=[c.metadata for c in batch])
         self.manifest_path.write_text(json.dumps({'corpus_hash':corpus_hash,'embedder':self.embedder.identity,
-            'dimensions':dimensions,'count':len(chunks),'strategy':self.strategy,'tokenizer':'cl100k_base','window':500,'overlap':50},indent=2))
+            'dimensions':dimensions,'count':len(chunks),'strategy':self.strategy,'chunking_config':self.chunking_config},indent=2))
 
     def search(self, query, filters=None, k=20):
         if not self.collection.count():

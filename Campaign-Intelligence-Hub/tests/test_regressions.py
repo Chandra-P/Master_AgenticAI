@@ -57,3 +57,45 @@ def test_model_cannot_cite_other_report_sections():
     claims=[EvidenceClaim(text='Spend was low.',citations=['budget']),
             EvidenceClaim(text='Existing members converted.',citations=['audience'])]
     assert [c.citations for c in supported_claims(claims,scope)]==[['audience']]
+
+
+def test_index_rejects_changed_chunker(tmp_path):
+    from campaign_hub.vectordb.chroma_store import ChromaStore
+    from campaign_hub.models import Chunk
+    class E:
+        identity={'model':'test','dimensions':3}
+        def embed_documents(self,texts):return [[1.0,0.0,0.0] for _ in texts]
+    store=ChromaStore(tmp_path,'fixed',E())
+    store.build([Chunk(chunk_id='x',text='text',metadata={'campaign_id':'A'})],'hash')
+    changed=ChromaStore(tmp_path,'fixed',E(),chunking_config={'tokenizer':'changed','window':400,'overlap':20})
+    with pytest.raises(ValueError,match='rebuild'):
+        changed.assert_compatible('hash')
+
+
+def test_goal_analysis_explicitly_marks_below_target(tmp_path,monkeypatch):
+    from campaign_hub.models import Chunk,SearchHit,RetrievalOptions
+    service=make_service(tmp_path)
+    def search(query,campaign_id,options,document_type=None):
+        heading='Success Criteria' if document_type=='success_plan' else 'KPI Results'
+        text='Success requires 100 activations.' if heading=='Success Criteria' else '| Activations | 100 | 80 | count | higher | 2024-Q2 |'
+        return [SearchHit(chunk=Chunk(chunk_id=heading,text=text,metadata={'campaign_id':'TX-CHK-001','period':'2024-Q2','section_name':heading}),score=.9)]
+    monkeypatch.setattr(service,'search',search)
+    report=service.report_sections('TX-CHK-001','2024-Q2',RetrievalOptions(),False)
+    goal=next(s for s in report.sections if s.title=='Goal Achievement Analysis')
+    assert any('not met' in c.text and '80' in c.text and '100' in c.text for c in goal.claims)
+    assert all(c.citations for c in goal.claims)
+
+
+def test_zero_target_retains_absolute_variance():
+    from campaign_hub.reporting.service import kpi_review
+    from campaign_hub.models import Chunk
+    c=Chunk(chunk_id='x',text='| Activations | 0 | 5 | count | higher | 2024-Q2 |',metadata={})
+    assert '| 5.0 | unavailable |' in kpi_review(c,'2024-Q2').text
+
+
+def test_markdown_includes_provenance():
+    from campaign_hub.models import ReportResult
+    from campaign_hub.reporting.render import render_report
+    r=ReportResult(campaign_id='A',period='P',sections=[],evidence={},status='partial',confidence=0,provenance={'inputs':{'brief':False},'generated_at':'2026-10-17','corpus_hash':'abc'})
+    rendered=render_report(r)
+    assert '2026-10-17' in rendered and 'abc' in rendered and 'brief' in rendered

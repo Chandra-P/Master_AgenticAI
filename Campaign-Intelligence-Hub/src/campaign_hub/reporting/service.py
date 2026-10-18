@@ -43,7 +43,7 @@ def kpi_review(chunk, period):
             return None
         result=compare(target,actual,direction,window==period)
         variance=result['percentage_variance']
-        rows.append(f"| {metric} | {target:g} | {actual:g} | {unit} | {result['absolute_variance']} | {variance:.2f}% | {result['status']} |" if variance is not None else f"| {metric} | {target:g} | {actual:g} | {unit} | unavailable | unavailable | {result['status']} |")
+        rows.append(f"| {metric} | {target:g} | {actual:g} | {unit} | {result['absolute_variance']} | {variance:.2f}% | {result['status']} |" if variance is not None else f"| {metric} | {target:g} | {actual:g} | {unit} | {result['absolute_variance']} | unavailable | {result['status']} |")
     if not rows:
         return None
     return EvidenceClaim(text='| KPI | Target | Actual | Unit | Absolute variance | Percentage variance | Status |\n|---|---:|---:|---|---:|---:|---|\n'+'\n'.join(rows),citations=[chunk.chunk_id])

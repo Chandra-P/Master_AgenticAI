@@ -62,7 +62,7 @@ python -m campaign_hub evaluate --full
 python -m pytest -q
 ```
 
-Reranking downloads `cross-encoder/ms-marco-MiniLM-L-6-v2` on first use. Enable with `--rerank` or the UI toggle; the experiment matrix tests both states. Full evaluation may take considerable time on CPU. Run artifacts under `data/runs/` contain actual results/errors, not example scores. A retrieval-only experiment marks generation as skipped. Faithfulness is unavailable until an independent entailment judge is run; source/number validation alone does not prove semantic faithfulness.
+Reranking downloads `cross-encoder/ms-marco-MiniLM-L-6-v2` on first use. Enable with `--rerank` or the UI toggle; the experiment matrix tests both states. Full evaluation may take considerable time on CPU. Run artifacts under `data/runs/` contain actual results/errors, not example scores. A retrieval-only experiment marks generation as skipped. Add `--judge` for a separate local model support judgment; source/number validation alone does not prove semantic faithfulness, and a model judge is not human verification.
 
 Default model settings use `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` environment variables. Changing embedding model requires rebuilding indexes. `.env.example` documents names; environment variables must be exported in the shell. Current implementation uses local Ollama providers; the optional OpenAI adapter in the design is not enabled in this build.
 
