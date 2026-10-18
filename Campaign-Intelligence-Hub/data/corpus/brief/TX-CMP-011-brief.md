@@ -1,22 +1,22 @@
 ---
 campaign_id: TX-CMP-011
-campaign_name: TX Digital Banking Adoption 2025
+campaign_name: TX Digital Banking Adoption 2024
 campaign_type: Digital Banking Adoption
 client_name: Fictional TX Community Financial 11
 document_id: TX-CMP-011-brief
 document_type: brief
-period: 2025-Q2
+period: 2024-Q2
 region: TX
-year: 2025
+year: 2024
 ---
 
-# TX Digital Banking Adoption 2025 — brief
+# TX Digital Banking Adoption 2024 — brief
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
 ## Objectives
 
-Acquire 410 verified product activations during 2025-Q2 for Digital Banking Adoption.
+Acquire 410 verified product activations during 2024-Q2 for Digital Banking Adoption.
 
 ## Audience
 
@@ -32,7 +32,7 @@ Local confidence and clear product value.
 
 ## Channels
 
-Email and paid search with CRM deduplication.
+Direct mail and display only, with deduplicated CRM activations. Direct mail attribution: 60 days from mail/drop date. Display attribution: 30 days from exposure date.
 
 ## Budget
 

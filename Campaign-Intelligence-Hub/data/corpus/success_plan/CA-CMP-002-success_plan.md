@@ -1,26 +1,26 @@
 ---
 campaign_id: CA-CMP-002
-campaign_name: CA Deposit Growth 2025
+campaign_name: CA Deposit Growth 2026
 campaign_type: Deposit Growth
 client_name: Fictional CA Community Financial 2
 document_id: CA-CMP-002-success_plan
 document_type: success_plan
-period: 2025-Q2
+period: 2026-Q2
 region: CA
-year: 2025
+year: 2026
 ---
 
-# CA Deposit Growth 2025 — success_plan
+# CA Deposit Growth 2026 — success_plan
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
 ## Success Criteria
 
-Success requires at least 203 verified activations within 2025-Q2 and spend no higher than USD 25750.
+Success requires at least 203 verified activations within 2026-Q2 and spend no higher than USD 25750.
 
 ## KPI Definitions
 
-Verified activations are deduplicated completed product enrollments within 30 days of an eligible click. Acquisition cost equals attributed spend divided by verified activations.
+Verified activations are deduplicated completed product enrollments within 60 days of the direct mail/drop date or 30 days of display exposure. Acquisition cost equals attributed spend divided by verified activations. Direct mail rate uses mailed households; display rate uses unique exposed users. Compare rates within the same channel and denominator definition.
 
 ## Targets
 
@@ -28,4 +28,4 @@ Verified activations target: 203 count; acquisition cost ceiling: USD 126.85/act
 
 ## Reporting Window
 
-Only outcomes in 2025-Q2 are comparable; attribution uses a 30-day last eligible click window.
+Reporting cohort: 2026-Q2. Direct mail: 60 days from mail/drop date; display: 30 days from exposure. Include only conversions on/after the anchor and no later than the channel window boundary. Both windows are fully observed as of 2026-06-30. De-duplicate activations across channels; outcomes are pre-assigned to one eligible channel in this synthetic corpus.

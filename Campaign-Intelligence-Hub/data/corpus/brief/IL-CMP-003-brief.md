@@ -32,7 +32,7 @@ Local confidence and clear product value.
 
 ## Channels
 
-Email and paid search with CRM deduplication.
+Direct mail and display only, with deduplicated CRM activations. Direct mail attribution: 60 days from mail/drop date. Display attribution: 30 days from exposure date.
 
 ## Budget
 

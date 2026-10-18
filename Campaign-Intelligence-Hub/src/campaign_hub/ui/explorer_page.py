@@ -20,9 +20,12 @@ def show(service,options):
                 hits=service.search(query,cid,config)
                 output.append((config,hits,time.perf_counter()-started))
             st.session_state['retrieval-comparison']=output
+            st.session_state['retrieval-corpus']=service.corpus_hash
         except Exception as error:
             st.error(str(error))
     output=st.session_state.get('retrieval-comparison',[])
+    if st.session_state.get('retrieval-corpus')!=service.corpus_hash:
+        output=[]
     for column,(config,hits,seconds) in zip(st.columns(2),output):
         with column:
             st.subheader(f'{config.chunking} · {config.retrieval}')

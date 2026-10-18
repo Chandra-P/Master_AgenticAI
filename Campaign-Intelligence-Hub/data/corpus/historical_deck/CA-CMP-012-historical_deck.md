@@ -1,16 +1,16 @@
 ---
 campaign_id: CA-CMP-012
-campaign_name: CA Checking Account Acquisition 2026
+campaign_name: CA Checking Account Acquisition 2025
 campaign_type: Checking Account Acquisition
 client_name: Fictional CA Community Financial 12
 document_id: CA-CMP-012-historical_deck
 document_type: historical_deck
-period: 2026-Q2
+period: 2025-Q2
 region: CA
-year: 2026
+year: 2025
 ---
 
-# CA Checking Account Acquisition 2026 — historical_deck
+# CA Checking Account Acquisition 2025 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

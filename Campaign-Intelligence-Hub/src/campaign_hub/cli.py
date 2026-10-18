@@ -6,7 +6,7 @@ from campaign_hub.models import RetrievalOptions
 
 def main():
     parser=argparse.ArgumentParser(description='Campaign Intelligence Hub')
-    parser.add_argument('command',choices=['generate','validate','index','ask','report','evaluate'])
+    parser.add_argument('command',choices=['generate','validate','index','ask','report','compare','evaluate'])
     parser.add_argument('--chunking',choices=['fixed','semantic','all'],default='semantic')
     parser.add_argument('--retrieval',choices=['dense','hybrid'],default='hybrid')
     parser.add_argument('--rerank',action='store_true')
@@ -48,6 +48,9 @@ def main():
         print(f"Report: {out/args.campaign}.md — {report.status}")
     elif args.command=='ask':
         print(service.answer_question(args.question,args.campaign,options)['answer'])
+    elif args.command=='compare':
+        result=service.compare_with_history(args.campaign,options)
+        print(json.dumps({k:v for k,v in result.items() if k!='evidence'},indent=2))
     elif args.command=='evaluate':
         from campaign_hub.evaluation.runner import run_experiments
         rows=run_experiments(service,settings.data/'runs/latest',smoke=not args.full,use_llm=not args.extractive,judge=args.judge)

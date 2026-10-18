@@ -16,6 +16,6 @@ SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are ficti
 
 ## Reporting Methodology
 
-Use 30-day last eligible click attribution, deduplicate CRM enrollments, retain reporting periods, and distinguish targets from actuals. Do not compare mismatched windows or invent missing denominators.
+Use direct mail and display only. Direct mail attribution is 60 days from mail/drop date; display attribution is 30 days from exposure date. Exclude conversions before the anchor or after its channel window. Compare fully matured earlier campaigns within the same product/channel, attribution window, and exposure denominator. Deduplicate CRM enrollments and distinguish targets from actuals. Do not compare mismatched windows or invent missing denominators.
 
 Application focus: Checking Account Acquisition. Guide edition: 1.

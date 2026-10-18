@@ -2,7 +2,18 @@
 
 Date: 2026-10-17
 
-Status: Proposed for user review; implementation has not started.
+Status: Implemented locally; the confirmed amendments below supersede conflicting descriptions in the original design.
+
+## Approved changes: LangChain, channel attribution, and historical comparisons
+
+User requested these changes after the initial implementation. Direct mail anchor was explicitly confirmed as mail/drop date.
+
+- Use LangChain's OllamaEmbeddings, ChatOllama, ChatPromptTemplate/structured-output runnable chains, and Chroma integration. Retain ChromaDB persistence, local free APIs, LangGraph, source validation, and index compatibility checks.
+- Only direct mail and display are allowed. Direct mail attribution is 60 days from mail/drop date; display is 30 days from exposure. Reject pre-anchor and post-window outcomes; label source window maturity. Synthetic observations are date-level, deduplicated, and assigned to one channel.
+- Historical Comparison is a fifth application page. Compare the selected campaign with earlier campaigns sharing product type, channel, window length, anchor rule, and exposure denominator, with mature windows. Retrieve numerical source tables before computing comparisons. Do not use manifest outcomes or LLM-invented values as benchmark evidence.
+- Show activation rate and acquisition cost, individual peer values, median, direction-aware rank/percentile, cohort size/IDs, and citations. Lower acquisition cost is better. Keep zero-conversion peers in rate comparisons; omit only undefined cost values. Never compare pooled cross-channel conversion rates or future campaigns.
+- Include cited comparisons in report Channel Insights. A cohort below five peers has a small-sample warning; no qualifying peers means an explicit evidence gap, not an invented benchmark or universal quality claim.
+- Regenerate corpus/gold data and both indexes, refresh examples and actual evaluation artifacts, and invalidate UI outputs/results belonging to the previous corpus. Existing source counts remain 110 documents, 20 campaigns, and 30 evaluation cases.
 
 ## Purpose and decisions
 
@@ -131,7 +142,7 @@ Fallback text is exactly: "I could not find sufficient evidence in the knowledge
 
 ## Streamlit experience
 
-Four navigation pages: Generate Report (primary), Ask Questions, Retrieval Explorer, and Evaluation Dashboard. Use a consistent theme, clear synthetic-data labeling, and an evidence-focused layout. Use Streamlit's installed version-matched guidance before UI implementation.
+Five navigation pages: Generate Report (primary), Historical Comparison, Ask Questions, Retrieval Explorer, and Evaluation Dashboard. Use a consistent theme, clear synthetic-data labeling, and an evidence-focused layout. Use Streamlit's installed version-matched guidance before UI implementation.
 
 Generate Report: select campaign and reporting period, inspect availability of all five input categories, choose retrieval/chunking/reranking/model controls, and explicitly run report generation. Show section-level progress, all eleven output sections, target-versus-actual KPI table, inline citations, source excerpts, completeness status, evidence gaps, confidence diagnostics, and Markdown download. Missing input categories are disclosed before generation and reflected in the final coverage status.
 

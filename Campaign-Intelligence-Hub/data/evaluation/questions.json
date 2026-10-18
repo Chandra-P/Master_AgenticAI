@@ -3,11 +3,11 @@
     "id": "q01",
     "question": "What were the objectives of campaign TX-CHK-001?",
     "campaign_id": "TX-CHK-001",
-    "expected_answer": "Acquire 180 verified product activations during 2024-Q2 for Checking Account Acquisition.",
+    "expected_answer": "Acquire 180 verified product activations during 2026-Q2 for Checking Account Acquisition.",
     "expected_facts": [
       "180",
       "verified",
-      "2024-Q2"
+      "2026-Q2"
     ],
     "expected_sources": [
       "TX-CHK-001-brief"
@@ -22,11 +22,11 @@
     "id": "q02",
     "question": "What were the objectives of campaign CA-CMP-002?",
     "campaign_id": "CA-CMP-002",
-    "expected_answer": "Acquire 203 verified product activations during 2025-Q2 for Deposit Growth.",
+    "expected_answer": "Acquire 203 verified product activations during 2026-Q2 for Deposit Growth.",
     "expected_facts": [
       "203",
       "verified",
-      "2025-Q2"
+      "2026-Q2"
     ],
     "expected_sources": [
       "CA-CMP-002-brief"
@@ -60,11 +60,11 @@
     "id": "q04",
     "question": "What were the objectives of campaign FL-CMP-004?",
     "campaign_id": "FL-CMP-004",
-    "expected_answer": "Acquire 249 verified product activations during 2024-Q2 for CD Promotions.",
+    "expected_answer": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions.",
     "expected_facts": [
       "249",
       "verified",
-      "2024-Q2"
+      "2026-Q2"
     ],
     "expected_sources": [
       "FL-CMP-004-brief"
@@ -79,11 +79,11 @@
     "id": "q05",
     "question": "What were the objectives of campaign NY-CMP-005?",
     "campaign_id": "NY-CMP-005",
-    "expected_answer": "Acquire 272 verified product activations during 2025-Q2 for HELOC Campaigns.",
+    "expected_answer": "Acquire 272 verified product activations during 2026-Q2 for HELOC Campaigns.",
     "expected_facts": [
       "272",
       "verified",
-      "2025-Q2"
+      "2026-Q2"
     ],
     "expected_sources": [
       "NY-CMP-005-brief"
@@ -117,11 +117,11 @@
     "id": "q07",
     "question": "What were the objectives of campaign CA-CMP-007?",
     "campaign_id": "CA-CMP-007",
-    "expected_answer": "Acquire 318 verified product activations during 2024-Q2 for Auto Loan Campaigns.",
+    "expected_answer": "Acquire 318 verified product activations during 2026-Q2 for Auto Loan Campaigns.",
     "expected_facts": [
       "318",
       "verified",
-      "2024-Q2"
+      "2026-Q2"
     ],
     "expected_sources": [
       "CA-CMP-007-brief"
@@ -136,11 +136,11 @@
     "id": "q08",
     "question": "What were the objectives of campaign IL-CMP-008?",
     "campaign_id": "IL-CMP-008",
-    "expected_answer": "Acquire 341 verified product activations during 2025-Q2 for Credit Card Acquisition.",
+    "expected_answer": "Acquire 341 verified product activations during 2026-Q2 for Credit Card Acquisition.",
     "expected_facts": [
       "341",
       "verified",
-      "2025-Q2"
+      "2026-Q2"
     ],
     "expected_sources": [
       "IL-CMP-008-brief"
@@ -174,11 +174,11 @@
     "id": "q10",
     "question": "What were the objectives of campaign NY-CMP-010?",
     "campaign_id": "NY-CMP-010",
-    "expected_answer": "Acquire 387 verified product activations during 2024-Q2 for Direct Deposit Programs.",
+    "expected_answer": "Acquire 387 verified product activations during 2025-Q2 for Direct Deposit Programs.",
     "expected_facts": [
       "387",
       "verified",
-      "2024-Q2"
+      "2025-Q2"
     ],
     "expected_sources": [
       "NY-CMP-010-brief"
@@ -193,7 +193,7 @@
     "id": "q11",
     "question": "What were the results and channel findings for TX-CHK-001?",
     "campaign_id": "TX-CHK-001",
-    "expected_answer": "230 activations; 138 from email and 92 from paid search.",
+    "expected_answer": "230 activations; 138 from direct mail and 92 from display.",
     "expected_facts": [
       "230",
       "138",
@@ -213,7 +213,7 @@
     "id": "q12",
     "question": "What were the results and channel findings for CA-CMP-002?",
     "campaign_id": "CA-CMP-002",
-    "expected_answer": "260 activations; 156 from email and 104 from paid search.",
+    "expected_answer": "260 activations; 156 from direct mail and 104 from display.",
     "expected_facts": [
       "260",
       "156",
@@ -233,7 +233,7 @@
     "id": "q13",
     "question": "What were the results and channel findings for IL-CMP-003?",
     "campaign_id": "IL-CMP-003",
-    "expected_answer": "194 activations; 116 from email and 78 from paid search.",
+    "expected_answer": "194 activations; 116 from direct mail and 78 from display.",
     "expected_facts": [
       "194",
       "116",
@@ -253,7 +253,7 @@
     "id": "q14",
     "question": "What were the results and channel findings for FL-CMP-004?",
     "campaign_id": "FL-CMP-004",
-    "expected_answer": "179 activations; 107 from email and 72 from paid search.",
+    "expected_answer": "179 activations; 107 from direct mail and 72 from display.",
     "expected_facts": [
       "179",
       "107",
@@ -273,7 +273,7 @@
     "id": "q15",
     "question": "What were the results and channel findings for NY-CMP-005?",
     "campaign_id": "NY-CMP-005",
-    "expected_answer": "324 activations; 194 from email and 130 from paid search.",
+    "expected_answer": "324 activations; 194 from direct mail and 130 from display.",
     "expected_facts": [
       "324",
       "194",
@@ -293,7 +293,7 @@
     "id": "q16",
     "question": "What were the results and channel findings for TX-CMP-006?",
     "campaign_id": "TX-CMP-006",
-    "expected_answer": "319 activations; 191 from email and 128 from paid search.",
+    "expected_answer": "319 activations; 191 from direct mail and 128 from display.",
     "expected_facts": [
       "319",
       "191",
@@ -313,7 +313,7 @@
     "id": "q17",
     "question": "What were the results and channel findings for CA-CMP-007?",
     "campaign_id": "CA-CMP-007",
-    "expected_answer": "229 activations; 137 from email and 92 from paid search.",
+    "expected_answer": "229 activations; 137 from direct mail and 92 from display.",
     "expected_facts": [
       "229",
       "137",
@@ -333,7 +333,7 @@
     "id": "q18",
     "question": "What were the results and channel findings for IL-CMP-008?",
     "campaign_id": "IL-CMP-008",
-    "expected_answer": "406 activations; 244 from email and 162 from paid search.",
+    "expected_answer": "406 activations; 244 from direct mail and 162 from display.",
     "expected_facts": [
       "406",
       "244",
@@ -353,7 +353,7 @@
     "id": "q19",
     "question": "What were the results and channel findings for FL-CMP-009?",
     "campaign_id": "FL-CMP-009",
-    "expected_answer": "433 activations; 260 from email and 173 from paid search.",
+    "expected_answer": "433 activations; 260 from direct mail and 173 from display.",
     "expected_facts": [
       "433",
       "260",
@@ -373,7 +373,7 @@
     "id": "q20",
     "question": "What were the results and channel findings for NY-CMP-010?",
     "campaign_id": "NY-CMP-010",
-    "expected_answer": "495 activations; 297 from email and 198 from paid search.",
+    "expected_answer": "495 activations; 297 from direct mail and 198 from display.",
     "expected_facts": [
       "495",
       "297",

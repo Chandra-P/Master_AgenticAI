@@ -8,23 +8,23 @@ Faithfulness is unavailable unless `--judge` is selected. That option adds a loc
 
 ## Actual local run: 2026-10-17
 
-Executed the eight-configuration matrix on 27 held-out cases: **216 result rows, zero execution errors**. All 40 report/configuration cases produced complete reports. These runs used real Ollama embeddings, persistent Chroma collections, real BM25/fusion, and the actual cross-encoder. Question cases used retrieved text instead of LLM-generated answers (`--extractive`); report cases used extractive report generation and deterministic KPI calculations.
+Regenerated and reran the corpus after the LangChain/direct-mail/display update. Executed the eight-configuration matrix on 27 held-out cases: **216 result rows, zero execution errors**. All 40 report/configuration cases produced complete reports. These runs used LangChain Ollama embeddings and Chroma search, persistent Chroma collections, real BM25/fusion, and the actual cross-encoder. Question cases used retrieved text instead of LLM-generated answers (`--extractive`); report cases used extractive report generation, deterministic KPI calculations, and channel-specific historical comparisons.
 
 The three calibration cases were excluded. No entailment judge ran in this comparison, so faithfulness values remain null. Unsupported-question abstention was not scored in retrieval-only mode. Completeness is expected-fact string matching, not a measure of overall narrative quality. Report document relevance counts all report sources; question retrieval uses at most five chunks.
 
 | Chunking | Retrieval | Rerank | Mean MRR@5 | Document precision | Document recall |
 | --- | --- | --- | ---: | ---: | ---: |
-| Fixed | Dense | Off | 0.500 | 0.269 | 0.943 |
-| Fixed | Dense | On | 0.500 | 0.269 | 0.943 |
-| Fixed | Hybrid | Off | 0.500 | 0.269 | 0.943 |
-| Fixed | Hybrid | On | 0.500 | 0.269 | 0.943 |
-| Semantic | Dense | Off | 0.457 | 0.358 | 0.852 |
-| Semantic | Dense | On | 0.481 | 0.358 | 0.943 |
-| Semantic | Hybrid | Off | 0.500 | 0.383 | 0.943 |
-| Semantic | Hybrid | On | 0.481 | 0.358 | 0.943 |
+| Fixed | Dense | Off | 0.500 | 0.306 | 1.000 |
+| Fixed | Dense | On | 0.500 | 0.298 | 0.989 |
+| Fixed | Hybrid | Off | 0.438 | 0.306 | 1.000 |
+| Fixed | Hybrid | On | 0.500 | 0.298 | 0.989 |
+| Semantic | Dense | Off | 0.481 | 0.370 | 0.955 |
+| Semantic | Dense | On | 0.481 | 0.352 | 1.000 |
+| Semantic | Hybrid | Off | 0.481 | 0.358 | 1.000 |
+| Semantic | Hybrid | On | 0.481 | 0.352 | 1.000 |
 
 These are small synthetic-corpus observations, not universal ranking claims. Reranking improved semantic dense recall but did not uniformly improve other metrics. Latency mixes cold starts, downloads, cache warming, and concurrent local work; inspect raw rows before comparing performance.
 
 Artifacts: [all measured rows](evaluation/held-out-results.json), [configuration means and latency](evaluation/comparison.csv).
 
-Additional live checks: both Chroma collections built (110 fixed chunks, 430 semantic chunks); source-grounded and optional local-model reports generated; all four UI pages and real report generation exercised with Streamlit AppTest. No connected browser surface was available for visual screenshot QA.
+Additional live checks: both Chroma collections rebuilt (110 fixed chunks, 450 semantic chunks); live structured LangChain generation and the Historical Comparison UI exercised against real sources. Thirty-three automated checks pass. Direct mail uses 60 days from mail/drop date and display 30 days from exposure. Source-cited reports include ranks and medians; the synthetic default campaign has only one same-product historical peer, so the UI/report explicitly flag the limited cohort. Acquisition-cost comparisons also show their own valid-peer count when zero-conversion peers have undefined costs. No connected browser surface was available for visual screenshot QA.

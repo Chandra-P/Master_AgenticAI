@@ -14,9 +14,12 @@ def show(service,options):
         try:
             with st.spinner('Retrieving and validating a grounded answer…'):
                 st.session_state['answer']=service.answer_question(question,cid,options)
+                st.session_state['answer-corpus']=service.corpus_hash
         except Exception as error:
             st.error(str(error))
     result=st.session_state.get('answer')
+    if st.session_state.get('answer-corpus')!=service.corpus_hash:
+        result=None
     if result:
         st.markdown(result['answer'])
         st.caption('Only verifiable source wording is accepted. No semantic faithfulness score has been assigned.')

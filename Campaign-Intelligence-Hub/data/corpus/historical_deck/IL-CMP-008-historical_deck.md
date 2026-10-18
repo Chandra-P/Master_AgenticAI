@@ -1,16 +1,16 @@
 ---
 campaign_id: IL-CMP-008
-campaign_name: IL Credit Card Acquisition 2025
+campaign_name: IL Credit Card Acquisition 2026
 campaign_type: Credit Card Acquisition
 client_name: Fictional IL Community Financial 8
 document_id: IL-CMP-008-historical_deck
 document_type: historical_deck
-period: 2025-Q2
+period: 2026-Q2
 region: IL
-year: 2025
+year: 2026
 ---
 
-# IL Credit Card Acquisition 2025 — historical_deck
+# IL Credit Card Acquisition 2026 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

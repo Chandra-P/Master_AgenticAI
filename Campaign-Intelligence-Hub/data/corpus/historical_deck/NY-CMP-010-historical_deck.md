@@ -1,16 +1,16 @@
 ---
 campaign_id: NY-CMP-010
-campaign_name: NY Direct Deposit Programs 2024
+campaign_name: NY Direct Deposit Programs 2025
 campaign_type: Direct Deposit Programs
 client_name: Fictional NY Community Financial 10
 document_id: NY-CMP-010-historical_deck
 document_type: historical_deck
-period: 2024-Q2
+period: 2025-Q2
 region: NY
-year: 2024
+year: 2025
 ---
 
-# NY Direct Deposit Programs 2024 — historical_deck
+# NY Direct Deposit Programs 2025 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

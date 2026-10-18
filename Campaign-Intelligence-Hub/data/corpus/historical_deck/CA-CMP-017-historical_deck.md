@@ -1,16 +1,16 @@
 ---
 campaign_id: CA-CMP-017
-campaign_name: CA Mortgage Campaigns 2025
+campaign_name: CA Mortgage Campaigns 2024
 campaign_type: Mortgage Campaigns
 client_name: Fictional CA Community Financial 17
 document_id: CA-CMP-017-historical_deck
 document_type: historical_deck
-period: 2025-Q2
+period: 2024-Q2
 region: CA
-year: 2025
+year: 2024
 ---
 
-# CA Mortgage Campaigns 2025 — historical_deck
+# CA Mortgage Campaigns 2024 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

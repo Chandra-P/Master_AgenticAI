@@ -3,6 +3,7 @@ import hashlib
 from pathlib import Path
 from importlib.metadata import version
 import chromadb
+from langchain_chroma import Chroma
 from campaign_hub.models import Chunk, SearchHit
 
 
@@ -19,6 +20,7 @@ class ChromaStore:
         self.client = chromadb.PersistentClient(path=str(root))
         self.manifest_path = self.root / (self.name+'.json')
         self.collection = self.client.get_or_create_collection(self.name, metadata={'hnsw:space':'cosine'})
+        self.vectorstore=Chroma(client=self.client,collection_name=self.name,embedding_function=embedder)
 
     def assert_compatible(self, corpus_hash):
         if not self.manifest_path.exists():
@@ -52,9 +54,9 @@ class ChromaStore:
             return []
         filters = filters or {}
         where = {'$and':[{key:value} for key,value in filters.items()]} if len(filters)>1 else filters
-        result = self.collection.query(query_embeddings=[self.embedder.embed_query(query)], n_results=min(k,self.collection.count()), where=where or None)
-        return [SearchHit(chunk=Chunk(chunk_id=cid,text=text,metadata=meta),score=1-distance,dense_score=1-distance)
-                for cid,text,meta,distance in zip(result['ids'][0],result['documents'][0],result['metadatas'][0],result['distances'][0])]
+        result=self.vectorstore.similarity_search_with_score(query,k=min(k,self.collection.count()),filter=where or None)
+        return [SearchHit(chunk=Chunk(chunk_id=doc.id,text=doc.page_content,metadata=doc.metadata),score=1-distance,dense_score=1-distance)
+                for doc,distance in result]
 
     def chunks(self, filters=None):
         filters = filters or {}

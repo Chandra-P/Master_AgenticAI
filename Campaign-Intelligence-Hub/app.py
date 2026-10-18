@@ -8,7 +8,7 @@ st.badge('Synthetic course data',icon=':material/science:')
 
 with st.sidebar:
     st.subheader('Workspace')
-    page=st.radio('Navigate',['Generate Report','Ask Questions','Retrieval Explorer','Evaluation Dashboard'])
+    page=st.radio('Navigate',['Generate Report','Historical Comparison','Ask Questions','Retrieval Explorer','Evaluation Dashboard'])
     st.divider()
     model=st.text_input('Local generation model',value='llama3.2:3b')
     options=controls()
@@ -22,6 +22,8 @@ except FileNotFoundError:
 
 if page=='Generate Report':
     from campaign_hub.ui.report_page import show
+elif page=='Historical Comparison':
+    from campaign_hub.ui.history_page import show
 elif page=='Ask Questions':
     from campaign_hub.ui.questions_page import show
 elif page=='Retrieval Explorer':

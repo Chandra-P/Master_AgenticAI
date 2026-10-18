@@ -1,16 +1,16 @@
 ---
 campaign_id: FL-CMP-004
-campaign_name: FL CD Promotions 2024
+campaign_name: FL CD Promotions 2026
 campaign_type: CD Promotions
 client_name: Fictional FL Community Financial 4
 document_id: FL-CMP-004-historical_deck
 document_type: historical_deck
-period: 2024-Q2
+period: 2026-Q2
 region: FL
-year: 2024
+year: 2026
 ---
 
-# FL CD Promotions 2024 — historical_deck
+# FL CD Promotions 2026 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

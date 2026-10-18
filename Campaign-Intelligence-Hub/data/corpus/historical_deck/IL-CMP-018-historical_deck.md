@@ -1,16 +1,16 @@
 ---
 campaign_id: IL-CMP-018
-campaign_name: IL Auto Loan Campaigns 2026
+campaign_name: IL Auto Loan Campaigns 2025
 campaign_type: Auto Loan Campaigns
 client_name: Fictional IL Community Financial 18
 document_id: IL-CMP-018-historical_deck
 document_type: historical_deck
-period: 2026-Q2
+period: 2025-Q2
 region: IL
-year: 2026
+year: 2025
 ---
 
-# IL Auto Loan Campaigns 2026 — historical_deck
+# IL Auto Loan Campaigns 2025 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

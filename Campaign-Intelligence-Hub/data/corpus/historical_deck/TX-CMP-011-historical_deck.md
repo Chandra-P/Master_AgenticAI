@@ -1,16 +1,16 @@
 ---
 campaign_id: TX-CMP-011
-campaign_name: TX Digital Banking Adoption 2025
+campaign_name: TX Digital Banking Adoption 2024
 campaign_type: Digital Banking Adoption
 client_name: Fictional TX Community Financial 11
 document_id: TX-CMP-011-historical_deck
 document_type: historical_deck
-period: 2025-Q2
+period: 2024-Q2
 region: TX
-year: 2025
+year: 2024
 ---
 
-# TX Digital Banking Adoption 2025 — historical_deck
+# TX Digital Banking Adoption 2024 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

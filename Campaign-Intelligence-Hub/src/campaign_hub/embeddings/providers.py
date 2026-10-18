@@ -1,13 +1,16 @@
 """Ollama embeddings with bounded batches and content-addressed local cache."""
 import hashlib
 import json
-import httpx
+from langchain_core.embeddings import Embeddings
+from langchain_ollama import OllamaEmbeddings
 
 
-class OllamaEmbedder:
+class OllamaEmbedder(Embeddings):
     def __init__(self, settings):
         self.settings = settings
-        self.identity = {'provider':'ollama', 'model':settings.embedding_model, 'normalization':'embeddinggemma-query-document-v1'}
+        self.client=OllamaEmbeddings(model=settings.embedding_model,base_url=settings.ollama_url,
+                                     client_kwargs={'timeout':180})
+        self.identity = {'provider':'langchain-ollama', 'model':settings.embedding_model, 'normalization':'embeddinggemma-query-document-v1'}
         self.cache = settings.data / 'cache/embeddings'
         self.cache.mkdir(parents=True, exist_ok=True)
 
@@ -24,10 +27,7 @@ class OllamaEmbedder:
         for start in range(0,len(missing),16):
             batch = missing[start:start+16]
             try:
-                response = httpx.post(self.settings.ollama_url+'/api/embed', json={'model':self.settings.embedding_model,
-                    'input':[x[1] for x in batch], 'truncate':False}, timeout=180)
-                response.raise_for_status()
-                vectors = response.json()['embeddings']
+                vectors = self.client.embed_documents([x[1] for x in batch])
             except Exception as error:
                 raise RuntimeError(f'Ollama embedding failed. Start Ollama and run: ollama pull {self.settings.embedding_model}. {error}') from error
             if len(vectors) != len(batch) or not vectors or not vectors[0]:

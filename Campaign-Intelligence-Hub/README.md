@@ -8,11 +8,30 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 
 - 110 deterministic synthetic Markdown documents for 20 campaigns and shared guidance.
 - 30 evaluation cases with expected facts and source/section citations.
-- Local Ollama embeddings and generation; no API key or paid API calls by default.
+- LangChain `OllamaEmbeddings`, `ChatOllama`, prompt/structured-output chains, and the LangChain Chroma integration; no API key or paid API calls by default.
 - Persistent ChromaDB, fixed 500-token/50-overlap chunks and business-section chunks.
 - Dense retrieval, dense/BM25 reciprocal-rank fusion, and optional real cross-encoder reranking.
 - LangGraph report orchestration and explicit insufficient-evidence behavior.
-- Streamlit report generation, questions, retrieval comparison, and measured evaluation views.
+- Streamlit report generation, historical campaign comparison, questions, retrieval exploration, and measured evaluation views.
+
+## Channels, attribution, and historical standing
+
+Only **direct mail** and **display** are included:
+
+| Channel | Attribution window | Starting event | Activation-rate denominator |
+| --- | --- | --- | --- |
+| Direct mail | 60 days | Mail/drop date | Mailed households |
+| Display | 30 days | Exposure date | Unique exposed users |
+
+Windows include the anchor date through the channel's final elapsed-day boundary; earlier/later conversions are excluded. The synthetic records use date-level cohorts and deduplicated outcomes assigned to one eligible channel. A campaign is mature only when its complete channel window has elapsed.
+
+Use **Historical Comparison** to see activation rate and cost per activation against earlier campaigns of the same product type, channel, attribution rule, and denominator. The page shows individual peers, peer medians, rank (1 = best), and a performance percentile with tie handling. Lower acquisition cost is better. Rates are compared within channels, not pooled across direct mail and display.
+
+The same source-cited comparison appears in report Channel Insights. This 20-campaign corpus spans eleven product types, so some cohorts have only one earlier peer or none. Small samples are explicitly flagged; a rank is a descriptive comparison, not a claim that a campaign is universally good. No compatible mature history means no ranking.
+
+```powershell
+python -m campaign_hub compare --campaign TX-CHK-001
+```
 
 ## Setup (Windows PowerShell)
 

@@ -1,16 +1,16 @@
 ---
 campaign_id: CA-CMP-002
-campaign_name: CA Deposit Growth 2025
+campaign_name: CA Deposit Growth 2026
 campaign_type: Deposit Growth
 client_name: Fictional CA Community Financial 2
 document_id: CA-CMP-002-historical_deck
 document_type: historical_deck
-period: 2025-Q2
+period: 2026-Q2
 region: CA
-year: 2025
+year: 2026
 ---
 
-# CA Deposit Growth 2025 — historical_deck
+# CA Deposit Growth 2026 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

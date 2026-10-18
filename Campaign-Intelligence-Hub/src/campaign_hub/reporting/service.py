@@ -100,6 +100,56 @@ class CampaignService:
         from campaign_hub.langgraph.workflow import build_workflow
         return build_workflow(self).invoke({'campaign_id':campaign_id,'period':period,'options':options,'use_llm':use_llm})['report']
 
+    def compare_with_history(self,campaign_id,options):
+        from campaign_hub.reporting.benchmark import compare_campaign,parse_channel_results
+        current=self.campaigns.get(campaign_id)
+        if not current:
+            raise ValueError('Unknown campaign')
+        evidence={}
+        def source_record(meta):
+            hits=self.search('Channel Results',meta['campaign_id'],options,'performance_report')
+            for hit in hits:
+                chunk=section_evidence(hit.chunk,'Channel Results')
+                if chunk is not None and chunk.metadata.get('period')==meta['period']:
+                    stats=parse_channel_results(chunk.text)
+                    if stats:
+                        evidence[chunk.chunk_id]=chunk
+                        return {**meta,'channel_results':stats}
+            return {**meta,'channel_results':{}}
+        observed=source_record(current)
+        peers=[source_record(c) for c in self.campaigns.values() if c['campaign_type']==current['campaign_type']
+               and c['period']<current['period'] and c['campaign_id']!=campaign_id]
+        comparisons=[compare_campaign(observed,peers,ch) for ch in ['direct_mail','display']]
+        return {'campaign_id':campaign_id,'period':current['period'],'corpus_hash':self.corpus_hash,'comparisons':comparisons,'evidence':evidence}
+
+    @staticmethod
+    def comparison_claims(comparison):
+        claims=[]
+        for result in comparison['comparisons']:
+            label='Direct mail' if result['channel']=='direct_mail' else 'Display'
+            if result['status']!='ok':
+                continue
+            rows=[]
+            for name,metric in result['metrics'].items():
+                title='Activation rate' if name=='activation_rate' else 'Cost per activation (USD)'
+                current=f"{metric['current']:.2%}" if name=='activation_rate' else f"{metric['current']:.2f}"
+                median=f"{metric['peer_median']:.2%}" if name=='activation_rate' else f"{metric['peer_median']:.2f}"
+                rows.append(f"| {title} | {current} | {median} | {metric['peer_count']} | {metric['rank']} of {metric['total']} | {metric['percentile']:.1f} | {metric['position']} |")
+            peer_ids=set(result['peer_ids'])|{comparison['campaign_id']}
+            citations=[cid for cid,c in comparison['evidence'].items() if c.metadata['campaign_id'] in peer_ids]
+            text=f"{label} historical comparison: {result['peer_count']} earlier comparable campaign(s). Rank 1 is best; percentile is the share of peers outperformed, with half credit for ties.\n\n"
+            text+='| Metric | Current | Peer median | Comparable peers | Rank incl. current | Performance percentile | Position |\n|---|---:|---:|---:|---|---:|---|\n'+'\n'.join(rows)
+            text+='\n\nPeer campaigns: '+', '.join(result['peer_ids'])+'. '
+            if result['small_sample']:
+                text+='Small cohort (fewer than 5 peers): descriptive comparison only, not a reliable population benchmark.'
+            for name,metric in result['metrics'].items():
+                if metric['excluded_undefined_cost_peers']:
+                    text+=f" Acquisition cost excludes {metric['excluded_undefined_cost_peers']} zero-conversion peers; only {metric['peer_count']} defined-cost peers remain."
+                    if metric['small_sample']:
+                        text+=' The acquisition-cost benchmark has a small sample.'
+            claims.append(EvidenceClaim(text=text,citations=citations))
+        return claims
+
     def report_sections(self,campaign_id,period,options,use_llm=True):
         started=time.perf_counter()
         evidence={}
@@ -154,7 +204,9 @@ class CampaignService:
         # The report separately retrieves historical comparators and general best practices.
         guidance=self.search('Recommendations best practices','GLOBAL',options,'best_practice')
         historical=self.search(self.campaigns[campaign_id]['campaign_type'],None,options,'historical_deck')
-        historical=[h for h in historical if h.chunk.metadata['campaign_id'] not in (campaign_id,'GLOBAL')]
+        historical=[h for h in historical if h.chunk.metadata['campaign_id'] not in (campaign_id,'GLOBAL')
+                    and h.chunk.metadata.get('campaign_type')==self.campaigns[campaign_id]['campaign_type']
+                    and h.chunk.metadata.get('period','9999')<period]
         brief=self.search('Objectives',campaign_id,options,'brief')
         for hit in guidance[:1]+historical[:1]+brief[:1]:
             evidence[hit.chunk.chunk_id]=hit.chunk
@@ -164,7 +216,17 @@ class CampaignService:
         if historical:
             c=historical[0].chunk
             sections[7].claims.append(EvidenceClaim(text=f"Historical comparator {c.metadata['campaign_id']} (not the selected campaign): "+c.text,citations=[c.chunk_id]))
-        inputs={'brief':bool(brief),'success_plan':bool(sections[1].claims),'kpi_results':bool(sections[2].claims),'historical_campaigns':bool(historical),'best_practices':bool(guidance)}
+        comparison=self.compare_with_history(campaign_id,options) if period==self.campaigns[campaign_id]['period'] else None
+        if comparison:
+            evidence.update(comparison['evidence'])
+            sections[5].claims.extend(self.comparison_claims(comparison))
+            for result in comparison['comparisons']:
+                if result['status']!='ok':
+                    label='Direct mail' if result['channel']=='direct_mail' else 'Display'
+                    sections[5].gap+=(f"\n{label}: no mature, compatible earlier cohort is available; historical standing cannot be determined.")
+        inputs={'brief':bool(brief),'success_plan':bool(sections[1].claims),'kpi_results':bool(sections[2].claims),
+                'historical_campaigns':bool(historical) or bool(comparison and any(r['peer_ids'] for r in comparison['comparisons'])),
+                'best_practices':bool(guidance)}
         slide_claims=[]
         for n,index in enumerate([0,1,2,5,6],1):
             section=sections[index]
@@ -178,7 +240,9 @@ class CampaignService:
             status='complete' if coverage==1 and all(inputs.values()) else 'partial',confidence=coverage,
             provenance={'generated_at':datetime.now(timezone.utc).isoformat(),'corpus_hash':self.corpus_hash,'inputs':inputs,
                         'options':options.model_dump(),'generation_model':self.settings.generation_model if use_llm else 'extractive',
-                        'errors':errors,'support_mode':'verbatim evidence; validated Python KPI arithmetic'},timings={'total_seconds':time.perf_counter()-started})
+                        'errors':errors,'historical_comparison':{k:v for k,v in comparison.items() if k!='evidence'} if comparison else None,
+                        'attribution':{'direct_mail':'60 days from mail/drop date','display':'30 days from exposure'},
+                        'support_mode':'verbatim evidence; validated Python KPI and historical-comparison arithmetic'},timings={'total_seconds':time.perf_counter()-started})
 
     def answer_question(self,question,campaign_id,options):
         match=re.search(r'\b[A-Z]{2}-[A-Z]+-\d{3}\b',question)

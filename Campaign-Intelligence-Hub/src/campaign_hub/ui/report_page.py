@@ -24,6 +24,10 @@ def show(service,options):
         except Exception as error:
             st.error(str(error))
     report=st.session_state.get('report')
+    if report and report.provenance.get('corpus_hash')!=service.corpus_hash:
+        st.session_state.pop('report',None)
+        report=None
+        st.info('Campaign evidence changed. Generate a fresh report using the current corpus.')
     if report:
         st.subheader(f'Report · {report.campaign_id}')
         if report.status=='complete':

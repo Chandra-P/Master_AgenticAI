@@ -18,6 +18,9 @@ def show(service,options):
         st.info('No evaluations have been run. Build both indexes, then run a smoke experiment or use the evaluation CLI.')
         return
     rows=json.loads(path.read_text(encoding='utf-8'))
+    if any(r.get('identity',{}).get('corpus')!=service.corpus_hash for r in rows):
+        st.warning('These evaluation results belong to an earlier corpus. Run a fresh evaluation before comparing current performance.')
+        return
     df=pd.DataFrame(rows)
     st.dataframe(df.drop(columns=['answer','identity','judgments'],errors='ignore'),alt='Actual evaluation results by configuration')
     good=df[df['error'].isna()] if 'error' in df else df

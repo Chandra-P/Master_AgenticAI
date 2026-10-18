@@ -1,16 +1,16 @@
 ---
 campaign_id: CA-CMP-007
-campaign_name: CA Auto Loan Campaigns 2024
+campaign_name: CA Auto Loan Campaigns 2026
 campaign_type: Auto Loan Campaigns
 client_name: Fictional CA Community Financial 7
 document_id: CA-CMP-007-historical_deck
 document_type: historical_deck
-period: 2024-Q2
+period: 2026-Q2
 region: CA
-year: 2024
+year: 2026
 ---
 
-# CA Auto Loan Campaigns 2024 — historical_deck
+# CA Auto Loan Campaigns 2026 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

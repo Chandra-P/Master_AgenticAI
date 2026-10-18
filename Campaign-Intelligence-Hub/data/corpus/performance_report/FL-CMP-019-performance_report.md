@@ -24,7 +24,7 @@ SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are ficti
 
 ## Performance Drivers
 
-Email accounted for 342 verified activations and paid search for 228. Channel composition is an observed association, not causal lift.
+Direct mail accounted for 342 verified activations and display for 228. Channel composition is an observed association, not causal lift.
 
 ## Audience Insights
 
@@ -32,7 +32,15 @@ Existing members supplied 342 activations and prospective members 228; no age-le
 
 ## Channel Insights
 
-Email: 342 activations; paid search: 228. Total attributed spend: USD 53541. Channel-specific spend is unavailable, so channel ROI cannot be calculated.
+Direct mail: 342 activations within 60 days of mail/drop date; display: 228 within 30 days of exposure. Total attributed spend: USD 53541. Channel-specific spend and exposure counts are in Channel Results. Financial return is unavailable, so channel ROI cannot be calculated.
+
+## Channel Results
+
+| Channel | Activations | Exposures | Spend USD | Window days | Anchor | Anchor date | As of | Exposure unit | Mature |
+|---|---:|---:|---:|---:|---|---|---|---|---|
+| direct_mail | 342 | 8600 | 34802 | 60 | mail_drop_date | 2024-04-01 | 2024-06-30 | mailed_households | true |
+| display | 228 | 17200 | 18739 | 30 | exposure_date | 2024-04-15 | 2024-06-30 | exposed_users | true |
+
 
 ## Measurement Limitations
 

@@ -1,13 +1,19 @@
 from dataclasses import replace
+import hashlib
 import streamlit as st
 from campaign_hub.config import Settings
 from campaign_hub.models import RetrievalOptions
 
 
 @st.cache_resource(max_entries=4)
-def service_for(model):
+def _cached_service(model,manifest_hash):
     from campaign_hub.reporting.service import CampaignService
     return CampaignService(replace(Settings(),generation_model=model))
+
+
+def service_for(model):
+    manifest_hash=hashlib.sha256((Settings().data/'manifest.json').read_bytes()).hexdigest()
+    return _cached_service(model,manifest_hash)
 
 
 def controls():
