@@ -1,71 +1,98 @@
-# Master_AgenticAI
+﻿# Master_AgenticAI
 
-This repository is a portfolio-style collection of AI-assisted learning projects. The main project in this repo is KidSpark, a browser-based educational app that helps students practice real-world decision-making through short, game-like challenges.
+A collection of AI-assisted learning projects, LangChain examples, and local AI tools.
 
-## Project overview
+## Projects
 
-KidSpark is built for middle and high school learners. Students work through short scenarios involving:
+| Project | Description | Location |
+| --- | --- | --- |
+| KidSpark | Learning app for middle and high school students: budgeting, scam awareness, and event planning, with feedback, saved progress, and leaderboards. | [kidspark/](kidspark/) |
+| Week 1: LangChain Fundamentals | Notebook covering prompts, chat models, streaming, chains, structured output, tools, and agents. Includes local Ollama examples and commented OpenAI examples. | [Notebook](Mastering-Agentic-AI-Week1/Langchain%20Basics/Langchain_Fundamentals.ipynb) |
+| Terminal Web Chatbot | Local Ollama assistant with web search, source links, conversation memory, and geometry tools. | [terminal_chatbot.py](Mastering-Agentic-AI-Week1/Langchain%20Basics/terminal_chatbot.py) |
+| Dhumsharath | React, Vite, and TypeScript Telugu movie dumb-charades game, with teams, timed rounds, hints, and scoreboards. | [Separate repository](https://github.com/Chandra-P/Dhumsharath) |
 
-- budgeting
-- scam awareness
-- event planning
-
-Each challenge includes guided choices, hints, explanations, progress tracking, and saved results so learners can practice practical judgment in a low-pressure environment.
-
-## Important: where the app actually lives
-
-The working project is nested in the `kidspark/` directory. The app entry file is:
-
-- `kidspark/app.py`
-
-If someone tries to run the app from the repository root without entering the nested project folder, they will hit the `File does not exist: app.py` issue that occurs when `app.py` is not present in the current working directory.
+Dhumsharath remains a separate repository; cloning Master_AgenticAI does not include it.
 
 ## Repository structure
 
-- `README.md` — repo-level overview
-- `kidspark/` — actual KidSpark project and application code
-- `kidspark/README.md` — project-specific setup and usage guide
-- `kidspark/app.py` — Streamlit app entry point
-- `kidspark/data/` — local data and saved database files
-- `kidspark/src/` — application code
-- `kidspark/tests/` — automated validation tests
-
-## How to recreate and run the app
-
-From the repository root, either run the app directly with the nested path:
-
-```powershell
-streamlit run kidspark/app.py
+```text
+Master_AgenticAI/
+├── README.md
+├── kidspark/
+│   ├── app.py
+│   ├── README.md
+│   ├── src/
+│   ├── tests/
+│   └── data/
+└── Mastering-Agentic-AI-Week1/
+    └── Langchain Basics/
+        ├── Langchain_Fundamentals.ipynb
+        ├── terminal_chatbot.py
+        ├── langchain_prompts.py
+        ├── README.md
+        ├── pyproject.toml
+        ├── uv.lock
+        ├── env.demo
+        └── images/
 ```
 
-Or enter the actual project folder first:
+## Run KidSpark
+
+Use Python 3.10 or newer. From the repository root:
 
 ```powershell
-cd .\kidspark
+cd kidspark
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e .
 python -m streamlit run app.py
 ```
 
-On macOS/Linux:
+On macOS/Linux, activate with `source .venv/bin/activate`.
+Open http://localhost:8501 if the browser does not open automatically.
+See the [KidSpark guide](kidspark/README.md) for details.
 
-```bash
-cd kidspark
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e .
-python -m streamlit run app.py
+## Run the Week 1 examples
+
+Use Python 3.12 or newer. Install [Ollama](https://ollama.com/download), keep it running, and download the model:
+
+```powershell
+ollama pull llama3.2:3b
 ```
 
-## Why this project matters
+From the repository root:
 
-KidSpark turns everyday decision-making into short learning experiences. Instead of passive reading, it helps students explore realistic trade-offs, evaluate information, and build confidence with practical problem-solving.
+```powershell
+cd "Mastering-Agentic-AI-Week1/Langchain Basics"
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install python-dotenv langchain langchain-core langchain-ollama ddgs ipykernel
+```
 
-## Workflow and tools
+On macOS/Linux, activate with `source .venv/bin/activate`. The install command includes the Ollama and web-search dependencies; the original project dependency file and lockfile still describe the earlier OpenAI setup.
 
-This project was developed using Python, Streamlit, and an AI-assisted coding workflow. The application is structured to support iteration, testing, and rapid refinement while keeping the experience easy to use for students and reviewers.
+### Notebook
 
-## Status
+Open `Langchain_Fundamentals.ipynb` in VS Code, select the new `.venv` interpreter as the notebook kernel, and run the cells in order. Use the active Ollama model cells; the previous OpenAI model examples are commented out.
 
-This repository contains a working KidSpark app, supporting project documentation, and validated functionality for the challenge flow and learning experience.
+The local examples need no OpenAI API key or `.env` file. Prompt-template examples work without a model server; generating answers requires Ollama and the downloaded model.
+
+### Terminal web chatbot
+
+From the same directory and environment:
+
+```powershell
+python terminal_chatbot.py
+```
+
+Ask a question at `You:` and press Enter. Enter `quit` or `exit` to stop. Conversation history lasts for the current process.
+
+Web search requires internet access. The chatbot prints `Searching the web:` when searching and uses search snippets with source URLs, rather than full webpages. It can answer simple questions without searching.
+
+## Dhumsharath
+
+Source: [Chandra-P/Dhumsharath](https://github.com/Chandra-P/Dhumsharath). The application lives in `artifacts/dhumsharath/`; workspace details are in that repository's `replit.md`.
+
+## Branch visibility
+
+The Week 1 folder was added on `kidspark-final`. Select that branch on GitHub to see these additions until they are merged into `main`.
