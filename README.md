@@ -9,6 +9,7 @@ A collection of AI-assisted learning projects, LangChain examples, and local AI 
 | KidSpark | Learning app for middle and high school students: budgeting, scam awareness, and event planning, with feedback, saved progress, and leaderboards. | [kidspark/](kidspark/) |
 | Week 1: LangChain Fundamentals | Notebook covering prompts, chat models, streaming, chains, structured output, tools, and agents. Includes local Ollama examples and commented OpenAI examples. | [Notebook](Mastering-Agentic-AI-Week1/Langchain%20Basics/Langchain_Fundamentals.ipynb) |
 | Terminal Web Chatbot | Local Ollama assistant with web search, source links, conversation memory, and geometry tools. | [terminal_chatbot.py](Mastering-Agentic-AI-Week1/Langchain%20Basics/terminal_chatbot.py) |
+| Campaign Intelligence Hub | Week 2 RAG application that generates cited campaign performance reports using local Ollama, ChromaDB, hybrid retrieval, and LangGraph. Includes a Streamlit workspace and retrieval experiments. | [Project guide](Campaign-Intelligence-Hub/README.md) |
 | Dhumsharath | React, Vite, and TypeScript Telugu movie dumb-charades game, with teams, timed rounds, hints, and scoreboards. | [Separate repository](https://github.com/Chandra-P/Dhumsharath) |
 
 Dhumsharath remains a separate repository; cloning Master_AgenticAI does not include it.

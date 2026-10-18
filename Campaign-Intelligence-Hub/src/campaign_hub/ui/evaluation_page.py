@@ -1,0 +1,32 @@
+import json
+import pandas as pd
+import streamlit as st
+
+
+def show(service,options):
+    st.header('Evaluation dashboard')
+    st.caption('Only measured local runs appear here. Errors and unavailable judgments remain visible.')
+    path=service.settings.data/'runs/latest/results.json'
+    if st.button('Run eight-configuration retrieval smoke experiment',type='primary'):
+        try:
+            from campaign_hub.evaluation.runner import run_experiments
+            with st.spinner('Running actual retrieval experiments, including cross-encoder reranking…'):
+                run_experiments(service,path.parent,smoke=True,use_llm=False)
+        except Exception as error:
+            st.error(str(error))
+    if not path.exists():
+        st.info('No evaluations have been run. Build both indexes, then run a smoke experiment or use the evaluation CLI.')
+        return
+    rows=json.loads(path.read_text(encoding='utf-8'))
+    df=pd.DataFrame(rows)
+    st.dataframe(df.drop(columns=['answer','identity','judgments'],errors='ignore'),alt='Actual evaluation results by configuration')
+    good=df[df['error'].isna()] if 'error' in df else df
+    for metric,label in [('mrr','Retrieval relevance (MRR@5)'),('context_precision','Context precision'),('context_recall','Context recall'),('latency_seconds','Latency in seconds'),('answer_completeness','Expected-fact completeness proxy')]:
+        if metric in good and good[metric].notna().any():
+            st.subheader(label)
+            chart=good.groupby(['chunking','retrieval','reranking'])[metric].mean().reset_index()
+            chart['configuration']=chart['chunking']+' / '+chart['retrieval']+' / rerank '+chart['reranking'].astype(str)
+            st.bar_chart(chart,x='configuration',y=metric,alt=label+' across measured configurations')
+    st.info('Faithfulness requires a separate entailment judgment. Missing values are unavailable, not zero or perfect scores.')
+    if 'error' in df and df['error'].notna().any():
+        st.warning(f"{df['error'].notna().sum()} configurations/questions failed. Inspect error rows before drawing conclusions.")

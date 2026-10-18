@@ -6,7 +6,37 @@ Status: Proposed for user review; implementation has not started.
 
 ## Purpose and decisions
 
-Build a Week 2 course application for campaign insights analysts. Transform campaign briefs, success plans, reports, historical insight decks, and methodology documents into evidence-backed answers and executive narratives.
+Build a Week 2 course application for campaign insights analysts. The primary deliverable is a complete Campaign Performance Report generated from retrieved campaign evidence. Questions, retrieval exploration, and evaluations support report creation and verification.
+
+## Campaign Performance Report generation
+
+Required inputs: Campaign Brief, Success Plan, KPI Results, Historical Campaigns, and Best Practices. Link the brief, plan, and KPI results by campaign ID and reporting period. Retrieve historical campaigns through a separate comparison search and best practices through a separate guidance search. Historical outcomes and general guidance must never be presented as the selected campaign's actual results.
+
+The existing 20 synthetic performance reports serve as source KPI-results documents, not generated deliverables. Store generated reports separately from the source corpus; never index them automatically or use them as independent evidence. Each KPI-results source must contain actuals, targets or links to targets, units, measurement windows, and audience/channel breakdowns where available. Missing breakdowns remain explicitly unavailable.
+
+Generate these eleven sections in this order:
+
+1. Executive Summary
+2. Goal Achievement Analysis
+3. KPI Performance Review
+4. Performance Drivers
+5. Audience Insights
+6. Channel Insights
+7. Recommendations
+8. Lessons Learned
+9. Suggested Next Steps
+10. Presentation Storyline
+11. Source Citations
+
+All findings, numerical claims, comparisons, and evidence-based recommendations require inline citations to supporting retrieved document IDs and section anchors. A bibliography alone is insufficient. Recommendations, lessons, and proposed next steps distinguish observed evidence from suggested actions; proposed actions cannot imply measured results or guaranteed outcomes. Performance drivers describe observed associations unless evidence supports causation.
+
+Goal Achievement Analysis compares each stated goal against its documented success criterion. KPI Performance Review includes a table of metric, target, actual, absolute variance, percentage variance when meaningful, achievement status, measurement period, and citations for both target and actual. Compute comparisons in Python from validated source values, respecting whether higher or lower is better. Do not divide by zero, compare incompatible units/windows, or ask the LLM to invent missing values.
+
+Report generation uses a coverage plan and section-specific retrieval: retrieve up to 20 candidates and select up to five chunks per section/evidence query. Accumulate a deduplicated evidence ledger across sections instead of expecting a single global five-chunk result to support an entire report. Bound each generation call to the model context budget. Synthesize the executive summary and five-slide presentation storyline from validated section findings with their original citations, not unsupported intermediate prose.
+
+Keep all eleven section headings. A section without adequate evidence shows the exact insufficient-evidence fallback and its missing inputs; it does not produce speculative findings. Report status is `complete` only when all required sections have sufficient validated evidence; otherwise show `partial` with a coverage checklist. If no substantive section is supportable, return the global fallback. Missing historical or best-practice inputs are explicitly disclosed. Never label a partially supported report complete.
+
+Download the report as Markdown, including inline citations, source bibliography, campaign/reporting-period identification, synthetic-data notice, section coverage, configuration, source hashes, and generation timestamp. Confidence and evidence diagnostics are accompanying metadata rather than a replacement for any required section. A presentation storyline is included; binary PowerPoint export is outside scope.
 
 Tagline: Transform campaign objectives, success plans, and performance reports into actionable insights and executive-ready narratives.
 
@@ -43,7 +73,7 @@ A canonical campaign record contains ID, name, client, type, region, year, objec
 
 Calculate derived metrics from canonical raw values, with explicit denominators, units, attribution windows, and rounding. Include both successful and underperforming campaigns and contradictory-looking cases resolved by methodology (e.g. clicks vs funded accounts). Manifest records document IDs, paths, campaign links, hashes, and schema version.
 
-Generate 30 evaluation records with stable IDs, questions, expected answers, atomic expected facts, expected document IDs, and ground-truth section citations. Cover objectives, KPIs, results, cross-document comparisons, analogous campaigns, recommendations, executive summaries, slide storylines, and unsupported questions. Reserve a subset for threshold tuning; report final comparisons on the remaining questions. Ground truth comes from canonical records, not model-generated answers.
+Generate 30 evaluation records with stable IDs, questions, expected answers, atomic expected facts, expected document IDs, and ground-truth section citations. Cover objectives, KPIs, results, cross-document comparisons, analogous campaigns, recommendations, executive summaries, slide storylines, unsupported questions, and complete/partial report requests. Report cases include expected section coverage, numerical comparisons, and citations for all findings. Reserve a subset for threshold tuning; report final comparisons on the remaining questions. Ground truth comes from canonical records, not model-generated answers.
 
 ## Ingestion and chunking
 
@@ -67,14 +97,15 @@ Dense search retrieves up to 20 candidates. Hybrid search combines dense and BM2
 
 Campaign ID detection constrains factual questions to the selected campaign. Similarity/comparison questions deliberately permit other campaigns. Unknown IDs return insufficient evidence rather than silently searching a different campaign. UI filters override ambiguous inferred filters transparently.
 
-Reranking uses the local `cross-encoder/ms-marco-MiniLM-L-6-v2` model, downloaded once, scoring query/chunk pairs. Reranking off preserves candidate order. Both modes send the top five unique chunks to context validation/generation. Download or inference failure produces an actionable error; never silently substitute lexical overlap while reporting cross-encoder reranking.
+Reranking uses the local `cross-encoder/ms-marco-MiniLM-L-6-v2` model, downloaded once, scoring query/chunk pairs. Reranking off preserves candidate order. Both modes send the top five unique chunks per evidence query to context validation/generation. Reports repeat this pipeline for section coverage. Download or inference failure produces an actionable error; never silently substitute lexical overlap while reporting cross-encoder reranking.
 
 ## LangGraph and evidence validation
 
 ```mermaid
 flowchart TD
-    Q[Question and user controls] --> U[Query understanding]
-    U --> S[Strategy selection]
+    Q[Report request or question and controls] --> U[Intent and campaign understanding]
+    U --> P[Report coverage plan or single question]
+    P --> S[Strategy selection for each evidence query]
     S --> D[Dense retrieval]
     S --> H[Dense plus BM25 fusion]
     D --> R[Optional cross-encoder reranking]
@@ -83,15 +114,16 @@ flowchart TD
     V -->|Sufficient evidence| G[Grounded generation]
     V -->|Insufficient evidence| F[Evidence fallback]
     G --> C[Citation and claim validation]
-    C -->|Supported| A[Final response]
+    C -->|Supported| A[Assemble validated sections and source ledger]
+    A --> O[Final report or answer with coverage status]
     C -->|Invalid or unsupported| F
 ```
 
-Graph state records query, intent, filters, selected strategy, candidates, contexts, answer fields, citations, validation findings, confidence diagnostics, timings, and errors. Nodes are independently testable and return explicit state updates.
+Graph state records query, intent, campaign/reporting period, report section plan, section coverage, filters, selected strategy, candidates, contexts, evidence ledger, calculated KPI comparisons, answer fields, citations, validation findings, confidence diagnostics, timings, and errors. Nodes are independently testable and return explicit state updates. Report processing repeats retrieval and validation for each section, then assembles validated findings; unsupported sections remain marked as gaps.
 
 Context validation considers semantic relevance, campaign match, coverage, and evidence availability. Thresholds are configurable and tuned only on the calibration subset. Confidence is a documented heuristic evidence score, not a calibrated probability of correctness.
 
-Generation receives only retrieved evidence and instructions to treat source content as data, never commands. Return structured sections: executive summary, key findings, performance drivers, audience insights, recommendations, next steps, citations, and confidence. Recommendations must trace to source recommendations or clearly identified evidence-based synthesis; unsupported sections state insufficient evidence. Five-slide requests produce exactly five titled storyline entries with supporting citations.
+Generation receives only retrieved evidence and instructions to treat source content as data, never commands. Report mode returns the eleven sections defined above. Question mode returns a focused answer with cited findings and confidence diagnostics. Recommendations must trace to source recommendations or clearly identified evidence-based synthesis; unsupported sections state insufficient evidence. Presentation storylines contain exactly five titled slide entries with supporting citations.
 
 Citations use allowlisted retrieved source IDs and section anchors. Validate cited IDs, actual source text, numerical claims, and required fact coverage. Reject invented or unsupported citations. An optional local LLM judge can assess claim entailment but is not a guarantee of truth. Conservative fallback is preferred when validation fails. A zero-hallucination guarantee is not technically supportable.
 
@@ -99,7 +131,9 @@ Fallback text is exactly: "I could not find sufficient evidence in the knowledge
 
 ## Streamlit experience
 
-Three navigation pages, consistent theme, clear synthetic-data labeling, and an evidence-focused layout. Use Streamlit's installed version-matched guidance before UI implementation.
+Four navigation pages: Generate Report (primary), Ask Questions, Retrieval Explorer, and Evaluation Dashboard. Use a consistent theme, clear synthetic-data labeling, and an evidence-focused layout. Use Streamlit's installed version-matched guidance before UI implementation.
+
+Generate Report: select campaign and reporting period, inspect availability of all five input categories, choose retrieval/chunking/reranking/model controls, and explicitly run report generation. Show section-level progress, all eleven output sections, target-versus-actual KPI table, inline citations, source excerpts, completeness status, evidence gaps, confidence diagnostics, and Markdown download. Missing input categories are disclosed before generation and reflected in the final coverage status.
 
 Ask Questions: campaign/filter controls, example prompts, question input, fixed/semantic selector, dense/hybrid selector, reranking toggle, configurable local model, run status, required answer sections, source excerpts/links, confidence explanation, and download of the narrative as Markdown. PowerPoint storyline means narrative content; a binary PPTX export is outside the stated deliverables.
 
@@ -121,9 +155,9 @@ CLI supports corpus generation/validation, indexing both chunkers, querying, smo
 
 Unit tests: exact corpus counts/relationships, numerical consistency, deterministic regeneration, metadata validation, fixed token window/overlap, semantic section attribution, cache/index invalidation, filter parity, fusion deduplication, reranker ordering, citation allowlists, unsupported-answer fallback, and evaluation math against hand-computed examples.
 
-Integration tests: isolated temporary Chroma persistence, graph routing with deterministic test doubles, and offline synthetic-corpus end-to-end behavior. Live tests separately exercise Ollama embeddings/generation, real Chroma retrieval, cross-encoder reranking, one cited campaign answer, one unsupported question, and five-slide structure. Streamlit AppTest/smoke checks cover all pages, empty index/results states, and controls without triggering unintended expensive work.
+Integration tests: isolated temporary Chroma persistence, graph routing with deterministic test doubles, and offline synthetic-corpus end-to-end behavior. Report tests require all eleven sections, inline evidence support for every finding, correct KPI arithmetic and directionality, missing/zero/incompatible metric handling, source-versus-generated-output separation, historical-versus-current fact isolation, and honest complete/partial status. Live tests separately exercise Ollama embeddings/generation, real Chroma retrieval, cross-encoder reranking, one cited campaign answer, one unsupported question, a full campaign report, a missing-input report, and five-slide structure. Streamlit AppTest/smoke checks cover all four pages, empty index/results states, and controls without triggering unintended expensive work.
 
-Completion requires 110 committed source documents, 30 gold evaluation items, both real indexes, all retrieval modes, genuine reranking, actual LangGraph execution, source-validated responses/fallbacks, working UI, recorded experiment outputs or explicitly documented blocked runs, passing relevant checks, installation instructions, architecture diagram, and course methodology/limitations documentation. Do not call an unexecuted experiment a completed comparison.
+Completion requires 110 committed source documents, 30 gold evaluation items, both real indexes, all retrieval modes, genuine reranking, actual LangGraph execution, a generated eleven-section Campaign Performance Report with cited findings and validated KPI comparisons, honest partial-report/fallback behavior, source-validated question answers, working four-page UI, recorded experiment outputs or explicitly documented blocked runs, passing relevant checks, installation instructions, architecture diagram, and course methodology/limitations documentation. Do not call an unexecuted experiment a completed comparison.
 
 ## Delivery sequence
 
