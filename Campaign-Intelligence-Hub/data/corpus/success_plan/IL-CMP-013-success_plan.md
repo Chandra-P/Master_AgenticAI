@@ -1,8 +1,8 @@
 ---
 campaign_id: IL-CMP-013
-campaign_name: IL Deposit Growth 2024
-campaign_type: Deposit Growth
-client_name: Fictional IL Community Financial 13
+campaign_name: IL Checking Account Acquisition 2024
+campaign_type: Checking Account Acquisition
+client_name: Fictional Meridian Credit Union
 document_id: IL-CMP-013-success_plan
 document_type: success_plan
 period: 2024-Q2
@@ -10,7 +10,7 @@ region: IL
 year: 2024
 ---
 
-# IL Deposit Growth 2024 — success_plan
+# IL Checking Account Acquisition 2024 — success_plan
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 456 count; acquisition cost ceiling: USD 98.68/activation; spend ceiling: USD 45000.
+Verified activations target: 456 count; acquisition cost ceiling: USD 98.68/activation; spend ceiling: USD 45000; opening account balance target: USD 1368000.00.
 
 ## Reporting Window
 

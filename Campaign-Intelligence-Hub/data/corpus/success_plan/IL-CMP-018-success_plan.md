@@ -1,8 +1,8 @@
 ---
 campaign_id: IL-CMP-018
-campaign_name: IL Auto Loan Campaigns 2025
-campaign_type: Auto Loan Campaigns
-client_name: Fictional IL Community Financial 18
+campaign_name: IL Deposit Growth 2025
+campaign_type: Deposit Growth
+client_name: Fictional Orchard Financial
 document_id: IL-CMP-018-success_plan
 document_type: success_plan
 period: 2025-Q2
@@ -10,7 +10,7 @@ region: IL
 year: 2025
 ---
 
-# IL Auto Loan Campaigns 2025 — success_plan
+# IL Deposit Growth 2025 — success_plan
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 571 count; acquisition cost ceiling: USD 94.13/activation; spend ceiling: USD 53750.
+Verified activations target: 571 count; acquisition cost ceiling: USD 94.13/activation; spend ceiling: USD 53750; opening account balance target: USD 1713000.00.
 
 ## Reporting Window
 

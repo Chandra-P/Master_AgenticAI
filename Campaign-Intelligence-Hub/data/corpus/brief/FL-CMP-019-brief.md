@@ -1,8 +1,8 @@
 ---
 campaign_id: FL-CMP-019
-campaign_name: FL Credit Card Acquisition 2024
-campaign_type: Credit Card Acquisition
-client_name: Fictional FL Community Financial 19
+campaign_name: FL Deposit Growth 2024
+campaign_type: Deposit Growth
+client_name: Fictional Orchard Financial
 document_id: FL-CMP-019-brief
 document_type: brief
 period: 2024-Q2
@@ -10,13 +10,13 @@ region: FL
 year: 2024
 ---
 
-# FL Credit Card Acquisition 2024 — brief
+# FL Deposit Growth 2024 — brief
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
 ## Objectives
 
-Acquire 594 verified product activations during 2024-Q2 for Credit Card Acquisition.
+Acquire 594 verified product activations during 2024-Q2 for Deposit Growth.
 
 ## Audience
 
@@ -24,7 +24,7 @@ Digitally active local households; includes existing and prospective members.
 
 ## Offer
 
-Campaign-specific eligibility incentive for credit card acquisition. Eligibility and product suitability must be verified.
+Campaign-specific eligibility incentive for deposit growth. Eligibility and product suitability must be verified.
 
 ## Creative Theme
 

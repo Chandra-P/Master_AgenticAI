@@ -1,4 +1,8 @@
 import streamlit as st
+import sys
+from pathlib import Path
+# Support Streamlit entry-point deployment without a separate editable-package install.
+sys.path.insert(0,str(Path(__file__).resolve().parent/'src'))
 from campaign_hub.ui.resources import service_for, controls
 
 st.set_page_config(page_title='Campaign Intelligence Hub',page_icon=':material/insights:',layout='wide')
@@ -10,8 +14,9 @@ with st.sidebar:
     st.subheader('Workspace')
     page=st.radio('Navigate',['Generate Report','Historical Comparison','Ask Questions','Retrieval Explorer','Evaluation Dashboard'])
     st.divider()
-    model=st.text_input('Local generation model',value='llama3.2:3b')
-    options=controls()
+    with st.expander('Analyst model and retrieval settings'):
+        model=st.text_input('Local generation model',value='llama3.2:3b')
+        options=controls()
     st.caption('Local Ollama · ChromaDB · No API key required')
 
 try:

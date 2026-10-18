@@ -1,22 +1,29 @@
 import pandas as pd
 import streamlit as st
-from campaign_hub.ui.resources import source_viewer
+from campaign_hub.ui.resources import source_viewer,select_campaign
 
 
 def show(service,options):
     st.header('Historical campaign comparison')
     st.markdown('See where a campaign stands among earlier campaigns of the same product type, measured within the same channel and attribution rules.')
     st.caption('Direct mail: 60 days from mail/drop date. Display: 30 days from exposure. Only fully observed windows qualify.')
+    cid=select_campaign(service,'history','Campaign to benchmark')
+    scope_label=st.selectbox('Comparison group',['Same-client historical campaigns','Synthetic peer reference — not an industry benchmark'])
+    scope='client' if scope_label.startswith('Same-client') else 'peer_reference'
+    if scope=='peer_reference':
+        st.warning('Fictional cross-client examples only. No verified industry benchmark is available.')
     with st.form('history-form'):
-        cid=st.selectbox('Campaign to benchmark',list(service.campaigns),format_func=lambda c:f"{c} · {service.campaigns[c]['campaign_name']}")
         submitted=st.form_submit_button('Compare with historical campaigns',type='primary')
     if submitted:
         try:
             with st.spinner('Retrieving comparable historical evidence and calculating standing…'):
-                st.session_state['historical-comparison']=service.compare_with_history(cid,options)
+                st.session_state['historical-comparison']=service.compare_with_history(cid,options,scope=scope)
+                st.session_state['historical-scope']=scope
         except Exception as error:
             st.error(str(error))
     comparison=st.session_state.get('historical-comparison')
+    if comparison and (comparison['campaign_id']!=cid or st.session_state.get('historical-scope')!=scope):
+        comparison=None
     if comparison and comparison.get('corpus_hash')!=service.corpus_hash:
         st.session_state.pop('historical-comparison',None)
         comparison=None

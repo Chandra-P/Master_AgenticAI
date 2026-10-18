@@ -2,7 +2,7 @@
 campaign_id: CA-CMP-007
 campaign_name: CA Auto Loan Campaigns 2026
 campaign_type: Auto Loan Campaigns
-client_name: Fictional CA Community Financial 7
+client_name: Fictional Harbor Community Bank
 document_id: CA-CMP-007-success_plan
 document_type: success_plan
 period: 2026-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 318 count; acquisition cost ceiling: USD 108.49/activation; spend ceiling: USD 34500.
+Verified activations target: 318 count; acquisition cost ceiling: USD 108.49/activation; spend ceiling: USD 34500; opening account balance target: USD 954000.00.
 
 ## Reporting Window
 

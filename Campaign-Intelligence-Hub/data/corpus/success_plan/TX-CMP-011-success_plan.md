@@ -2,7 +2,7 @@
 campaign_id: TX-CMP-011
 campaign_name: TX Digital Banking Adoption 2024
 campaign_type: Digital Banking Adoption
-client_name: Fictional TX Community Financial 11
+client_name: Fictional Meridian Credit Union
 document_id: TX-CMP-011-success_plan
 document_type: success_plan
 period: 2024-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 410 count; acquisition cost ceiling: USD 101.22/activation; spend ceiling: USD 41500.
+Verified activations target: 410 count; acquisition cost ceiling: USD 101.22/activation; spend ceiling: USD 41500; opening account balance target: USD 1230000.00.
 
 ## Reporting Window
 

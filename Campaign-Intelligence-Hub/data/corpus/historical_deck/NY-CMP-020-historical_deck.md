@@ -1,8 +1,8 @@
 ---
 campaign_id: NY-CMP-020
-campaign_name: NY Branch Openings 2025
-campaign_type: Branch Openings
-client_name: Fictional NY Community Financial 20
+campaign_name: NY High Yield Savings 2025
+campaign_type: High Yield Savings
+client_name: Fictional Summit Credit Union
 document_id: NY-CMP-020-historical_deck
 document_type: historical_deck
 period: 2025-Q2
@@ -10,7 +10,7 @@ region: NY
 year: 2025
 ---
 
-# NY Branch Openings 2025 — historical_deck
+# NY High Yield Savings 2025 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

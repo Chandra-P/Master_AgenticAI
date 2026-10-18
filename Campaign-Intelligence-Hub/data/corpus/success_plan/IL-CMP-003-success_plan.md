@@ -2,7 +2,7 @@
 campaign_id: IL-CMP-003
 campaign_name: IL High Yield Savings 2026
 campaign_type: High Yield Savings
-client_name: Fictional IL Community Financial 3
+client_name: Fictional Summit Credit Union
 document_id: IL-CMP-003-success_plan
 document_type: success_plan
 period: 2026-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 226 count; acquisition cost ceiling: USD 121.68/activation; spend ceiling: USD 27500.
+Verified activations target: 226 count; acquisition cost ceiling: USD 121.68/activation; spend ceiling: USD 27500; opening account balance target: USD 678000.00.
 
 ## Reporting Window
 

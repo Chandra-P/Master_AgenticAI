@@ -1,30 +1,47 @@
-# Evaluation status
+# Evaluation and verification results
 
-The application writes real run outputs to `data/runs/latest/results.json` and `results.csv`. The dashboard remains empty until those files exist.
+## Current local verification: 2026-10-18
 
-The experiment matrix has eight combinations: fixed/semantic chunking, dense/hybrid retrieval, and reranking disabled/enabled. Held-out cases exclude calibration items. `--smoke` uses one held-out question across the matrix; `--full` uses all held-out cases, including report and unsupported requests.
+- **51 automated tests passed.** Tests cover corpus construction, chunking, metadata filters, KPI/attribution arithmetic, benchmark eligibility, evidence validation, client selection, report export, source-conflict rejection and unavailable zero-channel CPA.
+- Exactly **110 source documents**: 20 briefs, 20 success plans, 20 performance reports, 20 historical deck documents, 10 strategy documents, 10 best-practice guides, 5 KPI dictionaries and 5 methodology documents. There are 20 campaigns, five fictional clients, 200 location/channel rows and 30 evaluation cases.
+- Rebuilt actual persistent Chroma collections: **130 fixed chunks and 490 semantic chunks**, using LangChain Ollama embeddings (`embeddinggemma`). Collection compatibility includes the corpus and embedding configuration.
+- All **20 source-validated campaign snapshots generated chart-led HTML successfully**. Final UI/CLI generation uses Chroma retrieval and validated parent-document expansion. The default-campaign example retrieved **38 chunks across 9 source documents**, then rendered **10 comparison charts**, each with an adjacent finding and source links.
+- The default client output is now [standalone HTML](example-client-report.html). Its inline CSS/SVG and source evidence work without external assets. Desktop/mobile Edge checks at 1440px/430px verified 10 charts, valid citation targets and no document-level horizontal overflow. The complete desktop report was visually inspected. Full accessibility/cross-browser/device-matrix testing remains future work.
+- Streamlit AppTest exercised automatic channel filtering, real retrieval-backed generation, the embedded HTML preview and HTML/source-packet download controls. PDF/PowerPoint are no longer offered by the default UI/CLI workflow; legacy export functions retain regression tests.
+- Read-only code review found no remaining Critical/Important issues in the targeted source reconciliation, zero-channel CPA, peer isolation, HTML/chart/source attribution or checklist tally.
 
-Faithfulness is unavailable unless `--judge` is selected. That option adds a local model entailment judgment with model provenance; it remains an imperfect model assessment rather than independent human verification. Do not interpret retrieval relevance, valid citation IDs, or string-matched completeness as faithfulness. Generated errors are retained in each result row; failed runs are not silently excluded.
+## Measured retrieval experiment
 
-## Actual local run: 2026-10-17
+Executed the eight-configuration matrix on **27 held-out cases: 216 result rows, zero execution errors**, against the current regenerated corpus. Three calibration cases were excluded. The run used actual Chroma search, BM25/fusion, LangChain Ollama embeddings and the downloaded cross-encoder.
 
-Regenerated and reran the corpus after the LangChain/direct-mail/display update. Executed the eight-configuration matrix on 27 held-out cases: **216 result rows, zero execution errors**. All 40 report/configuration cases produced complete reports. These runs used LangChain Ollama embeddings and Chroma search, persistent Chroma collections, real BM25/fusion, and the actual cross-encoder. Question cases used retrieved text instead of LLM-generated answers (`--extractive`); report cases used extractive report generation, deterministic KPI calculations, and channel-specific historical comparisons.
+Question cases used retrieved text instead of model-generated answers (`--extractive`). Report cases used the eleven-section analytical RAG workflow: **24 complete and 16 partial**. The 16 partial reports correspond to the two evaluated products without compatible same-client historical cohorts across eight configurations; the system preserves an explicit historical-evidence gap instead of inventing standing. This does not prevent a final client packet from disclosing that history is unavailable. All 20 deterministic client packets passed their supported source checks.
 
-The three calibration cases were excluded. No entailment judge ran in this comparison, so faithfulness values remain null. Unsupported-question abstention was not scored in retrieval-only mode. Completeness is expected-fact string matching, not a measure of overall narrative quality. Report document relevance counts all report sources; question retrieval uses at most five chunks.
+| Chunking | Retrieval | Rerank | MRR@5 | Document precision | Document recall | Mean seconds |
+|---|---|---|---:|---:|---:|---:|
+| Fixed | Dense | Off | 0.4877 | 0.2907 | 0.9773 | 0.2230 |
+| Fixed | Dense | On | 0.5000 | 0.2833 | 0.9659 | 4.2568 |
+| Fixed | Hybrid | Off | 0.5000 | 0.3056 | 1.0000 | 0.3900 |
+| Fixed | Hybrid | On | 0.5000 | 0.2833 | 0.9659 | 1.6558 |
+| Semantic | Dense | Off | 0.4352 | 0.3630 | 0.8977 | 0.4406 |
+| Semantic | Dense | On | 0.4815 | 0.3432 | 0.9773 | 3.2753 |
+| Semantic | Hybrid | Off | 0.4630 | 0.3457 | 1.0000 | 0.3975 |
+| Semantic | Hybrid | On | 0.4815 | 0.3506 | 0.9886 | 2.7696 |
 
-| Chunking | Retrieval | Rerank | Mean MRR@5 | Document precision | Document recall |
-| --- | --- | --- | ---: | ---: | ---: |
-| Fixed | Dense | Off | 0.500 | 0.306 | 1.000 |
-| Fixed | Dense | On | 0.500 | 0.298 | 0.989 |
-| Fixed | Hybrid | Off | 0.438 | 0.306 | 1.000 |
-| Fixed | Hybrid | On | 0.500 | 0.298 | 0.989 |
-| Semantic | Dense | Off | 0.481 | 0.370 | 0.955 |
-| Semantic | Dense | On | 0.481 | 0.352 | 1.000 |
-| Semantic | Hybrid | Off | 0.481 | 0.358 | 1.000 |
-| Semantic | Hybrid | On | 0.481 | 0.352 | 1.000 |
+Raw artifacts: [all measured rows](evaluation/held-out-results.json), [configuration means](evaluation/comparison.csv). Results under `data/runs/latest/` also drive the dashboard and are rejected if their corpus identity is stale.
 
-These are small synthetic-corpus observations, not universal ranking claims. Reranking improved semantic dense recall but did not uniformly improve other metrics. Latency mixes cold starts, downloads, cache warming, and concurrent local work; inspect raw rows before comparing performance.
+These are small synthetic-corpus measurements. Source-derived gold and similar wording can inflate results. Document metrics are not token-level context judgments. Expected-fact completeness is string matching, not overall narrative quality. Citation accuracy is gold source/section overlap; the low aggregate values (about 0.084–0.087) reflect the narrow expected-section gold and additional analytical-report citations and must not be presented as strong semantic citation accuracy. Latency includes cold starts and concurrent local work; it is not a controlled throughput benchmark. Reranking does not uniformly improve retrieval.
 
-Artifacts: [all measured rows](evaluation/held-out-results.json), [configuration means and latency](evaluation/comparison.csv).
+**No entailment judge ran in this matrix**: all faithfulness values remain null. Faithfulness charts appear only after actual judge measurements. Retrieval-only unsupported-question abstention is unscored. Independent factual evaluation, a measured second embedding model, calibrated confidence, production/browser/cloud checks and the separate graph-node expansion remain documented future work. See the full [implementation status report](implementation-status.md).
 
-Additional live checks: both Chroma collections rebuilt (110 fixed chunks, 450 semantic chunks); live structured LangChain generation and the Historical Comparison UI exercised against real sources. Thirty-three automated checks pass. Direct mail uses 60 days from mail/drop date and display 30 days from exposure. Source-cited reports include ranks and medians; the synthetic default campaign has only one same-product historical peer, so the UI/report explicitly flag the limited cohort. Acquisition-cost comparisons also show their own valid-peer count when zero-conversion peers have undefined costs. No connected browser surface was available for visual screenshot QA.
+## Reproduce
+
+```powershell
+python -m pytest -q
+python -m campaign_hub generate
+python -m campaign_hub validate
+python -m campaign_hub index --chunking all
+python -m campaign_hub evaluate --full --extractive
+python -m campaign_hub client-report --campaign TX-CHK-001
+```
+
+Optional `evaluate --full --judge` runs generated answers and an additional local model support judgment; it is slower and remains an imperfect same-model assessment, not independent human validation. No perfect scores are substituted for unavailable measurements.

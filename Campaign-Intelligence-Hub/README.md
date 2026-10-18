@@ -13,6 +13,10 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 - Dense retrieval, dense/BM25 reciprocal-rank fusion, and optional real cross-encoder reranking.
 - LangGraph report orchestration and explicit insufficient-evidence behavior.
 - Streamlit report generation, historical campaign comparison, questions, retrieval exploration, and measured evaluation views.
+- Automatic client/campaign map showing attributed accounts and opening balances, with channel filters and a geographic results table.
+- A standalone HTML client presentation with embedded SVG comparison charts, findings directly below each chart, and clickable source evidence. The final report retrieves chunks through Chroma, expands validated source documents, and calculates metrics in Python.
+
+See the complete [implementation status report](docs/implementation-status.md): **94 of 102 checklist items implemented (92.2%)**, with eight explicit future-work items and production release boundaries. See the [deployment guide](docs/deployment.md) for local/server/Community Cloud instructions.
 
 ## Channels, attribution, and historical standing
 
@@ -25,9 +29,9 @@ Only **direct mail** and **display** are included:
 
 Windows include the anchor date through the channel's final elapsed-day boundary; earlier/later conversions are excluded. The synthetic records use date-level cohorts and deduplicated outcomes assigned to one eligible channel. A campaign is mature only when its complete channel window has elapsed.
 
-Use **Historical Comparison** to see activation rate and cost per activation against earlier campaigns of the same product type, channel, attribution rule, and denominator. The page shows individual peers, peer medians, rank (1 = best), and a performance percentile with tie handling. Lower acquisition cost is better. Rates are compared within channels, not pooled across direct mail and display.
+Use **Historical Comparison** to see activation rate and cost per activation against earlier campaigns of the **same client**, product type, channel, attribution rule, and denominator. An optional cross-client view is labeled **Synthetic peer reference — not an industry benchmark**. The page shows individual peers, peer medians, rank (1 = best), and a performance percentile with tie handling. Lower acquisition cost is better. Rates are compared within channels, not pooled across direct mail and display.
 
-The same source-cited comparison appears in report Channel Insights. This 20-campaign corpus spans eleven product types, so some cohorts have only one earlier peer or none. Small samples are explicitly flagged; a rank is a descriptive comparison, not a claim that a campaign is universally good. No compatible mature history means no ranking.
+The same source-cited comparison appears in the client report's Progress Toward Goals. This 20-campaign corpus spans eleven product types and five fictional clients; the default campaign has two same-client historical comparators. Some products have no history. Small samples are explicitly flagged; a rank is a descriptive comparison, not a claim that a campaign is universally good. No compatible mature history means no ranking. Verified industry benchmark data has not been supplied.
 
 ```powershell
 python -m campaign_hub compare --campaign TX-CHK-001
@@ -54,7 +58,21 @@ If activation is blocked, replace `python` with `.\.venv\Scripts\python.exe`. On
 
 ## Generate a report
 
-Select **Generate Report**, choose a campaign/reporting period, set retrieval options, and click **Generate report**. The source corpus is synthetic and must not be presented as real client performance.
+Select **Generate Report**, choose a **Client**, then choose one of that client's campaigns. KPI cards, map and same-client historical standing update automatically. Use the channel and map-measure controls to inspect accounts or opening balances. Click **Generate client-facing report** to retrieve evidence and see the HTML presentation preview. Choose **Download HTML presentation**, then open the file in a browser. Client and campaign selectors also appear on Historical Comparison, Ask Questions, and Retrieval Explorer.
+
+The HTML presentation includes client/campaign identity, Executive Summary, Goals, chart-led Progress Toward Goals, Channels, Same-client History, Geography, Learnings, Recommendations, Next Steps, Measurement Notes and Source Citations. Each comparison chart has an adjacent insight and numbered source links. The file is self-contained and needs no CDN or network connection to view. Reconciliation failures, altered narrative, missing required retrieval evidence or immature attribution block exports. Proposed tests are labeled; owner/date/priority remain unassigned when absent from sources. These checks do not guarantee 100% correctness. The source corpus and client names are synthetic.
+
+Open the [example HTML presentation](docs/example-client-report.html). HTML is now the default client output in the UI and CLI; PDF/PowerPoint are no longer generated by that workflow. Legacy export functions remain available for compatibility.
+
+```powershell
+python -m campaign_hub client-report --campaign TX-CHK-001
+```
+
+The final report uses the selected fixed/semantic, dense/hybrid and reranking settings against the built Chroma index. Retrieved chunk IDs, queries, scores and source hashes are recorded in the frozen JSON packet. Validated parent-document expansion preserves complete source tables for Python calculations; it does not substitute manifest KPI values. The CLI writes HTML, diagnostic Markdown and JSON under `data/reports/`. Report generation needs Ollama embeddings and a compatible index; it does not require Llama prose generation. The landing map remains a fast deterministic source-table snapshot. Map filters do not change the full-campaign report scope. Opening balances mean account balances at opening in USD, not current balances, net new deposits or revenue.
+
+The current input corpus is synthetic Markdown under `data/corpus/`. Real PDF, Word, PowerPoint, Excel/CSV and database ingestion is explicitly future work; the app does not yet ingest real client files.
+
+The separate eleven-section analytical RAG report remains available with:
 
 ```powershell
 python -m campaign_hub report --campaign TX-CHK-001
@@ -66,7 +84,7 @@ For a faster deterministic report retaining source wording, without model prose 
 python -m campaign_hub report --campaign TX-CHK-001 --extractive
 ```
 
-Both modes use real embeddings, Chroma retrieval, and cited evidence. The optional model can suggest concise wording; unsupported paraphrases fall back to verbatim source evidence. KPI variance arithmetic is performed in Python. Generated outputs are under `data/reports/` and are never automatically re-ingested.
+These two analytical modes use real embeddings, Chroma retrieval, and cited evidence. The optional model can suggest concise wording; unsupported paraphrases fall back to verbatim source evidence. KPI variance arithmetic is performed in Python. Analytical outputs are under `data/reports/`: `<campaign>.md`, `<campaign>-technical.md`, and `<campaign>.json`. Outputs are never automatically re-ingested. Use `client-report` for the final presentation packet.
 
 Report sections: Executive Summary, Goal Achievement Analysis, KPI Performance Review, Performance Drivers, Audience Insights, Channel Insights, Recommendations, Lessons Learned, Suggested Next Steps, Presentation Storyline, and Source Citations.
 

@@ -1,8 +1,8 @@
 ---
 campaign_id: NY-CMP-015
-campaign_name: NY CD Promotions 2024
-campaign_type: CD Promotions
-client_name: Fictional NY Community Financial 15
+campaign_name: NY Checking Account Acquisition 2024
+campaign_type: Checking Account Acquisition
+client_name: Fictional Prairie Bank
 document_id: NY-CMP-015-historical_deck
 document_type: historical_deck
 period: 2024-Q2
@@ -10,7 +10,7 @@ region: NY
 year: 2024
 ---
 
-# NY CD Promotions 2024 — historical_deck
+# NY Checking Account Acquisition 2024 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

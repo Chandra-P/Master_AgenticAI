@@ -2,7 +2,7 @@
 campaign_id: IL-CMP-003
 campaign_name: IL High Yield Savings 2026
 campaign_type: High Yield Savings
-client_name: Fictional IL Community Financial 3
+client_name: Fictional Summit Credit Union
 document_id: IL-CMP-003-historical_deck
 document_type: historical_deck
 period: 2026-Q2

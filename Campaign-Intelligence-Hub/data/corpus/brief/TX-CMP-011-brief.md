@@ -2,7 +2,7 @@
 campaign_id: TX-CMP-011
 campaign_name: TX Digital Banking Adoption 2024
 campaign_type: Digital Banking Adoption
-client_name: Fictional TX Community Financial 11
+client_name: Fictional Meridian Credit Union
 document_id: TX-CMP-011-brief
 document_type: brief
 period: 2024-Q2

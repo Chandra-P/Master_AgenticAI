@@ -1,8 +1,8 @@
 ---
 campaign_id: NY-CMP-015
-campaign_name: NY CD Promotions 2024
-campaign_type: CD Promotions
-client_name: Fictional NY Community Financial 15
+campaign_name: NY Checking Account Acquisition 2024
+campaign_type: Checking Account Acquisition
+client_name: Fictional Prairie Bank
 document_id: NY-CMP-015-brief
 document_type: brief
 period: 2024-Q2
@@ -10,13 +10,13 @@ region: NY
 year: 2024
 ---
 
-# NY CD Promotions 2024 — brief
+# NY Checking Account Acquisition 2024 — brief
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
 ## Objectives
 
-Acquire 502 verified product activations during 2024-Q2 for CD Promotions.
+Acquire 502 verified product activations during 2024-Q2 for Checking Account Acquisition.
 
 ## Audience
 
@@ -24,7 +24,7 @@ Digitally active local households; includes existing and prospective members.
 
 ## Offer
 
-Campaign-specific eligibility incentive for cd promotions. Eligibility and product suitability must be verified.
+Campaign-specific eligibility incentive for checking account acquisition. Eligibility and product suitability must be verified.
 
 ## Creative Theme
 

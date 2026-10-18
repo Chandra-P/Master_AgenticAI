@@ -1,8 +1,8 @@
 ---
 campaign_id: IL-CMP-013
-campaign_name: IL Deposit Growth 2024
-campaign_type: Deposit Growth
-client_name: Fictional IL Community Financial 13
+campaign_name: IL Checking Account Acquisition 2024
+campaign_type: Checking Account Acquisition
+client_name: Fictional Meridian Credit Union
 document_id: IL-CMP-013-historical_deck
 document_type: historical_deck
 period: 2024-Q2
@@ -10,7 +10,7 @@ region: IL
 year: 2024
 ---
 
-# IL Deposit Growth 2024 — historical_deck
+# IL Checking Account Acquisition 2024 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

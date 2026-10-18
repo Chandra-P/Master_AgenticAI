@@ -6,7 +6,7 @@ from campaign_hub.models import RetrievalOptions
 
 def main():
     parser=argparse.ArgumentParser(description='Campaign Intelligence Hub')
-    parser.add_argument('command',choices=['generate','validate','index','ask','report','compare','evaluate'])
+    parser.add_argument('command',choices=['generate','validate','index','ask','report','client-report','compare','evaluate'])
     parser.add_argument('--chunking',choices=['fixed','semantic','all'],default='semantic')
     parser.add_argument('--retrieval',choices=['dense','hybrid'],default='hybrid')
     parser.add_argument('--rerank',action='store_true')
@@ -32,6 +32,20 @@ def main():
         return
     from campaign_hub.reporting.service import CampaignService
     service=CampaignService(settings)
+    if args.command=='client-report':
+        from campaign_hub.reporting.client_packet import packet_markdown
+        from campaign_hub.reporting.client_retrieval import retrieve_client_packet
+        from campaign_hub.reporting.html_report import export_html
+        packet=retrieve_client_packet(service,args.campaign,RetrievalOptions(chunking=args.chunking if args.chunking!='all' else 'semantic',retrieval=args.retrieval,reranking=args.rerank))
+        if args.period and args.period!=packet['period']:
+            raise ValueError('Requested period differs from source campaign reporting period')
+        out=settings.data/'reports'
+        out.mkdir(parents=True,exist_ok=True)
+        (out/f'{args.campaign}-client.html').write_text(export_html(packet),encoding='utf-8')
+        (out/f'{args.campaign}-client.md').write_text(packet_markdown(packet),encoding='utf-8')
+        (out/f'{args.campaign}-client.json').write_text(json.dumps(packet,indent=2),encoding='utf-8')
+        print(f'Validated client report exported: {out}')
+        return
     options=RetrievalOptions(chunking=args.chunking if args.chunking!='all' else 'semantic',retrieval=args.retrieval,reranking=args.rerank)
     if args.command=='index':
         for strategy in ['fixed','semantic'] if args.chunking=='all' else [args.chunking]:
@@ -43,7 +57,8 @@ def main():
         report=service.generate_report(args.campaign,period,options,use_llm=not args.extractive)
         out=settings.data/'reports'
         out.mkdir(parents=True,exist_ok=True)
-        (out/f'{args.campaign}.md').write_text(render_report(report),encoding='utf-8')
+        (out/f'{args.campaign}.md').write_text(render_report(report,client_facing=True),encoding='utf-8')
+        (out/f'{args.campaign}-technical.md').write_text(render_report(report),encoding='utf-8')
         (out/f'{args.campaign}.json').write_text(report.model_dump_json(indent=2),encoding='utf-8')
         print(f"Report: {out/args.campaign}.md — {report.status}")
     elif args.command=='ask':

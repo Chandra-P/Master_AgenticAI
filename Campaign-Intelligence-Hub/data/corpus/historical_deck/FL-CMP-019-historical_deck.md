@@ -1,8 +1,8 @@
 ---
 campaign_id: FL-CMP-019
-campaign_name: FL Credit Card Acquisition 2024
-campaign_type: Credit Card Acquisition
-client_name: Fictional FL Community Financial 19
+campaign_name: FL Deposit Growth 2024
+campaign_type: Deposit Growth
+client_name: Fictional Orchard Financial
 document_id: FL-CMP-019-historical_deck
 document_type: historical_deck
 period: 2024-Q2
@@ -10,7 +10,7 @@ region: FL
 year: 2024
 ---
 
-# FL Credit Card Acquisition 2024 — historical_deck
+# FL Deposit Growth 2024 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

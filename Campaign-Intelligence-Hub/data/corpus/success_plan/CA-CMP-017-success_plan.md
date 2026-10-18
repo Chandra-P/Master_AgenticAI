@@ -1,8 +1,8 @@
 ---
 campaign_id: CA-CMP-017
-campaign_name: CA Mortgage Campaigns 2024
-campaign_type: Mortgage Campaigns
-client_name: Fictional CA Community Financial 17
+campaign_name: CA Deposit Growth 2024
+campaign_type: Deposit Growth
+client_name: Fictional Harbor Community Bank
 document_id: CA-CMP-017-success_plan
 document_type: success_plan
 period: 2024-Q2
@@ -10,7 +10,7 @@ region: CA
 year: 2024
 ---
 
-# CA Mortgage Campaigns 2024 — success_plan
+# CA Deposit Growth 2024 — success_plan
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 548 count; acquisition cost ceiling: USD 94.89/activation; spend ceiling: USD 52000.
+Verified activations target: 548 count; acquisition cost ceiling: USD 94.89/activation; spend ceiling: USD 52000; opening account balance target: USD 1644000.00.
 
 ## Reporting Window
 

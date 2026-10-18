@@ -2,7 +2,7 @@
 campaign_id: FL-CMP-004
 campaign_name: FL CD Promotions 2026
 campaign_type: CD Promotions
-client_name: Fictional FL Community Financial 4
+client_name: Fictional Prairie Bank
 document_id: FL-CMP-004-historical_deck
 document_type: historical_deck
 period: 2026-Q2

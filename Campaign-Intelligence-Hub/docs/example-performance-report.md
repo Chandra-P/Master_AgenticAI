@@ -1,8 +1,12 @@
 # Campaign Performance Report: TX-CHK-001
 
-Period: 2026-Q2 | Status: complete
+**Client:** Fictional Meridian Credit Union
 
-SYNTHETIC COURSE DATA
+**Campaign:** TX Checking Account Acquisition 2026
+
+**Reporting period:** 2026-Q2 | **Report status:** complete
+
+SYNTHETIC COURSE DATA — fictional demonstration; not actual client results.
 
 Evidence coverage score: 100% (heuristic, not probability of correctness).
 
@@ -20,7 +24,8 @@ Goal assessment using documented targets and actual results:
 |---|---:|---:|---|---:|---:|---|
 | Verified activations | 180 | 230 | count | 50.0 | 27.78% | met |
 | Acquisition cost | 133.33 | 90.9 | USD/activation | -42.43 | -31.82% | met |
-| Spend | 24000 | 20908 | USD | -3092.0 | -12.88% | met | [3]
+| Spend | 24000 | 20908 | USD | -3092.0 | -12.88% | met |
+| Opening account balance | 540000 | 598850 | USD | 58850.0 | 10.90% | met | [3]
 
 ## KPI Performance Review
 
@@ -28,7 +33,8 @@ Goal assessment using documented targets and actual results:
 |---|---:|---:|---|---:|---:|---|
 | Verified activations | 180 | 230 | count | 50.0 | 27.78% | met |
 | Acquisition cost | 133.33 | 90.9 | USD/activation | -42.43 | -31.82% | met |
-| Spend | 24000 | 20908 | USD | -3092.0 | -12.88% | met | [3]
+| Spend | 24000 | 20908 | USD | -3092.0 | -12.88% | met |
+| Opening account balance | 540000 | 598850 | USD | 58850.0 | 10.90% | met | [3]
 
 ## Performance Drivers
 
@@ -42,23 +48,23 @@ Existing members supplied 138 activations and prospective members 92; no age-lev
 
 Direct mail: 138 activations within 60 days of mail/drop date; display: 92 within 30 days of exposure. Total attributed spend: USD 20908. Channel-specific spend and exposure counts are in Channel Results. Financial return is unavailable, so channel ROI cannot be calculated. [6]
 
-Direct mail historical comparison: 1 earlier comparable campaign(s). Rank 1 is best; percentile is the share of peers outperformed, with half credit for ties.
+Direct mail historical comparison: 2 earlier comparable campaign(s). Rank 1 is best; percentile is the share of peers outperformed, with half credit for ties.
 
 | Metric | Current | Peer median | Comparable peers | Rank incl. current | Performance percentile | Position |
 |---|---:|---:|---:|---|---:|---|
-| Activation rate | 2.76% | 4.29% | 1 | 2 of 2 | 0.0 | underperforming peer median |
-| Cost per activation (USD) | 98.48 | 82.14 | 1 | 2 of 2 | 0.0 | underperforming peer median |
+| Activation rate | 2.76% | 3.48% | 2 | 2 of 3 | 50.0 | underperforming peer median |
+| Cost per activation (USD) | 98.48 | 114.88 | 2 | 2 of 3 | 50.0 | outperforming peer median |
 
-Peer campaigns: CA-CMP-012. Small cohort (fewer than 5 peers): descriptive comparison only, not a reliable population benchmark. [12][13]
+Peer campaigns: IL-CMP-013, CA-CMP-012. Small cohort (fewer than 5 peers): descriptive comparison only, not a reliable population benchmark. [12][13][14]
 
-Display historical comparison: 1 earlier comparable campaign(s). Rank 1 is best; percentile is the share of peers outperformed, with half credit for ties.
+Display historical comparison: 2 earlier comparable campaign(s). Rank 1 is best; percentile is the share of peers outperformed, with half credit for ties.
 
 | Metric | Current | Peer median | Comparable peers | Rank incl. current | Performance percentile | Position |
 |---|---:|---:|---:|---|---:|---|
-| Activation rate | 0.92% | 1.43% | 1 | 2 of 2 | 0.0 | underperforming peer median |
-| Cost per activation (USD) | 79.54 | 66.34 | 1 | 2 of 2 | 0.0 | underperforming peer median |
+| Activation rate | 0.92% | 1.16% | 2 | 2 of 3 | 50.0 | underperforming peer median |
+| Cost per activation (USD) | 79.54 | 92.94 | 2 | 2 of 3 | 50.0 | outperforming peer median |
 
-Peer campaigns: CA-CMP-012. Small cohort (fewer than 5 peers): descriptive comparison only, not a reliable population benchmark. [12][13]
+Peer campaigns: IL-CMP-013, CA-CMP-012. Small cohort (fewer than 5 peers): descriptive comparison only, not a reliable population benchmark. [12][13][14]
 
 ## Recommendations
 
@@ -92,7 +98,8 @@ Slide 3: KPI Performance Review
 |---|---:|---:|---|---:|---:|---|
 | Verified activations | 180 | 230 | count | 50.0 | 27.78% | met |
 | Acquisition cost | 133.33 | 90.9 | USD/activation | -42.43 | -31.82% | met |
-| Spend | 24000 | 20908 | USD | -3092.0 | -12.88% | met | [3]
+| Spend | 24000 | 20908 | USD | -3092.0 | -12.88% | met |
+| Opening account balance | 540000 | 598850 | USD | 58850.0 | 10.90% | met | [3]
 
 Slide 4: Channel Insights
 
@@ -117,14 +124,17 @@ Test clearer eligibility language and a segmented follow-up cadence before chang
 - [11] corpus/brief/TX-CHK-001-brief.md#objectives — Objectives
 - [12] corpus/performance_report/TX-CHK-001-performance_report.md#channel-results — Channel Results
 - [13] corpus/performance_report/CA-CMP-012-performance_report.md#channel-results — Channel Results
+- [14] corpus/performance_report/IL-CMP-013-performance_report.md#channel-results — Channel Results
+- [15] corpus/performance_report/FL-CMP-014-performance_report.md#channel-results — Channel Results
+- [16] corpus/performance_report/NY-CMP-015-performance_report.md#channel-results — Channel Results
 
 
 ## Report provenance and input coverage
 
 ```json
 {
-  "generated_at": "2026-10-18T04:15:58.600765+00:00",
-  "corpus_hash": "3c3b3c2d662490563391ee189e07c882226b91ab487ea6e28b5310b90ee2caab",
+  "generated_at": "2026-10-18T04:57:47.350205+00:00",
+  "corpus_hash": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
   "inputs": {
     "brief": true,
     "success_plan": true,
@@ -144,45 +154,50 @@ Test clearer eligibility language and a segmented follow-up cadence before chang
   "historical_comparison": {
     "campaign_id": "TX-CHK-001",
     "period": "2026-Q2",
-    "corpus_hash": "3c3b3c2d662490563391ee189e07c882226b91ab487ea6e28b5310b90ee2caab",
+    "corpus_hash": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
     "comparisons": [
       {
         "status": "ok",
         "channel": "direct_mail",
         "peer_ids": [
+          "IL-CMP-013",
           "CA-CMP-012"
         ],
-        "peer_count": 1,
+        "scope": "client",
+        "benchmark_label": "Same-client historical campaigns",
+        "peer_count": 2,
         "metrics": {
           "activation_rate": {
             "current": 0.0276,
-            "peer_median": 0.042916666666666665,
+            "peer_median": 0.03476914414414414,
             "rank": 2,
-            "total": 2,
+            "total": 3,
             "peer_values": {
+              "IL-CMP-013": 0.02662162162162162,
               "CA-CMP-012": 0.042916666666666665
             },
-            "peer_count": 1,
+            "peer_count": 2,
             "excluded_undefined_cost_peers": 0,
             "small_sample": true,
-            "percentile": 0.0,
+            "percentile": 50.0,
             "higher_is_better": true,
             "position": "underperforming peer median"
           },
           "cost_per_activation": {
             "current": 98.47826086956522,
-            "peer_median": 82.14239482200647,
+            "peer_median": 114.878304009988,
             "rank": 2,
-            "total": 2,
+            "total": 3,
             "peer_values": {
+              "IL-CMP-013": 147.61421319796955,
               "CA-CMP-012": 82.14239482200647
             },
-            "peer_count": 1,
+            "peer_count": 2,
             "excluded_undefined_cost_peers": 0,
             "small_sample": true,
-            "percentile": 0.0,
+            "percentile": 50.0,
             "higher_is_better": false,
-            "position": "underperforming peer median"
+            "position": "outperforming peer median"
           }
         },
         "small_sample": true,
@@ -192,39 +207,44 @@ Test clearer eligibility language and a segmented follow-up cadence before chang
         "status": "ok",
         "channel": "display",
         "peer_ids": [
+          "IL-CMP-013",
           "CA-CMP-012"
         ],
-        "peer_count": 1,
+        "scope": "client",
+        "benchmark_label": "Same-client historical campaigns",
+        "peer_count": 2,
         "metrics": {
           "activation_rate": {
             "current": 0.0092,
-            "peer_median": 0.014305555555555556,
+            "peer_median": 0.011578453453453454,
             "rank": 2,
-            "total": 2,
+            "total": 3,
             "peer_values": {
+              "IL-CMP-013": 0.008851351351351351,
               "CA-CMP-012": 0.014305555555555556
             },
-            "peer_count": 1,
+            "peer_count": 2,
             "excluded_undefined_cost_peers": 0,
             "small_sample": true,
-            "percentile": 0.0,
+            "percentile": 50.0,
             "higher_is_better": true,
             "position": "underperforming peer median"
           },
           "cost_per_activation": {
             "current": 79.54347826086956,
-            "peer_median": 66.34466019417475,
+            "peer_median": 92.93568887571334,
             "rank": 2,
-            "total": 2,
+            "total": 3,
             "peer_values": {
+              "IL-CMP-013": 119.52671755725191,
               "CA-CMP-012": 66.34466019417475
             },
-            "peer_count": 1,
+            "peer_count": 2,
             "excluded_undefined_cost_peers": 0,
             "small_sample": true,
-            "percentile": 0.0,
+            "percentile": 50.0,
             "higher_is_better": false,
-            "position": "underperforming peer median"
+            "position": "outperforming peer median"
           }
         },
         "small_sample": true,

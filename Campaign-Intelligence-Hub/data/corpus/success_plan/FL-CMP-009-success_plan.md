@@ -2,7 +2,7 @@
 campaign_id: FL-CMP-009
 campaign_name: FL Branch Openings 2026
 campaign_type: Branch Openings
-client_name: Fictional FL Community Financial 9
+client_name: Fictional Prairie Bank
 document_id: FL-CMP-009-success_plan
 document_type: success_plan
 period: 2026-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 364 count; acquisition cost ceiling: USD 104.40/activation; spend ceiling: USD 38000.
+Verified activations target: 364 count; acquisition cost ceiling: USD 104.40/activation; spend ceiling: USD 38000; opening account balance target: USD 1092000.00.
 
 ## Reporting Window
 

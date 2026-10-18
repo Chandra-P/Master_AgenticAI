@@ -1,5 +1,9 @@
 # Architecture
 
+The diagram below describes the analytical RAG stages. Most stages currently execute inside one combined LangGraph report node; six separate graph nodes are explicit future work, as recorded in the [implementation audit](implementation-status.md).
+
+Final client generation runs metadata-filtered Chroma retrieval with the selected chunking, dense/hybrid and reranking settings. Validated retrieved chunks select parent documents; parent expansion retains complete linked source tables. The workflow validates identities/targets/units and channel/geographic reconciliation, then builds a frozen factual packet. Chart datasets and adjacent findings derive from that packet, and a standalone HTML presentation embeds SVG charts, styles and source evidence. Every export revalidates source hashes, retrieval attribution and canonical narrative/citations. This publication workflow does not accept arbitrary LLM-generated prose. The landing map remains a fast source-table snapshot and refreshes without model calls. The earlier analytical LangGraph workflow below remains available for RAG experiments and the technical report.
+
 ```mermaid
 flowchart TD
     C[110 synthetic Markdown sources] --> I[Validated ingestion]

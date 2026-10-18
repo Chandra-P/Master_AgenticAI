@@ -1,8 +1,8 @@
 ---
 campaign_id: TX-CMP-016
-campaign_name: TX HELOC Campaigns 2025
-campaign_type: HELOC Campaigns
-client_name: Fictional TX Community Financial 16
+campaign_name: TX Deposit Growth 2025
+campaign_type: Deposit Growth
+client_name: Fictional Harbor Community Bank
 document_id: TX-CMP-016-success_plan
 document_type: success_plan
 period: 2025-Q2
@@ -10,7 +10,7 @@ region: TX
 year: 2025
 ---
 
-# TX HELOC Campaigns 2025 — success_plan
+# TX Deposit Growth 2025 — success_plan
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 525 count; acquisition cost ceiling: USD 95.71/activation; spend ceiling: USD 50250.
+Verified activations target: 525 count; acquisition cost ceiling: USD 95.71/activation; spend ceiling: USD 50250; opening account balance target: USD 1575000.00.
 
 ## Reporting Window
 

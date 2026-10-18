@@ -2,7 +2,7 @@
 campaign_id: CA-CMP-012
 campaign_name: CA Checking Account Acquisition 2025
 campaign_type: Checking Account Acquisition
-client_name: Fictional CA Community Financial 12
+client_name: Fictional Meridian Credit Union
 document_id: CA-CMP-012-success_plan
 document_type: success_plan
 period: 2025-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 433 count; acquisition cost ceiling: USD 99.88/activation; spend ceiling: USD 43250.
+Verified activations target: 433 count; acquisition cost ceiling: USD 99.88/activation; spend ceiling: USD 43250; opening account balance target: USD 1299000.00.
 
 ## Reporting Window
 

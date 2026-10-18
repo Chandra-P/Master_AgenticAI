@@ -4,7 +4,9 @@
 
 Analysts combine prospective campaign goals with results, historical lessons, and guidance to produce client-ready reports. This application makes that process reproducible with a synthetic banking corpus and auditable retrieval.
 
-The final deliverable is an eleven-section Campaign Performance Report, not just a chatbot. Supporting pages let reviewers inspect retrieval and measured evaluation results. The report compares goals and KPIs, summarizes observed audience/channel patterns, presents recommendations and lessons, and includes a five-slide presentation storyline and source bibliography.
+The final deliverable is a standalone HTML Campaign Performance Report with comparison charts, insights underneath, goals/progress, learnings, recommendations, next steps, measurement notes and citations. It uses real Chroma retrieval, validated parent-document expansion and deterministic Python calculations. The original eleven-section analytical RAG report and storyline remain available through the CLI. Supporting pages expose retrieval/evaluation results. The landing workspace automatically displays the selected client's campaign geography and same-client historical standing.
+
+The complete [implementation audit](implementation-status.md) records all 102 checklist items, including eight explicit future-work items. This is a synthetic local demonstration, not a production client-data deployment.
 
 ## Demonstration sequence
 

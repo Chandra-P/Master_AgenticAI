@@ -100,7 +100,11 @@ class CampaignService:
         from campaign_hub.langgraph.workflow import build_workflow
         return build_workflow(self).invoke({'campaign_id':campaign_id,'period':period,'options':options,'use_llm':use_llm})['report']
 
-    def compare_with_history(self,campaign_id,options):
+    def campaign_snapshot(self,campaign_id,client_name=None,channel=None,period=None):
+        from campaign_hub.reporting.snapshot import campaign_snapshot
+        return campaign_snapshot(self,campaign_id,client_name,channel,period)
+
+    def compare_with_history(self,campaign_id,options,scope='client'):
         from campaign_hub.reporting.benchmark import compare_campaign,parse_channel_results
         current=self.campaigns.get(campaign_id)
         if not current:
@@ -119,7 +123,7 @@ class CampaignService:
         observed=source_record(current)
         peers=[source_record(c) for c in self.campaigns.values() if c['campaign_type']==current['campaign_type']
                and c['period']<current['period'] and c['campaign_id']!=campaign_id]
-        comparisons=[compare_campaign(observed,peers,ch) for ch in ['direct_mail','display']]
+        comparisons=[compare_campaign(observed,peers,ch,scope=scope) for ch in ['direct_mail','display']]
         return {'campaign_id':campaign_id,'period':current['period'],'corpus_hash':self.corpus_hash,'comparisons':comparisons,'evidence':evidence}
 
     @staticmethod
@@ -236,7 +240,8 @@ class CampaignService:
         sections.append(ReportSection(title='Presentation Storyline',claims=slide_claims,gap='' if len(slide_claims)==5 else FALLBACK))
         sections.append(ReportSection(title='Source Citations'))
         coverage=sum(bool(s.claims) and not s.gap for s in sections[:-1])/10
-        return ReportResult(campaign_id=campaign_id,period=period,sections=sections,evidence=evidence,
+        return ReportResult(campaign_id=campaign_id,client_name=self.campaigns[campaign_id]['client_name'],
+            campaign_name=self.campaigns[campaign_id]['campaign_name'],period=period,sections=sections,evidence=evidence,
             status='complete' if coverage==1 and all(inputs.values()) else 'partial',confidence=coverage,
             provenance={'generated_at':datetime.now(timezone.utc).isoformat(),'corpus_hash':self.corpus_hash,'inputs':inputs,
                         'options':options.model_dump(),'generation_model':self.settings.generation_model if use_llm else 'extractive',

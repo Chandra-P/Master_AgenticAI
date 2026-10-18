@@ -1,12 +1,13 @@
 import time
 import streamlit as st
+from campaign_hub.ui.resources import select_campaign
 
 
 def show(service,options):
     st.header('Retrieval explorer')
     st.caption('Compare the same question and campaign across two retrieval configurations.')
+    cid=select_campaign(service,'explorer')
     with st.form('explorer-form'):
-        cid=st.selectbox('Campaign',list(service.campaigns))
         query=st.text_input('Evidence query',value='KPI Results targets actuals')
         other_chunk=st.selectbox('Comparison chunking',['fixed','semantic'])
         other_retrieval=st.selectbox('Comparison retrieval',['dense','hybrid'])
@@ -21,10 +22,11 @@ def show(service,options):
                 output.append((config,hits,time.perf_counter()-started))
             st.session_state['retrieval-comparison']=output
             st.session_state['retrieval-corpus']=service.corpus_hash
+            st.session_state['retrieval-campaign']=cid
         except Exception as error:
             st.error(str(error))
     output=st.session_state.get('retrieval-comparison',[])
-    if st.session_state.get('retrieval-corpus')!=service.corpus_hash:
+    if st.session_state.get('retrieval-corpus')!=service.corpus_hash or st.session_state.get('retrieval-campaign')!=cid:
         output=[]
     for column,(config,hits,seconds) in zip(st.columns(2),output):
         with column:

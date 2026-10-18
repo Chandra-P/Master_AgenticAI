@@ -33,12 +33,17 @@ def percentile(value,peers,higher_is_better=True):
     return 100*(worse+ties/2)/len(peers)
 
 
-def compare_campaign(current,candidates,channel):
+def compare_campaign(current,candidates,channel,scope='client'):
+    if scope not in ('client','peer_reference'):
+        raise ValueError('Unknown benchmark scope')
     current_stats=current.get('channel_results',{}).get(channel)
     if not current_stats or not current_stats.get('mature'):
         return {'status':'incomplete_attribution','peer_ids':[],'metrics':{},'channel':channel}
     peers=[]
     for c in candidates:
+        same_client=c.get('client_name')==current.get('client_name')
+        if (scope=='client' and not same_client) or (scope=='peer_reference' and same_client):
+            continue
         stats=c.get('channel_results',{}).get(channel)
         if (not stats or c['campaign_id']==current['campaign_id'] or c['period']>=current['period']
                 or c['campaign_type']!=current['campaign_type'] or not stats.get('mature')):
@@ -71,5 +76,6 @@ def compare_campaign(current,candidates,channel):
                        'position':'outperforming peer median' if (value>median(values) if higher else value<median(values)) else
                                   'at peer median' if value==median(values) else 'underperforming peer median'}
     return {'status':'ok','channel':channel,'peer_ids':[p['campaign_id'] for p in peers],
+            'scope':scope,'benchmark_label':'Same-client historical campaigns' if scope=='client' else 'Synthetic peer reference — not an industry benchmark',
             'peer_count':len(peers),'metrics':metrics,'small_sample':len(peers)<5,
             'cohort_rule':'Earlier reporting periods, same campaign type and channel, identical window/anchor/exposure unit, fully matured.'}

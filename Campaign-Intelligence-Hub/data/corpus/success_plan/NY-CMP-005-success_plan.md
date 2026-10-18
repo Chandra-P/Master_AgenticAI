@@ -2,7 +2,7 @@
 campaign_id: NY-CMP-005
 campaign_name: NY HELOC Campaigns 2026
 campaign_type: HELOC Campaigns
-client_name: Fictional NY Community Financial 5
+client_name: Fictional Orchard Financial
 document_id: NY-CMP-005-success_plan
 document_type: success_plan
 period: 2026-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 272 count; acquisition cost ceiling: USD 113.97/activation; spend ceiling: USD 31000.
+Verified activations target: 272 count; acquisition cost ceiling: USD 113.97/activation; spend ceiling: USD 31000; opening account balance target: USD 816000.00.
 
 ## Reporting Window
 

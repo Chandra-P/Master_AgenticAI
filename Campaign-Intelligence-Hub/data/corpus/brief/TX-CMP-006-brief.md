@@ -2,7 +2,7 @@
 campaign_id: TX-CMP-006
 campaign_name: TX Mortgage Campaigns 2026
 campaign_type: Mortgage Campaigns
-client_name: Fictional TX Community Financial 6
+client_name: Fictional Meridian Credit Union
 document_id: TX-CMP-006-brief
 document_type: brief
 period: 2026-Q2

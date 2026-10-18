@@ -2,7 +2,7 @@
 campaign_id: NY-CMP-010
 campaign_name: NY Direct Deposit Programs 2025
 campaign_type: Direct Deposit Programs
-client_name: Fictional NY Community Financial 10
+client_name: Fictional Orchard Financial
 document_id: NY-CMP-010-brief
 document_type: brief
 period: 2025-Q2

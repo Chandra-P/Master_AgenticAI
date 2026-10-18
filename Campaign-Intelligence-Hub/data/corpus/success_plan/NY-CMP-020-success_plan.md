@@ -1,8 +1,8 @@
 ---
 campaign_id: NY-CMP-020
-campaign_name: NY Branch Openings 2025
-campaign_type: Branch Openings
-client_name: Fictional NY Community Financial 20
+campaign_name: NY High Yield Savings 2025
+campaign_type: High Yield Savings
+client_name: Fictional Summit Credit Union
 document_id: NY-CMP-020-success_plan
 document_type: success_plan
 period: 2025-Q2
@@ -10,7 +10,7 @@ region: NY
 year: 2025
 ---
 
-# NY Branch Openings 2025 — success_plan
+# NY High Yield Savings 2025 — success_plan
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 617 count; acquisition cost ceiling: USD 92.79/activation; spend ceiling: USD 57250.
+Verified activations target: 617 count; acquisition cost ceiling: USD 92.79/activation; spend ceiling: USD 57250; opening account balance target: USD 1851000.00.
 
 ## Reporting Window
 

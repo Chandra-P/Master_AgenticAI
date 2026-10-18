@@ -2,7 +2,7 @@
 campaign_id: CA-CMP-002
 campaign_name: CA Deposit Growth 2026
 campaign_type: Deposit Growth
-client_name: Fictional CA Community Financial 2
+client_name: Fictional Harbor Community Bank
 document_id: CA-CMP-002-success_plan
 document_type: success_plan
 period: 2026-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 203 count; acquisition cost ceiling: USD 126.85/activation; spend ceiling: USD 25750.
+Verified activations target: 203 count; acquisition cost ceiling: USD 126.85/activation; spend ceiling: USD 25750; opening account balance target: USD 609000.00.
 
 ## Reporting Window
 

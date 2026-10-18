@@ -2,7 +2,7 @@
 campaign_id: TX-CHK-001
 campaign_name: TX Checking Account Acquisition 2026
 campaign_type: Checking Account Acquisition
-client_name: Fictional TX Community Financial 1
+client_name: Fictional Meridian Credit Union
 document_id: TX-CHK-001-brief
 document_type: brief
 period: 2026-Q2

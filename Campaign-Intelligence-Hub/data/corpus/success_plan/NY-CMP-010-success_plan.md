@@ -2,7 +2,7 @@
 campaign_id: NY-CMP-010
 campaign_name: NY Direct Deposit Programs 2025
 campaign_type: Direct Deposit Programs
-client_name: Fictional NY Community Financial 10
+client_name: Fictional Orchard Financial
 document_id: NY-CMP-010-success_plan
 document_type: success_plan
 period: 2025-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 387 count; acquisition cost ceiling: USD 102.71/activation; spend ceiling: USD 39750.
+Verified activations target: 387 count; acquisition cost ceiling: USD 102.71/activation; spend ceiling: USD 39750; opening account balance target: USD 1161000.00.
 
 ## Reporting Window
 

@@ -1,8 +1,8 @@
 ---
 campaign_id: NY-CMP-015
-campaign_name: NY CD Promotions 2024
-campaign_type: CD Promotions
-client_name: Fictional NY Community Financial 15
+campaign_name: NY Checking Account Acquisition 2024
+campaign_type: Checking Account Acquisition
+client_name: Fictional Prairie Bank
 document_id: NY-CMP-015-success_plan
 document_type: success_plan
 period: 2024-Q2
@@ -10,7 +10,7 @@ region: NY
 year: 2024
 ---
 
-# NY CD Promotions 2024 — success_plan
+# NY Checking Account Acquisition 2024 — success_plan
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 502 count; acquisition cost ceiling: USD 96.61/activation; spend ceiling: USD 48500.
+Verified activations target: 502 count; acquisition cost ceiling: USD 96.61/activation; spend ceiling: USD 48500; opening account balance target: USD 1506000.00.
 
 ## Reporting Window
 

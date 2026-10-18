@@ -2,7 +2,7 @@
 campaign_id: CA-CMP-007
 campaign_name: CA Auto Loan Campaigns 2026
 campaign_type: Auto Loan Campaigns
-client_name: Fictional CA Community Financial 7
+client_name: Fictional Harbor Community Bank
 document_id: CA-CMP-007-brief
 document_type: brief
 period: 2026-Q2

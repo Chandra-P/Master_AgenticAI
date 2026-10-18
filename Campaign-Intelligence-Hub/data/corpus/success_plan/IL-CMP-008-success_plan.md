@@ -2,7 +2,7 @@
 campaign_id: IL-CMP-008
 campaign_name: IL Credit Card Acquisition 2026
 campaign_type: Credit Card Acquisition
-client_name: Fictional IL Community Financial 8
+client_name: Fictional Summit Credit Union
 document_id: IL-CMP-008-success_plan
 document_type: success_plan
 period: 2026-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 341 count; acquisition cost ceiling: USD 106.30/activation; spend ceiling: USD 36250.
+Verified activations target: 341 count; acquisition cost ceiling: USD 106.30/activation; spend ceiling: USD 36250; opening account balance target: USD 1023000.00.
 
 ## Reporting Window
 

@@ -1,0 +1,106 @@
+{
+  "verified_on": "2026-10-18",
+  "corpus_hash": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
+  "document_counts": {
+    "brief": 20,
+    "success_plan": 20,
+    "performance_report": 20,
+    "historical_deck": 20,
+    "strategy": 10,
+    "best_practice": 10,
+    "kpi_dictionary": 5,
+    "methodology": 5
+  },
+  "campaigns": 20,
+  "geographic_rows": 200,
+  "automated_tests": {
+    "passed": 51,
+    "failed": 0
+  },
+  "index_chunks": {
+    "fixed": 130,
+    "semantic": 490
+  },
+  "evaluation": {
+    "rows": 216,
+    "errors": 0,
+    "mode": "extractive",
+    "faithfulness_judge_run": false,
+    "analytical_report_statuses": {
+      "complete": 24,
+      "partial": 16
+    }
+  },
+  "client_packets_validated": 20,
+  "checklist": {
+    "implemented": 94,
+    "future_work": 8,
+    "total": 102,
+    "coverage_percent": 92.2
+  },
+  "ui_apptest": {
+    "automatic_channel_filter": "passed",
+    "retrieval_report_generation": "passed",
+    "iframe_preview": "passed",
+    "download_buttons": [
+      "Download HTML presentation",
+      "Download factual source packet"
+    ]
+  },
+  "live_llama_question": "source-cited objective returned; additional source excerpts included",
+  "artifacts": {
+    "example-client-report.html": "258975a103d9fac48533685f2413c498da2a6c84cd4748b985edab1bba5a2f39"
+  },
+  "production_deployed": false,
+  "browser_visual_qa": "HTML desktop and mobile example checked; full accessibility/cross-browser coverage remains future work",
+  "default_client_format": "HTML",
+  "source_snapshot_html_campaigns_validated": 20,
+  "final_report_retrieval": {
+    "evidence_mode": "rag",
+    "source_documents": 9,
+    "retrieved_chunks": 38,
+    "options": {
+      "chunking": "semantic",
+      "retrieval": "hybrid",
+      "reranking": false,
+      "candidate_k": 20,
+      "final_k": 5
+    }
+  },
+  "example_html": {
+    "charts": 10,
+    "external_assets": 0,
+    "browser_verification": [
+      {
+        "width": 1440,
+        "client": 1425,
+        "scroll": 1425,
+        "charts": 10,
+        "section": 165.203125,
+        "source_links_resolve": true
+      },
+      {
+        "width": 430,
+        "client": 415,
+        "scroll": 415,
+        "charts": 10,
+        "section": 165.25,
+        "source_links_resolve": true
+      }
+    ],
+    "full_desktop_visual_review": true,
+    "sha256": "258975a103d9fac48533685f2413c498da2a6c84cd4748b985edab1bba5a2f39"
+  },
+  "legacy_export_verification": {
+    "example_pdf": {
+      "pages": 7,
+      "all_pages_visually_reviewed": true
+    },
+    "example_pptx": {
+      "slides": 22,
+      "opened_and_rendered_in_powerpoint": true,
+      "text_frame_overflows": 0,
+      "all_slides_visually_reviewed": true
+    }
+  }
+}

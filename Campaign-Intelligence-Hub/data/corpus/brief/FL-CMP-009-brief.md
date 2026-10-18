@@ -2,7 +2,7 @@
 campaign_id: FL-CMP-009
 campaign_name: FL Branch Openings 2026
 campaign_type: Branch Openings
-client_name: Fictional FL Community Financial 9
+client_name: Fictional Prairie Bank
 document_id: FL-CMP-009-brief
 document_type: brief
 period: 2026-Q2

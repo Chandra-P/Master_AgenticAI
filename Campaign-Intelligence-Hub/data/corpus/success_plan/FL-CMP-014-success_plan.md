@@ -1,8 +1,8 @@
 ---
 campaign_id: FL-CMP-014
-campaign_name: FL High Yield Savings 2025
-campaign_type: High Yield Savings
-client_name: Fictional FL Community Financial 14
+campaign_name: FL Checking Account Acquisition 2025
+campaign_type: Checking Account Acquisition
+client_name: Fictional Prairie Bank
 document_id: FL-CMP-014-success_plan
 document_type: success_plan
 period: 2025-Q2
@@ -10,7 +10,7 @@ region: FL
 year: 2025
 ---
 
-# FL High Yield Savings 2025 — success_plan
+# FL Checking Account Acquisition 2025 — success_plan
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 479 count; acquisition cost ceiling: USD 97.60/activation; spend ceiling: USD 46750.
+Verified activations target: 479 count; acquisition cost ceiling: USD 97.60/activation; spend ceiling: USD 46750; opening account balance target: USD 1437000.00.
 
 ## Reporting Window
 

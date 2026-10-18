@@ -2,7 +2,7 @@
 campaign_id: NY-CMP-005
 campaign_name: NY HELOC Campaigns 2026
 campaign_type: HELOC Campaigns
-client_name: Fictional NY Community Financial 5
+client_name: Fictional Orchard Financial
 document_id: NY-CMP-005-historical_deck
 document_type: historical_deck
 period: 2026-Q2

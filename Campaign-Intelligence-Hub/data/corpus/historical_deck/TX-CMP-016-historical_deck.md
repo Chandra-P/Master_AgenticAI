@@ -1,8 +1,8 @@
 ---
 campaign_id: TX-CMP-016
-campaign_name: TX HELOC Campaigns 2025
-campaign_type: HELOC Campaigns
-client_name: Fictional TX Community Financial 16
+campaign_name: TX Deposit Growth 2025
+campaign_type: Deposit Growth
+client_name: Fictional Harbor Community Bank
 document_id: TX-CMP-016-historical_deck
 document_type: historical_deck
 period: 2025-Q2
@@ -10,7 +10,7 @@ region: TX
 year: 2025
 ---
 
-# TX HELOC Campaigns 2025 — historical_deck
+# TX Deposit Growth 2025 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 

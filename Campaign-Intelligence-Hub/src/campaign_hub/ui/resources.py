@@ -23,6 +23,14 @@ def controls():
     return RetrievalOptions(chunking=chunking,retrieval=retrieval,reranking=reranking)
 
 
+def select_campaign(service,key,label='Campaign'):
+    clients=['All clients']+sorted({c['client_name'] for c in service.campaigns.values()})
+    client=st.selectbox('Client',clients,key=f'{key}-client')
+    campaigns=[cid for cid,c in service.campaigns.items() if client=='All clients' or c['client_name']==client]
+    return st.selectbox(label,campaigns,key=f'{key}-campaign',
+        format_func=lambda cid:f"{cid} · {service.campaigns[cid]['campaign_name']}")
+
+
 def source_viewer(service,evidence):
     if not evidence:
         return

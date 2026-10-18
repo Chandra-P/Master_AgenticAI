@@ -24,7 +24,7 @@ def show(service,options):
     df=pd.DataFrame(rows)
     st.dataframe(df.drop(columns=['answer','identity','judgments'],errors='ignore'),alt='Actual evaluation results by configuration')
     good=df[df['error'].isna()] if 'error' in df else df
-    for metric,label in [('mrr','Retrieval relevance (MRR@5)'),('context_precision','Context precision'),('context_recall','Context recall'),('latency_seconds','Latency in seconds'),('answer_completeness','Expected-fact completeness proxy')]:
+    for metric,label in [('mrr','Retrieval relevance (MRR@5)'),('context_precision','Context precision'),('context_recall','Context recall'),('latency_seconds','Latency in seconds'),('answer_completeness','Expected-fact completeness proxy'),('faithfulness','Model-judged faithfulness'),('citation_accuracy','Gold source/section citation overlap')]:
         if metric in good and good[metric].notna().any():
             st.subheader(label)
             chart=good.groupby(['chunking','retrieval','reranking'])[metric].mean().reset_index()

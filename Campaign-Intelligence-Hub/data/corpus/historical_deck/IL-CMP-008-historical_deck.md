@@ -2,7 +2,7 @@
 campaign_id: IL-CMP-008
 campaign_name: IL Credit Card Acquisition 2026
 campaign_type: Credit Card Acquisition
-client_name: Fictional IL Community Financial 8
+client_name: Fictional Summit Credit Union
 document_id: IL-CMP-008-historical_deck
 document_type: historical_deck
 period: 2026-Q2

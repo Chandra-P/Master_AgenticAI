@@ -2,7 +2,7 @@
 campaign_id: TX-CHK-001
 campaign_name: TX Checking Account Acquisition 2026
 campaign_type: Checking Account Acquisition
-client_name: Fictional TX Community Financial 1
+client_name: Fictional Meridian Credit Union
 document_id: TX-CHK-001-success_plan
 document_type: success_plan
 period: 2026-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 180 count; acquisition cost ceiling: USD 133.33/activation; spend ceiling: USD 24000.
+Verified activations target: 180 count; acquisition cost ceiling: USD 133.33/activation; spend ceiling: USD 24000; opening account balance target: USD 540000.00.
 
 ## Reporting Window
 

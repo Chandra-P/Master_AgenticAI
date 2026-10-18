@@ -46,6 +46,8 @@ class ReportSection(BaseModel):
 
 class ReportResult(BaseModel):
     campaign_id: str
+    client_name: str = ''
+    campaign_name: str = ''
     period: str
     sections: list[ReportSection]
     evidence: dict[str, Chunk]

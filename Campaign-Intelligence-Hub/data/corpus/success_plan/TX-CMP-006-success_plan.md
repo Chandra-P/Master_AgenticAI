@@ -2,7 +2,7 @@
 campaign_id: TX-CMP-006
 campaign_name: TX Mortgage Campaigns 2026
 campaign_type: Mortgage Campaigns
-client_name: Fictional TX Community Financial 6
+client_name: Fictional Meridian Credit Union
 document_id: TX-CMP-006-success_plan
 document_type: success_plan
 period: 2026-Q2
@@ -24,7 +24,7 @@ Verified activations are deduplicated completed product enrollments within 60 da
 
 ## Targets
 
-Verified activations target: 295 count; acquisition cost ceiling: USD 111.02/activation; spend ceiling: USD 32750.
+Verified activations target: 295 count; acquisition cost ceiling: USD 111.02/activation; spend ceiling: USD 32750; opening account balance target: USD 885000.00.
 
 ## Reporting Window
 

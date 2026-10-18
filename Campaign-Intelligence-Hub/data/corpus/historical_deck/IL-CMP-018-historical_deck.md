@@ -1,8 +1,8 @@
 ---
 campaign_id: IL-CMP-018
-campaign_name: IL Auto Loan Campaigns 2025
-campaign_type: Auto Loan Campaigns
-client_name: Fictional IL Community Financial 18
+campaign_name: IL Deposit Growth 2025
+campaign_type: Deposit Growth
+client_name: Fictional Orchard Financial
 document_id: IL-CMP-018-historical_deck
 document_type: historical_deck
 period: 2025-Q2
@@ -10,7 +10,7 @@ region: IL
 year: 2025
 ---
 
-# IL Auto Loan Campaigns 2025 — historical_deck
+# IL Deposit Growth 2025 — historical_deck
 
 SYNTHETIC COURSE DATA: all institutions, outcomes, and recommendations are fictional.
 
