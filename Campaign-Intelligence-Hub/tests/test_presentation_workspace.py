@@ -1,4 +1,3 @@
-import json
 import pytest
 
 
@@ -60,27 +59,15 @@ def test_fact_packet_is_deterministic_and_fail_closed(tmp_path):
     assert validate_packet(packet)
 
 
-def test_pdf_and_deck_share_the_fact_packet(tmp_path):
+def test_html_export_rejects_a_packet_not_ready_for_review(tmp_path):
     service=service_fixture(tmp_path)
     from campaign_hub.reporting.client_packet import build_client_packet
-    from campaign_hub.reporting.exports import export_pdf,export_pptx
-    from pypdf import PdfReader
-    import zipfile,io
+    from campaign_hub.reporting.html_report import export_html
     packet=build_client_packet(service,'TX-CHK-001')
-    pdf=export_pdf(packet)
-    assert pdf.startswith(b'%PDF')
-    reader=PdfReader(io.BytesIO(pdf))
-    assert len(reader.pages)>=5
-    text='\n'.join(p.extract_text() for p in reader.pages)
-    assert packet['client_name'] in text and str(packet['facts']['actual']) in text
-    pptx=export_pptx(packet)
-    with zipfile.ZipFile(io.BytesIO(pptx)) as deck:
-        slides=[n for n in deck.namelist() if n.startswith('ppt/slides/slide') and n.endswith('.xml')]
-        assert len(slides)>=9
-        assert any(packet['client_name'] in deck.read(n).decode() for n in slides)
+    assert packet['client_name'] in export_html(packet)
     packet['readiness']['ready']=False
     with pytest.raises(ValueError,match='ready|validation'):
-        export_pdf(packet)
+        export_html(packet)
 
 
 @pytest.mark.parametrize('old,new',[

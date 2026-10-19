@@ -1,5 +1,9 @@
 # Evaluation and verification results
 
+## Repository cleanup verification: 2026-10-18
+
+The complete suite passed **104 tests** after removing the obsolete PDF/PowerPoint exporters and replacing their readiness check with an HTML export check. Two known RAGAS adapter deprecation warnings remain. The two canonical deliverables are `technical_solution_kit.html` and `campaign_performance_dashboard.html`; the duplicate example HTML/Markdown files were removed and links updated. Both canonical HTML files regenerated successfully. Read-only review found no important broken references or runtime regressions. Historical measurements and `verification-results.json` are retained as recorded evidence; their old artifact hashes describe the earlier files, not the current deliverables.
+
 ## RAGAS integration verification: 2026-10-18
 
 The context-precision failure was subsequently fixed with a compact, strict-schema prompt while retaining RAGAS's metric calculation and all retrieved passages. A **precision-only** reassessment of the identical saved q05 sample completed at approximately **1.0**, in **55.9 seconds** with a 90-second metric budget. Original failures and the new remeasurement are both preserved in the raw artifact; other metrics were not recomputed or copied into the new execution. Prompt versions are separate dashboard groups. This verifies the execution fix on one case, not full answer quality.
@@ -44,8 +48,8 @@ The results in this historical section used the old heading-based strategy named
 - Exactly **110 source documents**: 20 briefs, 20 success plans, 20 performance reports, 20 historical deck documents, 10 strategy documents, 10 best-practice guides, 5 KPI dictionaries and 5 methodology documents. There are 20 campaigns, five fictional clients, 200 location/channel rows and 30 evaluation cases.
 - Rebuilt actual persistent Chroma collections: **130 fixed chunks and 490 semantic chunks**, using LangChain Ollama embeddings (`embeddinggemma`). Collection compatibility includes the corpus and embedding configuration.
 - All **20 source-validated campaign snapshots generated chart-led HTML successfully**. Final UI/CLI generation uses Chroma retrieval and validated parent-document expansion. The default-campaign example retrieved **38 chunks across 9 source documents**, then rendered **10 comparison charts**, each with an adjacent finding and source links.
-- The default client output is now [standalone HTML](example-client-report.html). Its inline CSS/SVG and source evidence work without external assets. Desktop/mobile Edge checks at 1440px/430px verified 10 charts, valid citation targets and no document-level horizontal overflow. The complete desktop report was visually inspected. Full accessibility/cross-browser/device-matrix testing remains future work.
-- Streamlit AppTest exercised automatic channel filtering, real retrieval-backed generation, the embedded HTML preview and HTML/source-packet download controls. PDF/PowerPoint are no longer offered by the default UI/CLI workflow; legacy export functions retain regression tests.
+- The default client output is now [standalone HTML](campaign_performance_dashboard.html). Its inline CSS/SVG and source evidence work without external assets. Desktop/mobile Edge checks at 1440px/430px verified 10 charts, valid citation targets and no document-level horizontal overflow. The complete desktop report was visually inspected. Full accessibility/cross-browser/device-matrix testing remains future work.
+- Streamlit AppTest exercised automatic channel filtering, real retrieval-backed generation, the embedded HTML preview and HTML/source-packet download controls. PDF/PowerPoint are no longer offered by the default UI/CLI workflow; the obsolete exporters were subsequently removed during repository cleanup.
 - Read-only code review found no remaining Critical/Important issues in the targeted source reconciliation, zero-channel CPA, peer isolation, HTML/chart/source attribution or checklist tally.
 
 ## Historical eight-configuration retrieval experiment

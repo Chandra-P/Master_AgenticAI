@@ -1,4 +1,4 @@
-"""Standalone, responsive client presentation with embedded SVG charts and evidence."""
+"""Standalone client presentation with interactive charts, static fallbacks and evidence."""
 from html import escape
 from math import ceil,floor,log10
 from itertools import groupby

@@ -1,0 +1,13 @@
+# Reproducible local Python artifacts across projects
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+*.egg-info/
+*.log
+
+# Local credentials and repository recovery copies
+.env
+.streamlit/secrets.toml
+.repository-backups/

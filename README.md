@@ -19,6 +19,15 @@ Dhumsharath remains a separate repository; cloning Master_AgenticAI does not inc
 ```text
 Master_AgenticAI/
 ├── README.md
+├── Campaign-Intelligence-Hub/
+│   ├── app.py
+│   ├── README.md
+│   ├── src/
+│   ├── tests/
+│   ├── data/
+│   └── docs/
+│       ├── technical_solution_kit.html
+│       └── campaign_performance_dashboard.html
 ├── kidspark/
 │   ├── app.py
 │   ├── README.md

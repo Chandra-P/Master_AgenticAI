@@ -1,6 +1,5 @@
 """Validated, deterministic client narrative. Model-generated prose is never published here."""
 import hashlib
-import json
 from campaign_hub.reporting.snapshot import source_bundle,source_sections,source_metadata,snapshot_from_sources,chunk_is_in_source
 from campaign_hub.reporting.benchmark import compare_campaign
 from campaign_hub.ingestion.markdown import sections as document_sections

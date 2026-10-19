@@ -109,7 +109,7 @@ def build_deliverables(root,packet_path=None):
     packet_path=Path(packet_path) if packet_path else root/'data/reports/TX-CHK-001-client.json'
     packet=json.loads(packet_path.read_text(encoding='utf-8'))
     html=export_html(packet)
-    outputs={'technical_solution_kit.html':technical_kit(root),'campaign_performance_dashboard.html':html,'example-client-report.html':html}
+    outputs={'technical_solution_kit.html':technical_kit(root),'campaign_performance_dashboard.html':html}
     for name,value in outputs.items():
         (root/'docs'/name).write_text(value,encoding='utf-8')
     return list(outputs)

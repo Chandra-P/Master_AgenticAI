@@ -1,5 +1,4 @@
 """Deterministic source-table retrieval for the live workspace and final reports."""
-import hashlib
 import json
 import re
 from decimal import Decimal

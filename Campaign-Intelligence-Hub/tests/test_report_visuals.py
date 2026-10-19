@@ -1,5 +1,3 @@
-import io
-import zipfile
 import pytest
 from test_presentation_workspace import service_fixture
 
@@ -22,21 +20,6 @@ def test_comparisons_and_insights_use_the_same_facts(tmp_path):
         source=next(r for r in packet['facts']['history'] if r['channel']==channel)['metrics'][metric]
         assert panel['values'][-1]==source['current']
         assert len(panel['values'])==source['peer_count']+1
-
-
-def test_visual_pdf_and_editable_chart_workbooks(tmp_path):
-    from campaign_hub.reporting.client_packet import build_client_packet
-    from campaign_hub.reporting.exports import export_pdf,export_pptx
-    from pypdf import PdfReader
-    packet=build_client_packet(service_fixture(tmp_path),'TX-CHK-001')
-    text='\n'.join(p.extract_text() for p in PdfReader(io.BytesIO(export_pdf(packet))).pages)
-    assert 'What the data shows' in text
-    assert 'Same-client historical standing' in text
-    with zipfile.ZipFile(io.BytesIO(export_pptx(packet))) as deck:
-        charts=[n for n in deck.namelist() if n.startswith('ppt/charts/chart') and n.endswith('.xml')]
-        workbooks=[n for n in deck.namelist() if n.startswith('ppt/embeddings/')]
-        assert len(charts)==len(workbooks)==10
-        assert all(b'externalData' in deck.read(n) for n in charts)
 
 
 @pytest.mark.parametrize('chunking',['section','fixed','semantic'])

@@ -6,7 +6,7 @@ import time
 from datetime import datetime, timezone
 from pydantic import BaseModel
 from campaign_hub.config import Settings
-from campaign_hub.models import SECTIONS,FALLBACK,EvidenceClaim,ReportSection,ReportResult,RetrievalOptions
+from campaign_hub.models import SECTIONS,FALLBACK,EvidenceClaim,ReportSection,ReportResult
 from campaign_hub.reporting.kpis import compare
 from campaign_hub.reporting.evidence import valid_claim, supported_claims
 

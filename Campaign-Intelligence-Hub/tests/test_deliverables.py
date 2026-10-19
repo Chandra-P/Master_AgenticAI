@@ -1,6 +1,4 @@
-from html.parser import HTMLParser
 from pathlib import Path
-import pytest
 from test_presentation_workspace import service_fixture
 
 
