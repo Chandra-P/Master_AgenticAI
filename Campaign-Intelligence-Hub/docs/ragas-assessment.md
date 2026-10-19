@@ -41,7 +41,7 @@ Results are saved under `data/runs/ragas/latest/`: JSON rows, CSV scores and one
 
 Assessment failures and NaN/out-of-range scores remain null. Faithfulness is unavailable for empty/abstention answers; missing contexts make all three metrics unavailable. Passage precision/recall may still be assessed for an abstention with retrieved evidence. Error summaries exclude provider request bodies and credentials. RAGAS usage tracking is disabled by the adapter.
 
-The Evaluation Dashboard shows these saved results separately, with measured-case counts and the actual generation/judge profiles. It can display a bundled local smoke artifact without installing RAGAS on the web host. A saved local Llama assessment is not a measurement of the live Groq deployment. Results from a different corpus or assessment schema are rejected. Raw answers/passages/reference answers can be inspected.
+The retained development Evaluation Dashboard (outside public app navigation) shows these saved results separately, with measured-case counts and the actual generation/judge profiles. It can display a bundled local smoke artifact without installing RAGAS on the web host. A saved local Llama assessment is not a measurement of the live Groq deployment. Results from a different corpus or assessment schema are rejected. Raw answers/passages/reference answers can be inspected.
 
 Our source-derived synthetic gold and conservative verbatim answer validation make this a constrained demonstration. A small run, perfect score on one easy example, or a same-model judge does not establish broad factual accuracy. Peer financial-document scores are not directly comparable: their corpus, questions, reference answers, models and retrieval configurations differ.
 

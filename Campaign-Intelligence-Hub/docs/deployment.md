@@ -18,7 +18,7 @@ ollama pull embeddinggemma
 .venv/Scripts/python.exe -m streamlit run app.py
 ```
 
-The dashboard and map source-table snapshots work without model inference or indexes. Final HTML report generation, Ask Questions, Retrieval Explorer and RAG experiments require the running Ollama embedding service and built collections. Final report prose and chart findings use deterministic source calculations. Downloaded HTML reports contain all charts/styles/source evidence and can be viewed offline. The live geographic basemap uses an external tile service; its table remains available without tiles.
+The dashboard and map source-table snapshots work without model inference or indexes. Final HTML report generation, Ask Questions and CLI RAG experiments require the running Ollama embedding service and built collections. Final report prose and chart findings use deterministic source calculations. Downloaded HTML reports contain all charts/styles/source evidence and can be viewed offline. The live geographic basemap uses an external tile service; its table remains available without tiles.
 
 For a server, install dependencies into an isolated environment, run Ollama on the same protected host or a reachable protected service, and persist `data/indexes`, model files and source versions. Start Streamlit with `--server.address 0.0.0.0 --server.port 8501` behind your organization's authenticated HTTPS proxy. Multi-user authentication, authorization, private client ingestion, and durable shared storage are future work; this build is a synthetic local demonstration, not a production client-data service.
 

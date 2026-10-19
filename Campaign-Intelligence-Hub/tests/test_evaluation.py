@@ -7,7 +7,7 @@ def test_experiment_matrix_and_unknown_metric():
     assert completeness('120 activations', ['120','funded'])==0.5
 
 
-def test_ui_has_honest_empty_state(tmp_path,monkeypatch):
+def test_ui_exposes_only_client_workflows(tmp_path,monkeypatch):
     from streamlit.testing.v1 import AppTest
     from campaign_hub.config import ROOT
     from campaign_hub.config import Settings
@@ -21,6 +21,7 @@ def test_ui_has_honest_empty_state(tmp_path,monkeypatch):
     assert not app.exception
     assert any('Campaign Intelligence Hub' in t.value for t in app.title)
     assert len(app.sidebar.radio)==1
-    app.sidebar.radio[0].set_value('Evaluation Dashboard').run()
-    assert not app.exception
-    assert any('No evaluations' in t.value for t in app.info)
+    assert app.sidebar.radio[0].options==['Generate Report','Historical Comparison','Ask Questions']
+    for page in ['Historical Comparison','Ask Questions']:
+        app.sidebar.radio[0].set_value(page).run()
+        assert not app.exception

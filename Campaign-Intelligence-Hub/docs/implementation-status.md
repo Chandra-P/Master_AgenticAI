@@ -4,7 +4,7 @@ Audit date: 2026-10-18. Scope: the user's 102-item implementation checklist and 
 
 ## Implemented features
 
-The application includes the deterministic synthetic corpus, LangChain/Chroma RAG with local Ollama and hosted CPU/Groq profiles, three distinct chunkers, retrieval experiments, a configurable cross-encoder, a five-page Streamlit workspace, automatic campaign geography, same-client historical comparisons, and standalone HTML client presentations with embedded charts and insights. Final generation retrieves chunks, expands validated parent documents, and uses source text and deterministic arithmetic. Unsupported model prose cannot enter the final presentation packet. The map remains a fast source-table snapshot. HTML is the default client output; PDF/PowerPoint export functions are retained only for compatibility. See the [deliverable audit](deliverable-audit.md) for comparison with the supplied peer solution kits.
+The application includes the deterministic synthetic corpus, LangChain/Chroma RAG with local Ollama and hosted CPU/Groq profiles, three distinct chunkers, retrieval experiments, a configurable cross-encoder, a three-page client Streamlit workspace with retained technical development views, automatic campaign geography, same-client historical comparisons, and standalone HTML client presentations with embedded charts and insights. Final generation retrieves chunks, expands validated parent documents, and uses source text and deterministic arithmetic. Unsupported model prose cannot enter the final presentation packet. The map remains a fast source-table snapshot. HTML is the default client output; PDF/PowerPoint export functions are retained only for compatibility. See the [deliverable audit](deliverable-audit.md) for comparison with the supplied peer solution kits.
 
 Report cover identity, all KPI units/directions/periods, plan targets, campaign/channel/geographic totals, source versions, citations and attribution maturity are checked. Every export revalidates the packet. Audience and channel observations are distinguished from causal lift; unmeasured ROI is unavailable. Small historical cohorts and synthetic data are disclosed. Balances mean opening account balances in USD, not revenue or current deposits.
 
@@ -116,10 +116,10 @@ Paths below are relative to the project. Validation commands and measured result
 | Response display | IMPLEMENTED | Grounded answer with abstention behavior |
 | Citation display | IMPLEMENTED | Answer citation IDs and inspectable source evidence |
 | Confidence scores | FUTURE WORK | No calibrated probability-of-truth score. Analytical reports expose evidence coverage; UI readiness is source validation, not confidence |
-| Retrieval Explorer page | IMPLEMENTED | `ui/explorer_page.py` |
+| Retrieval Explorer page | IMPLEMENTED | `ui/explorer_page.py`; retained for development, removed from client navigation at user request |
 | Retrieved chunk viewer | IMPLEMENTED | Source text and rank/score display |
 | Metadata viewer | IMPLEMENTED | Per-chunk metadata JSON |
-| Evaluation Dashboard page | IMPLEMENTED | `ui/evaluation_page.py`; rejects stale-corpus results |
+| Evaluation Dashboard page | IMPLEMENTED | `ui/evaluation_page.py`; retained for development, removed from client navigation at user request; rejects stale-corpus results |
 | Faithfulness metrics | IMPLEMENTED | Optional claim support judge and actual RAGAS assessment; null unless measured. Saved profiles and case coverage expose same-model/limited-sample boundaries |
 | Retrieval metrics | IMPLEMENTED | MRR, nDCG, document precision/recall |
 | Latency metrics | IMPLEMENTED | Actual elapsed seconds per run/configuration |

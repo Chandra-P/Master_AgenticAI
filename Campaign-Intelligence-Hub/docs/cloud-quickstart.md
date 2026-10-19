@@ -12,7 +12,7 @@ Validation: **92 automated tests passed** after the three-method migration and c
 
 ## One-time owner setup
 
-The Evaluation Dashboard also displays saved [RAGAS answer/passage assessments](ragas-assessment.md) separately from document retrieval metrics. The bundled original two-case smoke and subsequent precision-only fix verification used local Llama; they are not scores for the live Groq model. Failures, unavailable judgments, case counts and run configuration notes remain visible, with distinct prompt versions in chart groups. Running new assessments is an opt-in owner CLI task with optional dependencies, not a visitor-triggered model/API workload.
+The public app exposes **Generate Report**, **Historical Comparison**, and **Ask Questions**. Retrieval Explorer and Evaluation Dashboard were removed from client navigation at the owner's request. Their development modules and [RAGAS assessment CLI](ragas-assessment.md) remain available. The saved local Llama assessments are not scores for the live Groq model. Running new assessments is an opt-in owner CLI task with optional dependencies, not a visitor-triggered model/API workload.
 
 1. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/) with access to the GitHub repository.
 2. Create an app with these values:
@@ -37,7 +37,7 @@ The root-level secret values are loaded only into server configuration. Generati
 - Select a client/campaign and confirm the map/KPI totals update.
 - Ask “What were the objectives?” and confirm a real answer with source citations. Missing keys, quota errors and unsupported claims must remain visible rather than appearing as successful generation.
 - Generate a campaign report. Confirm the HTML preview, 10 default-campaign comparison charts, insights, source links and HTML download.
-- Switch Fixed-size, Section-based and Embedding-based semantic alongside dense/hybrid retrieval; inspect retrieved text and chunk metadata. Try reranking and check resource usage.
+- Use the analyst settings to switch Fixed-size, Section-based and Embedding-based semantic alongside dense/hybrid retrieval. Technical chunk inspection and evaluation remain development tasks outside the public navigation.
 - Confirm that no visitor-facing setup, model-download or API-key entry is required.
 
 If the cloud host exceeds memory/CPU limits, start with reranking off and inspect its resource logs. The live checks above cover a small functional sample. Sustained Community Cloud memory usage, concurrent-user capacity, repeated cold starts, broad model-answer quality, and persistence across host resets remain unmeasured.
