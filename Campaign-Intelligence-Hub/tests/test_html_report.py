@@ -39,3 +39,26 @@ def test_html_does_not_infer_missing_history(tmp_path):
     service=service_fixture(tmp_path)
     html=export_html(build_client_packet(service,'FL-CMP-004'))
     assert 'No compatible same-client history' in html
+
+
+def test_interactive_dashboard_retains_evidence_and_missing_data(tmp_path):
+    from campaign_hub.reporting.client_packet import build_client_packet
+    from campaign_hub.reporting.html_report import export_html
+    html=export_html(build_client_packet(service_fixture(tmp_path),'TX-CHK-001'))
+    assert 'new Chart(' in html
+    assert 'bootstrap' in html.lower()
+    assert 'KPI callout' in html and 'Recommended action' in html
+    assert 'Audience composition' in html and '138' in html
+    assert 'Attribution timeline' in html and '2026-04-01' in html
+    assert 'Funded account trend' in html and 'Unavailable' in html
+    assert 'Presentation storyline' in html
+    assert 'Variance' in html and 'Favorable' in html
+    parser=ReportParser();parser.feed(html)
+    assert not parser.external
+    assert set(parser.links)<=set(parser.ids)
+
+
+def test_chart_payload_cannot_close_script():
+    from campaign_hub.reporting.dashboard import script_json
+    assert '</script>' not in script_json({'label':'</script><img src=x>'})
+    assert '\\u003c' in script_json({'label':'<script>'})

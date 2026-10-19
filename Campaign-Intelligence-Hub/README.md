@@ -6,6 +6,15 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 
 ## What is included
 
+### Review deliverables
+
+- [Technical Solution Kit](docs/technical_solution_kit.html): architecture, component deep dives, exact runtime prompts, decisions, measured comparisons, setup and explicit implementation boundaries.
+- [Executive Campaign Performance Dashboard](docs/campaign_performance_dashboard.html): interactive Chart.js comparisons, KPI target/variance/status cards, audience composition, attribution timeline, adjacent findings/actions, recommendations, seven-part presentation storyline and source evidence.
+
+Both files embed Bootstrap CSS and Chart.js locally and work without a CDN. SVG/data-table fallbacks preserve readable charts when JavaScript is blocked or the report is printed. Rebuild them from the validated saved example packet with `python -m campaign_hub.deliverables`. Generate that packet first with `python -m campaign_hub client-report --campaign TX-CHK-001` if it is absent.
+
+The dashboard explicitly marks unsupported trends, funded-account stages, funnel events and financial ROI as unavailable. Opening balances are not net deposit growth. Findings are derived from cited source tables; causes and projected impacts are not invented. See the [new deliverable requirements audit](docs/visual-deliverable-status.md).
+
 - 110 deterministic synthetic Markdown documents for 20 campaigns and shared guidance.
 - 30 evaluation cases with expected facts and source/section citations.
 - LangChain `OllamaEmbeddings`, `ChatOllama`, prompt/structured-output chains, and the LangChain Chroma integration; no API key or paid API calls by default.
@@ -14,7 +23,7 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 - LangGraph report orchestration and explicit insufficient-evidence behavior.
 - Streamlit report generation, historical campaign comparison, questions, retrieval exploration, and measured evaluation views.
 - Automatic client/campaign map showing attributed accounts and opening balances, with channel filters and a geographic results table.
-- A standalone HTML client presentation with embedded SVG comparison charts, findings directly below each chart, and clickable source evidence. The final report retrieves chunks through Chroma, expands validated source documents, and calculates metrics in Python.
+- A standalone HTML client presentation with embedded Chart.js comparisons, SVG/table fallbacks, findings directly below each chart, and clickable source evidence. The final report retrieves chunks through Chroma, expands validated source documents, and calculates metrics in Python.
 
 See the complete [implementation status report](docs/implementation-status.md): **94 of 102 checklist items implemented (92.2%)**, with eight explicit future-work items and production release boundaries. See the [deployment guide](docs/deployment.md) for local/server/Community Cloud instructions.
 

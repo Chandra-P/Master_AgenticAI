@@ -14,6 +14,8 @@ except (FileNotFoundError,st.errors.StreamlitSecretNotFoundError):
 settings=Settings()
 
 st.set_page_config(page_title='Campaign Intelligence Hub',page_icon=':material/insights:',layout='wide')
+from campaign_hub.ui.appearance import apply_appearance
+apply_appearance()
 st.title('Campaign Intelligence Hub')
 st.caption('From campaign evidence to executive-ready performance reports.')
 st.badge('Synthetic course data',icon=':material/science:')

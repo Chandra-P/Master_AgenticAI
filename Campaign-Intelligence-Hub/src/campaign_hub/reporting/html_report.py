@@ -5,6 +5,7 @@ from itertools import groupby
 from campaign_hub.reporting.client_packet import validate_packet
 from campaign_hub.reporting.snapshot import source_metadata
 from campaign_hub.reporting.visuals import comparison_panels,value_label
+from campaign_hub.reporting import dashboard
 
 
 CSS='''
@@ -62,20 +63,23 @@ def export_html(packet):
         return '<div class="citations">Sources: '+', '.join(f'<a href="#source-{numbers[key]}">[{numbers[key]}]</a>' for key in keys)+'</div>'
     def paragraphs(text):return ''.join(f'<p>{escape(p).replace(chr(10),"<br>")}</p>' for p in text.split('\n\n'))
     def head(number,title,ident):return f'<section id="{ident}"><div class="section-head"><span>{number:02d}</span><h2>{escape(title)}</h2></div>'
+    def chart(panel,index,svg=True):
+        static=_svg(panel,index) if svg else '<p class="chart-note">Exact audience counts are available in the data table below.</p>'
+        return ('<figure class="chart-card"><h3>'+escape(panel['title'])+'</h3><div class="chart-unit">'+escape(panel['note'])+'</div>'+
+            '<div class="kpi-callout">KPI callout · '+escape(value_label(panel['values'][-1],panel['unit']))+' · '+escape(panel['labels'][-1])+'</div>'+
+            f'<div class="interactive-chart" hidden><canvas id="interactive-{index}" role="img" aria-label="'+escape(panel['title'],quote=True)+'"></canvas></div>'+
+            '<div class="static-chart">'+static+'</div>'+dashboard.table(panel)+
+            '<figcaption class="insight"><h4>'+('What the data shows' if svg else 'What happened')+'</h4><p>'+escape(panel['insight'])+'</p></figcaption>'+
+            dashboard.reading(panel)+citations(panel['citations'])+'</figure>')
     parts=['<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
-        f'<title>{escape(packet["client_name"])} | Campaign Performance Report</title><style>{CSS}</style></head><body>',
+        f'<title>{escape(packet["client_name"])} | Campaign Performance Report</title><style>'+dashboard.vendor('bootstrap.min.css')+f'</style><style>{CSS}{dashboard.STYLE}</style></head><body>',
         '<header class="hero"><div class="wrap"><div class="hero-top"><div class="brand">Campaign Intelligence Hub</div><span class="badge">SYNTHETIC DEMONSTRATION DATA</span></div>',
         '<div class="eyebrow">Campaign performance review</div><h1>'+escape(packet['campaign_name'])+'</h1><p class="client">'+escape(packet['client_name'])+'</p>',
         '<div class="hero-meta">'+escape(packet['period'])+' &nbsp; · &nbsp; Data as of '+escape(f['as_of'])+'</div>',
         '<div class="hero-rule"></div><p class="lead">A visual story of goal achievement, channel performance, historical standing and where outcomes originated.</p></div></header>',
         '<nav aria-label="Report sections"><div class="wrap">'+''.join(f'<a href="#{ident}">{label}</a>' for ident,label in [('summary','Overview'),('goals','Goals'),('channels','Channels'),('history','History'),('geography','Geography'),('actions','Actions'),('measurement','Measurement'),('sources','Sources')])+'</div></nav><main class="wrap">',
-        '<div class="stats">']
-    for label,value,comparison in [('Attributed accounts',f"{f['actual']:,}",f"Goal {f['target']:,} · {f['actual']/f['target']:.1%} attained"),
-        ('Opening balances',f"${f['balance_cents']/100:,.0f}",f"Goal ${f['balance_target_cents']/100:,.0f}"),
-        ('Attributed spend',f"${f['spend']:,.0f}",f"Budget ceiling ${f['budget']:,.0f}"),
-        ('Cost per activation',f"${f['spend']/f['actual']:.2f}",f"Planned ceiling ${f['budget']/f['target']:.2f}")]:
-        parts.append(f'<div class="stat"><div class="stat-label">{label}</div><strong>{value}</strong><small>{comparison}</small></div>')
-    parts.extend(['</div>',head(1,'Executive summary','summary'),'<div class="copy-card">',paragraphs(packet['sections'][0]['text']),citations(packet['sections'][0]['citations']),'</div></section>'])
+        dashboard.kpi_cards(packet,citations)]
+    parts.extend([head(1,'Executive summary','summary'),'<div class="copy-card">',paragraphs(packet['sections'][0]['text']),citations(packet['sections'][0]['citations']),'</div></section>'])
     families={'Progress Toward Goals':(2,'Goals and achievement','goals'),'Channel performance':(3,'Channel performance','channels'),
         'Same-client historical standing':(4,'Same-client historical standing','history'),'Geographic performance':(5,'Geographic performance','geography')}
     panels=comparison_panels(packet);counter=0
@@ -88,9 +92,7 @@ def export_html(packet):
         for panel in groups.get(family,[]):
             counter+=1
             legend=('Gray: goal · Teal: actual' if ident=='goals' else 'Gray: prior campaigns · Teal: current campaign' if ident=='history' else 'Teal: largest location' if ident=='geography' else 'Attributed results; no causal lift inferred')
-            parts.extend(['<figure class="chart-card"><h3>'+escape(panel['title'])+'</h3><div class="chart-unit">'+escape(legend)+'</div>',_svg(panel,counter),
-                '<div class="chart-note">'+escape(panel['note'])+'</div><figcaption class="insight"><h4>What the data shows</h4><p>'+escape(panel['insight'])+'</p></figcaption>',
-                citations(panel['citations']),'</figure>'])
+            parts.append(chart({**panel,'note':legend+'. '+panel['note']},counter))
         parts.append('</div>')
         if ident=='history':
             for result in f['history']:
@@ -101,11 +103,15 @@ def export_html(packet):
             if missing:parts.append('<div class="callout">Historical source retrieval unavailable; excluded from available comparisons: '+escape(', '.join(missing))+'.</div>')
             parts.append('<div class="callout">No verified industry benchmark has been supplied. Synthetic cross-client references are not an industry benchmark.</div>')
         parts.append('</section>')
-    parts.extend([head(6,'Learnings and recommended actions','actions'),'<div class="copy-card"><h3>Learnings</h3>',paragraphs(packet['sections'][3]['text']),citations(packet['sections'][3]['citations']),'</div><br><div class="actions">'])
-    for section in packet['sections'][4:6]:parts.append('<div class="copy-card"><h3>'+escape(section['title'])+'</h3>'+paragraphs(section['text'])+citations(section['citations'])+'</div>')
-    parts.extend(['</div></section>',head(7,'Measurement and limitations','measurement'),'<div class="copy-card">',paragraphs(packet['sections'][6]['text']),citations(packet['sections'][6]['citations']),
+    audience=dashboard.audience_panel(packet)
+    if audience:
+        panels.append(audience)
+    parts.append(dashboard.supplemental(packet,citations,chart(audience,len(panels),svg=False) if audience else '<div class="availability">Audience outcome breakdown unavailable.</div>'))
+    parts.extend([head(9,'Learnings and recommended actions','actions'),'<div class="copy-card"><h3>Learnings</h3>',paragraphs(packet['sections'][3]['text']),citations(packet['sections'][3]['citations']),'</div><br><div class="actions">'])
+    for section in packet['sections'][4:6]:parts.append('<div class="copy-card"><h3>'+escape(section['title'])+'</h3>'+paragraphs(section['text'])+'<p class="chart-reading"><strong>Expected impact:</strong> Not quantified in the evidence.<br><strong>Priority:</strong> To be agreed; not specified by sources.</p>'+citations(section['citations'])+'</div>')
+    parts.extend(['</div></section>',dashboard.storyline(packet,citations),head(11,'Measurement and limitations','measurement'),'<div class="copy-card">',paragraphs(packet['sections'][6]['text']),citations(packet['sections'][6]['citations']),
         '<p class="provenance">Evidence: '+('Chroma retrieval with validated parent-document expansion' if packet.get('evidence_mode')=='rag' else 'Validated source-table snapshot')+'. Source version: '+escape(packet['corpus_hash'])+'</p></div></section>',
-        head(8,'Source citations','sources'),'<div class="copy-card"><p class="section-intro">Follow the numbered citations to inspect the source documents behind each chart and finding.</p><ol class="source-list">'])
+        head(12,'Source citations','sources'),'<div class="copy-card"><p class="section-intro">Follow the numbered citations to inspect the source documents behind each chart and finding.</p><ol class="source-list">'])
     for key,number in numbers.items():
         source=packet['sources'][key];meta=source_metadata(source)
         hits=[h['chunk_id'] for h in packet.get('retrieval',{}).get('hits',[]) if h['document_id']==key]
@@ -113,5 +119,5 @@ def export_html(packet):
             '<div class="source-meta">'+escape(key)+' · '+escape(meta['client_name'])+' · '+escape(meta['period'])+'</div>'+
             '<details><summary>Read source evidence'+(f' · {len(hits)} retrieved chunks' if hits else '')+'</summary><pre>'+escape(source['text'])+'</pre>'+
             ('<p class="provenance">Retrieved chunk IDs: '+escape(', '.join(hits))+'</p>' if hits else '')+'</details></li>')
-    parts.extend(['</ol></div></section></main><footer><div class="wrap">Campaign Intelligence Hub · Prepared for analyst review · Synthetic demonstration data. Charts use validated source values; observations do not establish causal lift or financial ROI.</div></footer></body></html>'])
+    parts.extend(['</ol></div></section></main><footer><div class="wrap">Campaign Intelligence Hub · Prepared for analyst review · Synthetic demonstration data. Charts use validated source values; observations do not establish causal lift or financial ROI.</div></footer>',dashboard.chart_runtime(panels),'</body></html>'])
     return ''.join(parts)
