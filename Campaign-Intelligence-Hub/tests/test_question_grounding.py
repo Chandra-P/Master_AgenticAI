@@ -4,6 +4,8 @@ import pytest
 
 @pytest.mark.parametrize('question,document_type',[
     ('What were the objectives?','brief'),
+    ('What was the opening account balance goal?','success_plan'),
+    ('What was the acquisition cost goal?','success_plan'),
     ('Did we meet the goals?',None),
     ('How are we tracking toward the goals?',None)])
 def test_question_prompt_matches_verbatim_validation(monkeypatch,question,document_type):

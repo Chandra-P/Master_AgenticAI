@@ -258,9 +258,12 @@ class CampaignService:
         # Questions about the original intent belong to the brief; achievement
         # questions still need results across the campaign's evidence.
         original_goals=bool(re.search(r'\b(objectives?|goals?)\b',question,re.I)) and not re.search(
-            r'\b(achiev\w*|perform\w*|track\w*|met|meet|actual|results?|compar\w*)\b',question,re.I)
+            r'\b(achiev\w*|perform\w*|track\w*|met|meet|actual|results?|compar\w*|spent|versus|vs)\b',question,re.I)
         if original_goals:
-            hits=self.search(question+' Objectives campaign goals intended targets',campaign_id,options,'brief')
+            metric_goal=bool(re.search(r'\b(balances?|cost|spend|budget|rates?|revenue|deposits?|activations?|conversions?|kpis?|roi|channels?|display|mail)\b',question,re.I))
+            kind='success_plan' if metric_goal else 'brief'
+            expansion=' Targets KPI Definitions' if metric_goal else ' Objectives campaign goals intended targets'
+            hits=self.search(question+expansion,campaign_id,options,kind)
         else:
             hits=self.search(question,campaign_id,options)
         if not hits:
