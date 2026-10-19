@@ -35,6 +35,8 @@ def show_ragas(service):
         st.warning('Saved RAGAS results could not be read; the owner should rerun the assessment.')
         return
     st.caption('Saved model-judged measurements. The recorded generator/judge profiles can differ from this live app. A smoke sample is not a full benchmark; using the same model as generator and judge is not independent validation.')
+    for note in dict.fromkeys(r.get('verification_note','') for r in rows):
+        if note:st.caption('Run note: '+note)
     st.dataframe(df,alt='Saved RAGAS scores, judge profiles, failures and measurement coverage')
     for metric,label in LABELS.items():
         measured=df[df[metric].notna()] if metric in df else pd.DataFrame()

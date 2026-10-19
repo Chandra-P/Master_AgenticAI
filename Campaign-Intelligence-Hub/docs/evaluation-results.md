@@ -1,5 +1,9 @@
 # Evaluation and verification results
 
+## RAGAS integration verification: 2026-10-18
+
+**100 automated tests passed** with the optional RAGAS stack installed; `pip check` found no broken requirements. Actual RAGAS metric calculations were tested against known positive/negative judge verdicts. Two real CPU smoke cases completed before the JSON-mode correction: q04 abstained (faithfulness unavailable), q05 scored 0.75 faithfulness, and both scored 1.0 context recall. Context precision was unavailable in both cases due to parsing failure/timeout. These are same-model local Llama measurements, not independent validation or hosted Groq results. The current JSON-mode configuration is covered by tests but still needs a complete live benchmark. See [RAGAS assessment details](ragas-assessment.md) and the [unmodified measured scores](evaluation/ragas-smoke-results.json).
+
 ## Current three-method verification: 2026-10-18
 
 - **92 automated tests passed** after semantic chunking, configuration isolation, controls, source-span, citation and hosted stale-result fallback regression changes.

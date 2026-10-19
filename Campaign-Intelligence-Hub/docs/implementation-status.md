@@ -120,7 +120,7 @@ Paths below are relative to the project. Validation commands and measured result
 | Retrieved chunk viewer | IMPLEMENTED | Source text and rank/score display |
 | Metadata viewer | IMPLEMENTED | Per-chunk metadata JSON |
 | Evaluation Dashboard page | IMPLEMENTED | `ui/evaluation_page.py`; rejects stale-corpus results |
-| Faithfulness metrics | IMPLEMENTED | Optional model support judge; null unless actually run; imperfect same-model assessment |
+| Faithfulness metrics | IMPLEMENTED | Optional claim support judge and actual RAGAS assessment; null unless measured. Saved profiles and case coverage expose same-model/limited-sample boundaries |
 | Retrieval metrics | IMPLEMENTED | MRR, nDCG, document precision/recall |
 | Latency metrics | IMPLEMENTED | Actual elapsed seconds per run/configuration |
 | Comparison visualizations | IMPLEMENTED | Charts grouped by chunking/retrieval/reranking |
@@ -165,11 +165,11 @@ Paths below are relative to the project. Validation commands and measured result
 | Item | Status | Evidence / boundary |
 |---|---|---|
 | Retrieval relevance | IMPLEMENTED | MRR@5 and nDCG@5 |
-| Faithfulness | IMPLEMENTED | Optional explicit entailment judge; unmeasured values remain null |
+| Faithfulness | IMPLEMENTED | Optional explicit support judge and RAGAS claim-level metric; unmeasured/failed values remain null |
 | Citation accuracy | IMPLEMENTED | Gold source/section overlap proxy, not semantic entailment |
 | Completeness | IMPLEMENTED | Expected-fact matching and section coverage; not overall narrative-quality scoring |
-| Context precision | IMPLEMENTED | Relevant retrieved document fraction, not token-level precision |
-| Context recall | IMPLEMENTED | Expected document coverage |
+| Context precision | IMPLEMENTED | Document fraction in retrieval experiments; separate actual RAGAS rank-sensitive passage precision in opt-in generated-answer assessments |
+| Context recall | IMPLEMENTED | Expected document coverage in retrieval experiments; separate RAGAS reference-claim coverage in generated-answer assessments |
 | Latency | IMPLEMENTED | Measured wall-clock seconds, including local cold-start effects |
 
 ### Experiments
@@ -207,7 +207,7 @@ Paths below are relative to the project. Validation commands and measured result
 1. Complete the eight checklist gaps above, with graph-node tests and a reproducible second-embedding-model experiment. Calibrate any confidence score against independently labeled real cases before displaying it as confidence.
 2. Real client data ingestion/connectors, row-level access controls, authentication, client isolation, audited analyst approval, report version storage and durable multi-user persistence. Current selectors filter synthetic campaign data; they are not an authorization system.
 3. Verified, licensed industry benchmark data with industry/product/geography/window eligibility, publication date and sample sizes. Fictional cross-client references must never be labeled real industry performance.
-4. Independent human factual evaluation, measured faithfulness-judge runs, model upgrade regression suites and an accepted real-data quality threshold. Retrieval-only results cannot establish narrative faithfulness or abstention quality.
+4. Independent human factual evaluation, a complete independently judged generated-answer benchmark, model upgrade regression suites and an accepted real-data quality threshold. Optional RAGAS scoring and a small local smoke assessment do not establish broad narrative faithfulness or abstention quality. See [RAGAS assessment](ragas-assessment.md).
 5. Full accessibility testing, cloud resource/load/restart tests and production model-hosting controls. A live Community Cloud demo, incognito visitor access, cited answers and a chart-led report preview have been verified. The HTML example was checked in Edge at desktop/mobile viewport sizes; these checks are not a comprehensive accessibility, capacity or production browser test matrix.
 6. Broader source schemas, arbitrary spreadsheet/PDF/slide ingestion and zero-total campaign KPI support. The current typed synthetic Markdown contract blocks unsupported schemas rather than guessing. Zero-activation channel CPA is unavailable; campaign-wide zero-activation cost handling needs a separate source contract.
 7. Client-specific HTML brand templates, richer interactive chart filtering and account-level geospatial integration. Current HTML embeds portable SVG comparison charts; map points are approximate synthetic city aggregates.

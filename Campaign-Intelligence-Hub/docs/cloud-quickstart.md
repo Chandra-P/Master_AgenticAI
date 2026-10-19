@@ -12,6 +12,8 @@ Validation: **92 automated tests passed** after the three-method migration and c
 
 ## One-time owner setup
 
+The Evaluation Dashboard also displays saved [RAGAS answer/passage assessments](ragas-assessment.md) separately from document retrieval metrics. The bundled two-case smoke used local Llama before the JSON-mode correction; it is not a score for the live Groq model. Failures, unavailable judgments, case counts and run configuration notes remain visible. Running new assessments is an opt-in owner CLI task with optional dependencies, not a visitor-triggered model/API workload.
+
 1. Sign in to [Streamlit Community Cloud](https://share.streamlit.io/) with access to the GitHub repository.
 2. Create an app with these values:
 

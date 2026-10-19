@@ -13,6 +13,7 @@ def test_ragas_saved_scores_are_labeled_and_unavailable_scores_are_not_charted(t
         'case_id':'q1','chunking':'section','retrieval':'hybrid','reranking':False,
         'ragas_faithfulness':None,'ragas_context_precision':.5,'ragas_context_recall':1.,
         'metric_errors':{'ragas_faithfulness':'unavailable'},'error':None,
+        'verification_note':'Earlier judge configuration; not the current deployed model.',
         'sample':{'user_input':'Q','response':'A','retrieved_contexts':['Source'],'reference':'Gold'}}
     path.write_text(json.dumps([row]))
     view._test_service=SimpleNamespace(settings=settings,corpus_hash='corpus')
@@ -23,6 +24,7 @@ def test_ragas_saved_scores_are_labeled_and_unavailable_scores_are_not_charted(t
         assert 'RAGAS context precision' in headings and 'RAGAS faithfulness' not in headings
         assert any('unavailable' in i.value.lower() for i in app.info)
         assert 'judge' in app.dataframe[0].value['judge_profile'][0]
+        assert any('Earlier judge configuration' in c.value for c in app.caption)
         row['identity']['corpus']='old';path.write_text(json.dumps([row]))
         app.run()
         assert app.warning and not app.dataframe

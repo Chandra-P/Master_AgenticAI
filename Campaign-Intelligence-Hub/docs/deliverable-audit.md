@@ -16,7 +16,7 @@ This audit compares Campaign Intelligence Hub with the two supplied financial RA
 | Retrieval and reranking | Dense similarity, BM25/dense fusion, metadata filters, top-K and a real local cross-encoder toggle; the paid Jev service is not required |
 | Generation and factual controls | LangChain model calls for questions and optional analytical prose; strict source wording/citation checks. Final client reports use validated source tables, Python arithmetic and source-backed findings |
 | Evaluation and comparisons | Thirty cases with gold facts/citations; held-out retrieval comparisons and latency artifacts. The new matrix covers twelve configurations |
-| Faithfulness | Optional model support-judge code exists; an independent judged answer-quality benchmark has not been completed. Missing scores are never filled with perfect values |
+| Faithfulness | Optional claim support judge and actual RAGAS generated-answer/passage assessment exist; an independent full answer-quality benchmark has not been completed. Missing scores are never filled with perfect values; see ragas-assessment.md |
 | Prompt documentation | Question and optional analytical prompts live in reporting/service.py; model JSON contracts in generation/providers.py; optional judge prompt in evaluation/judge.py |
 | Demonstration evidence | Hosted access, cited live answers and a report preview with charts/insights/citations were verified; setup, architecture, methodology, limitations and experiment records are linked in the repository |
 

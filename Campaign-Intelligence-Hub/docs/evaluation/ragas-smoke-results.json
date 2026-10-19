@@ -1,0 +1,181 @@
+[
+  {
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "case_id": "q04",
+    "identity": {
+      "framework": "ragas",
+      "version": "0.3.9",
+      "assessment_version": 1,
+      "judge_provider": "ollama",
+      "judge_model": "llama3.2:3b",
+      "judge_context_tokens": 8192,
+      "judge_output_tokens": 2048,
+      "metric_timeout_seconds": 180,
+      "metrics": [
+        "ragas_faithfulness",
+        "ragas_context_precision",
+        "ragas_context_recall"
+      ],
+      "corpus": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
+      "options": {
+        "chunking": "section",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5
+      },
+      "embedding_config": {
+        "provider": "sentence-transformers",
+        "model": "sentence-transformers/all-MiniLM-L6-v2",
+        "normalization": "model-token-windows-weighted-mean-l2-v2"
+      },
+      "chunking_config": {
+        "tokenizer": "cl100k_base",
+        "tokenizer_version": "0.14.0",
+        "window": 500,
+        "overlap": 50,
+        "pipeline_version": 2,
+        "strategy": "section",
+        "algorithm": "markdown_sections"
+      },
+      "generation_provider": "ollama",
+      "generation_model": "llama3.2:3b",
+      "case_id": "q04",
+      "reference_hash": "54f5a4d1196842ef9900cfa27c24f2ed91e566a8b074775c17ef05cd91bf1247",
+      "judge_json_mode": false
+    },
+    "ragas_faithfulness": null,
+    "ragas_context_precision": null,
+    "ragas_context_recall": 1.0,
+    "metric_errors": {
+      "ragas_faithfulness": "Abstention or empty response; faithfulness unavailable.",
+      "ragas_context_precision": "OutputParserException: judgment failed or returned an invalid score."
+    },
+    "error": null,
+    "created_at": "2026-10-19T02:33:12.206221+00:00",
+    "same_generation_and_judge_model": true,
+    "sample": {
+      "user_input": "What were the objectives of campaign FL-CMP-004?",
+      "response": "I could not find sufficient evidence in the knowledge base.",
+      "retrieved_contexts": [
+        "Campaign-specific eligibility incentive for cd promotions. Eligibility and product suitability must be verified.",
+        "Acquire 249 verified product activations during 2026-Q2 for CD Promotions.",
+        "Approved budget: USD 29250.",
+        "Digitally active local households; includes existing and prospective members.",
+        "Direct mail and display only, with deduplicated CRM activations. Direct mail attribution: 60 days from mail/drop date. Display attribution: 30 days from exposure date."
+      ],
+      "reference": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+    },
+    "chunk_ids": [
+      "FL-CMP-004-brief:section:offer:0:2f324d8d",
+      "FL-CMP-004-brief:section:objectives:0:54f5a4d1",
+      "FL-CMP-004-brief:section:budget:0:df869efc",
+      "FL-CMP-004-brief:section:audience:0:a2350f14",
+      "FL-CMP-004-brief:section:channels:0:1dacfd8b"
+    ],
+    "document_ids": [
+      "FL-CMP-004-brief",
+      "FL-CMP-004-brief",
+      "FL-CMP-004-brief",
+      "FL-CMP-004-brief",
+      "FL-CMP-004-brief"
+    ],
+    "abstained": true,
+    "generation_seconds": 20.939401499999803,
+    "latency_seconds": 197.01557639999373,
+    "verification_note": "Completed before JSON-mode adapter fix. The current JSON-mode adapter has framework/configuration tests, not a completed live model benchmark. Same local generator/judge; not a measurement of the hosted Groq app."
+  },
+  {
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "case_id": "q05",
+    "identity": {
+      "framework": "ragas",
+      "version": "0.3.9",
+      "assessment_version": 1,
+      "judge_provider": "ollama",
+      "judge_model": "llama3.2:3b",
+      "judge_context_tokens": 8192,
+      "judge_output_tokens": 2048,
+      "metric_timeout_seconds": 180,
+      "metrics": [
+        "ragas_faithfulness",
+        "ragas_context_precision",
+        "ragas_context_recall"
+      ],
+      "corpus": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
+      "options": {
+        "chunking": "section",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5
+      },
+      "embedding_config": {
+        "provider": "sentence-transformers",
+        "model": "sentence-transformers/all-MiniLM-L6-v2",
+        "normalization": "model-token-windows-weighted-mean-l2-v2"
+      },
+      "chunking_config": {
+        "tokenizer": "cl100k_base",
+        "tokenizer_version": "0.14.0",
+        "window": 500,
+        "overlap": 50,
+        "pipeline_version": 2,
+        "strategy": "section",
+        "algorithm": "markdown_sections"
+      },
+      "generation_provider": "ollama",
+      "generation_model": "llama3.2:3b",
+      "case_id": "q05",
+      "reference_hash": "d0beb910daaaf10aff6b2aab086bc521bb209dfc82f949baf3eb0771606158cc",
+      "judge_json_mode": false
+    },
+    "ragas_faithfulness": 0.75,
+    "ragas_context_precision": null,
+    "ragas_context_recall": 1.0,
+    "metric_errors": {
+      "ragas_context_precision": "TimeoutError: judgment failed or returned an invalid score."
+    },
+    "error": null,
+    "created_at": "2026-10-19T02:36:29.228244+00:00",
+    "same_generation_and_judge_model": true,
+    "sample": {
+      "user_input": "What were the objectives of campaign NY-CMP-005?",
+      "response": "Acquire 272 verified product activations during 2026-Q2 for HELOC Campaigns. [NY-CMP-005-brief:section:objectives:0:d0beb910]\n\nDigitally active local households; includes existing and prospective members. [NY-CMP-005-brief:section:audience:0:a2350f14]\n\nApproved budget: USD 31000. [NY-CMP-005-brief:section:budget:0:a9d112cc]\n\nLocal confidence and clear product value. [NY-CMP-005-brief:section:creative-theme:0:4f1876fa]",
+      "retrieved_contexts": [
+        "Campaign-specific eligibility incentive for heloc campaigns. Eligibility and product suitability must be verified.",
+        "Acquire 272 verified product activations during 2026-Q2 for HELOC Campaigns.",
+        "Digitally active local households; includes existing and prospective members.",
+        "Approved budget: USD 31000.",
+        "Local confidence and clear product value."
+      ],
+      "reference": "Acquire 272 verified product activations during 2026-Q2 for HELOC Campaigns."
+    },
+    "chunk_ids": [
+      "NY-CMP-005-brief:section:offer:0:ba084311",
+      "NY-CMP-005-brief:section:objectives:0:d0beb910",
+      "NY-CMP-005-brief:section:audience:0:a2350f14",
+      "NY-CMP-005-brief:section:budget:0:a9d112cc",
+      "NY-CMP-005-brief:section:creative-theme:0:4f1876fa"
+    ],
+    "document_ids": [
+      "NY-CMP-005-brief",
+      "NY-CMP-005-brief",
+      "NY-CMP-005-brief",
+      "NY-CMP-005-brief",
+      "NY-CMP-005-brief"
+    ],
+    "abstained": false,
+    "generation_seconds": 92.56196749999071,
+    "latency_seconds": 424.4498667999869,
+    "verification_note": "Completed before JSON-mode adapter fix. The current JSON-mode adapter has framework/configuration tests, not a completed live model benchmark. Same local generator/judge; not a measurement of the hosted Groq app."
+  }
+]
