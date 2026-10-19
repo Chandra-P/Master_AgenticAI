@@ -266,7 +266,15 @@ class CampaignService:
             expansion=' Targets KPI Definitions' if metric_goal else ' Objectives campaign goals intended targets'
             hits=self.search(question+expansion,campaign_id,options,kind)
         else:
-            hits=self.search(question,campaign_id,options)
+            if options.focus_context:
+                from campaign_hub.retrieval.focus import context_plan
+                kind,_=context_plan(question)
+                hits=self.search(question,campaign_id,options,kind)
+            else:
+                hits=self.search(question,campaign_id,options)
+        if options.focus_context:
+            from campaign_hub.retrieval.focus import focus_context
+            hits=focus_context(question,hits)
         if not hits:
             return {'answer':FALLBACK,'hits':[],'faithfulness':None}
         from campaign_hub.generation.providers import create_generator

@@ -1,0 +1,222 @@
+[
+  {
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "focus_context": false,
+    "case_id": "q04",
+    "case_kind": "question",
+    "identity": {
+      "framework": "ragas",
+      "version": "0.3.9",
+      "assessment_version": 1,
+      "judge_provider": "ollama",
+      "judge_model": "llama3.2:3b",
+      "judge_context_tokens": 8192,
+      "judge_output_tokens": 2048,
+      "judge_json_mode": true,
+      "metric_timeout_seconds": 75,
+      "metrics": [
+        "ragas_faithfulness",
+        "ragas_context_precision",
+        "ragas_context_recall",
+        "ragas_factual_correctness"
+      ],
+      "quality_assessment": true,
+      "precision_prompt_version": 2,
+      "precision_output_tokens": 256,
+      "precision_prompt_sha256": "3fed3e505ccb5f938543a8909a1f9a5f2fbe0a0591546a59a295a71aef9d13ef",
+      "corpus": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
+      "options": {
+        "chunking": "section",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5,
+        "focus_context": false
+      },
+      "embedding_config": {
+        "provider": "sentence-transformers",
+        "model": "sentence-transformers/all-MiniLM-L6-v2",
+        "normalization": "model-token-windows-weighted-mean-l2-v2"
+      },
+      "chunking_config": {
+        "tokenizer": "cl100k_base",
+        "tokenizer_version": "0.14.0",
+        "window": 500,
+        "overlap": 50,
+        "pipeline_version": 2,
+        "strategy": "section",
+        "algorithm": "markdown_sections"
+      },
+      "generation_provider": "ollama",
+      "generation_model": "llama3.2:3b",
+      "case_id": "q04",
+      "reference_hash": "54f5a4d1196842ef9900cfa27c24f2ed91e566a8b074775c17ef05cd91bf1247"
+    },
+    "ragas_faithfulness": null,
+    "ragas_context_precision": 0.99999999998,
+    "ragas_context_recall": 1.0,
+    "metric_errors": {
+      "ragas_faithfulness": "Abstention or empty response; faithfulness unavailable.",
+      "ragas_factual_correctness": "Abstention or empty response; faithfulness unavailable."
+    },
+    "error": null,
+    "created_at": "2026-10-19T04:55:34.135967+00:00",
+    "same_generation_and_judge_model": true,
+    "sample": {
+      "user_input": "What were the objectives of campaign FL-CMP-004?",
+      "response": "I could not find sufficient evidence in the knowledge base.",
+      "retrieved_contexts": [
+        "Campaign-specific eligibility incentive for cd promotions. Eligibility and product suitability must be verified.",
+        "Acquire 249 verified product activations during 2026-Q2 for CD Promotions.",
+        "Approved budget: USD 29250.",
+        "Digitally active local households; includes existing and prospective members.",
+        "Direct mail and display only, with deduplicated CRM activations. Direct mail attribution: 60 days from mail/drop date. Display attribution: 30 days from exposure date."
+      ],
+      "reference": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+    },
+    "chunk_ids": [
+      "FL-CMP-004-brief:section:offer:0:2f324d8d",
+      "FL-CMP-004-brief:section:objectives:0:54f5a4d1",
+      "FL-CMP-004-brief:section:budget:0:df869efc",
+      "FL-CMP-004-brief:section:audience:0:a2350f14",
+      "FL-CMP-004-brief:section:channels:0:1dacfd8b"
+    ],
+    "document_ids": [
+      "FL-CMP-004-brief",
+      "FL-CMP-004-brief",
+      "FL-CMP-004-brief",
+      "FL-CMP-004-brief",
+      "FL-CMP-004-brief"
+    ],
+    "abstained": true,
+    "generation_seconds": 34.21283109999786,
+    "ragas_factual_correctness": null,
+    "passage_verdicts": [
+      {
+        "context": "Campaign-specific eligibility incentive for cd promotions. Eligibility and product suitability must be verified.",
+        "verdict": 1,
+        "reason": "The passage mentions the target of 249 verified product activations."
+      },
+      {
+        "context": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions.",
+        "verdict": 1,
+        "reason": "The passage states the target."
+      },
+      {
+        "context": "Approved budget: USD 29250.",
+        "verdict": 1,
+        "reason": "The passage mentions the target of the campaign."
+      },
+      {
+        "context": "Digitally active local households; includes existing and prospective members.",
+        "verdict": 1,
+        "reason": "The passage mentions the target of the campaign."
+      },
+      {
+        "context": "Direct mail and display only, with deduplicated CRM activations. Direct mail attribution: 60 days from mail/drop date. Display attribution: 30 days from exposure date.",
+        "verdict": 1,
+        "reason": "The passage mentions the target, but it does not directly answer the question about objectives."
+      }
+    ],
+    "passage_relevance_precision": 1.0,
+    "latency_seconds": 120.2182635999925
+  },
+  {
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "focus_context": true,
+    "case_id": "q04",
+    "case_kind": "question",
+    "identity": {
+      "framework": "ragas",
+      "version": "0.3.9",
+      "assessment_version": 1,
+      "judge_provider": "ollama",
+      "judge_model": "llama3.2:3b",
+      "judge_context_tokens": 8192,
+      "judge_output_tokens": 2048,
+      "judge_json_mode": true,
+      "metric_timeout_seconds": 75,
+      "metrics": [
+        "ragas_faithfulness",
+        "ragas_context_precision",
+        "ragas_context_recall",
+        "ragas_factual_correctness"
+      ],
+      "quality_assessment": true,
+      "precision_prompt_version": 2,
+      "precision_output_tokens": 256,
+      "precision_prompt_sha256": "3fed3e505ccb5f938543a8909a1f9a5f2fbe0a0591546a59a295a71aef9d13ef",
+      "corpus": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
+      "options": {
+        "chunking": "section",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5,
+        "focus_context": true
+      },
+      "embedding_config": {
+        "provider": "sentence-transformers",
+        "model": "sentence-transformers/all-MiniLM-L6-v2",
+        "normalization": "model-token-windows-weighted-mean-l2-v2"
+      },
+      "chunking_config": {
+        "tokenizer": "cl100k_base",
+        "tokenizer_version": "0.14.0",
+        "window": 500,
+        "overlap": 50,
+        "pipeline_version": 2,
+        "strategy": "section",
+        "algorithm": "markdown_sections"
+      },
+      "generation_provider": "ollama",
+      "generation_model": "llama3.2:3b",
+      "case_id": "q04",
+      "reference_hash": "54f5a4d1196842ef9900cfa27c24f2ed91e566a8b074775c17ef05cd91bf1247"
+    },
+    "ragas_faithfulness": null,
+    "ragas_context_precision": 0.9999999999,
+    "ragas_context_recall": 1.0,
+    "metric_errors": {
+      "ragas_faithfulness": "Abstention or empty response; faithfulness unavailable.",
+      "ragas_factual_correctness": "Abstention or empty response; faithfulness unavailable."
+    },
+    "error": null,
+    "created_at": "2026-10-19T04:57:34.364961+00:00",
+    "same_generation_and_judge_model": true,
+    "sample": {
+      "user_input": "What were the objectives of campaign FL-CMP-004?",
+      "response": "I could not find sufficient evidence in the knowledge base.",
+      "retrieved_contexts": [
+        "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+      ],
+      "reference": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+    },
+    "chunk_ids": [
+      "FL-CMP-004-brief:section:objectives:0:54f5a4d1"
+    ],
+    "document_ids": [
+      "FL-CMP-004-brief"
+    ],
+    "abstained": true,
+    "generation_seconds": 18.04264499999408,
+    "ragas_factual_correctness": null,
+    "passage_verdicts": [
+      {
+        "context": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions.",
+        "verdict": 1,
+        "reason": "The passage states the target."
+      }
+    ],
+    "passage_relevance_precision": 1.0,
+    "latency_seconds": 80.32408679999935
+  }
+]

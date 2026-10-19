@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "passed": false,
+  "controls": [
+    {
+      "context": "Acquire 180 verified product activations during 2026-Q2.",
+      "expected": 1,
+      "score": 0.9999999999,
+      "passed": true
+    },
+    {
+      "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+      "expected": 0,
+      "score": 0.9999999999,
+      "passed": false
+    },
+    {
+      "context": "Approved budget: USD 24000.",
+      "expected": 0,
+      "score": 0.9999999999,
+      "passed": false
+    },
+    {
+      "context": "Digitally active local households; existing and prospective members.",
+      "expected": 0,
+      "score": 0.9999999999,
+      "passed": false
+    }
+  ]
+}

@@ -8,7 +8,7 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 
 ### Review deliverables
 
-- [Word project overview](docs/Campaign_Intelligence_Hub_Project_Document.docx): short, plain-language explanation of what we built, with practical campaign examples, a comparison chart and next steps. Detailed implementation remains in the separate HTML technical kit.
+- [Word project overview](docs/Campaign_Intelligence_Hub_Project_Overview.docx): three-page explanation with campaign examples, a simple fixed-versus-semantic explanation, the measured comparison and next steps. Detailed implementation remains in the separate HTML technical kit.
 - [Technical Solution Kit](docs/technical_solution_kit.html): architecture, component deep dives, exact runtime prompts, decisions, measured comparisons, setup and explicit implementation boundaries.
 - [Executive Campaign Performance Dashboard](docs/campaign_performance_dashboard.html): interactive Chart.js comparisons, KPI target/variance/status cards, audience composition, attribution timeline, adjacent findings/actions, recommendations, seven-part presentation storyline and source evidence.
 
@@ -116,6 +116,8 @@ python -m pytest -q
 Reranking downloads `cross-encoder/ms-marco-MiniLM-L-6-v2` on first use. Enable with `--rerank` or the UI toggle; the experiment matrix tests both states. Full evaluation may take considerable time on CPU. Run artifacts under `data/runs/` contain actual results/errors, not example scores. A retrieval-only experiment marks generation as skipped. Add `--judge` for a separate local model support judgment; source/number validation alone does not prove semantic faithfulness, and a model judge is not human verification.
 
 Actual **RAGAS faithfulness, passage context precision and reference-claim context recall** are available through the optional [RAGAS assessment workflow](docs/ragas-assessment.md). Install `requirements-ragas.txt`, then run `python -m campaign_hub evaluate --ragas --ragas-limit 1` with the selected generation/embedding providers. This assesses real generated answers and preserves exact contexts/references and judge identity in saved JSON/CSV artifacts. The evaluation dashboard module is retained for development and is not exposed in client navigation. It never substitutes document-ID overlap scores for RAGAS judgments. Local Ollama inference needs no paid API; missing judgments remain unavailable.
+
+The opt-in [90% quality target workflow](docs/quality-target.md) adds reference-based factual correctness, actual per-passage verdicts, complete-case coverage and judge calibration checks. `--focus-context` tests question-specific evidence sections without changing live defaults. The first local judge failed negative controls, so its high raw relevance scores are explicitly untrusted; the target remains unmet. Use a separately configured judge that passes controls before interpreting a quality score.
 
 Default model settings use local Ollama. `CIH_GENERATION_PROVIDER` and `CIH_EMBEDDING_PROVIDER` select the hosted Groq/CPU profile; see the cloud quickstart for server secrets. `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` configure the selected models. Model/chunker changes use isolated compatible indexes. No OpenAI adapter is enabled.
 

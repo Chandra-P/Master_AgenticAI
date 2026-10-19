@@ -36,12 +36,12 @@ class OllamaGenerator:
 
 
 class GroqGenerator:
-    def __init__(self,settings):
+    def __init__(self,settings,max_retries=1):
         if not os.getenv('GROQ_API_KEY'):
             raise RuntimeError('The server owner must configure GROQ_API_KEY in hosting secrets; visitors do not supply keys.')
         from langchain_groq import ChatGroq
         self.model=ChatGroq(model=settings.generation_model,temperature=0,max_tokens=1024,
-            timeout=60,max_retries=1)
+            timeout=60,max_retries=max_retries)
 
     def generate_json(self,system,prompt,schema):
         try:
@@ -55,7 +55,7 @@ class GroqGenerator:
             raise RuntimeError(hosted_error_message(error)) from error
 
 
-def create_generator(settings):
+def create_generator(settings,*,max_retries=1):
     if settings.generation_provider=='ollama':return OllamaGenerator(settings)
-    if settings.generation_provider=='groq':return GroqGenerator(settings)
+    if settings.generation_provider=='groq':return GroqGenerator(settings,max_retries=max_retries)
     raise ValueError('Unknown generation provider: '+settings.generation_provider)

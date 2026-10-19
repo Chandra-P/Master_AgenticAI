@@ -3,7 +3,7 @@ from typing import Literal
 from pydantic import Field
 
 
-def create_precision_prompt(model,provider):
+def create_precision_prompt(model,provider,verdict_sink=None):
     from ragas.metrics._context_precision import ContextPrecisionPrompt,QAC,Verification
 
     class StrictVerification(Verification):
@@ -28,6 +28,9 @@ def create_precision_prompt(model,provider):
             if n!=1:raise ValueError('Precision judgment supports one completion per passage')
             result=await chain.ainvoke(self.to_string(data),config={'callbacks':callbacks or []})
             # Validate even adapters that return dictionaries or unvalidated objects.
-            return [StrictVerification.model_validate(result.model_dump() if hasattr(result,'model_dump') else result)]
+            validated=StrictVerification.model_validate(result.model_dump() if hasattr(result,'model_dump') else result)
+            if verdict_sink is not None:
+                verdict_sink.append({'context':data.context,'verdict':validated.verdict,'reason':validated.reason})
+            return [validated]
 
     return StructuredPrecisionPrompt()

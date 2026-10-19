@@ -32,6 +32,7 @@ class RetrievalOptions(BaseModel):
     reranking: bool = False
     candidate_k: int = 20
     final_k: int = 5
+    focus_context: bool = False
 
 
 class EvidenceClaim(BaseModel):
