@@ -31,7 +31,9 @@ def retrieve(store, query, filters, options):
             return []
         bm25=BM25Okapi([words(c.text) or ['empty'] for c in chunks])
         scores=bm25.get_scores(words(query))
-        lexical=[SearchHit(chunk=chunks[i],score=float(scores[i]),bm25_score=float(scores[i])) for i in sorted(range(len(chunks)),key=lambda i:-scores[i])[:options.candidate_k]]
+        # Cached stores can outlive a Streamlit module reload. Revalidate plain
+        # data instead of requiring the cached Pydantic class's identity.
+        lexical=[SearchHit(chunk=chunks[i].model_dump(),score=float(scores[i]),bm25_score=float(scores[i])) for i in sorted(range(len(chunks)),key=lambda i:-scores[i])[:options.candidate_k]]
         candidates=fuse(dense,lexical)[:options.candidate_k]
     if options.reranking:
         from campaign_hub.reranking.cross_encoder import rerank
