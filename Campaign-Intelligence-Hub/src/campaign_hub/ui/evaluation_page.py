@@ -19,6 +19,9 @@ def results_path(settings):
 def show(service,options):
     st.header('Evaluation dashboard')
     st.caption('Only measured runs appear here. Errors and unavailable judgments remain visible.')
+    from campaign_hub.ui.ragas_results import show_ragas
+    show_ragas(service)
+    st.subheader('Document retrieval experiments')
     path=results_path(service.settings)
     if st.button('Run twelve-configuration retrieval smoke experiment',type='primary'):
         try:

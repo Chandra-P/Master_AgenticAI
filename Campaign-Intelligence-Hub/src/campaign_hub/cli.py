@@ -18,7 +18,15 @@ def main():
     parser.add_argument('--full',action='store_true')
     parser.add_argument('--judge',action='store_true',help='Run an additional local model support judge (slower)')
     parser.add_argument('--extractive',action='store_true',help='Skip model prose generation; preserve retrieved source wording')
+    parser.add_argument('--ragas',action='store_true',help='Assess actual generated question answers with optional RAGAS metrics')
+    parser.add_argument('--ragas-limit',type=int,default=1,help='Maximum held-out question cases per RAGAS configuration (default: 1)')
+    parser.add_argument('--judge-model',help='RAGAS judge model; defaults to the configured generation model')
+    parser.add_argument('--judge-provider',choices=['ollama','groq'],help='RAGAS judge provider; defaults to generation provider')
     args=parser.parse_args()
+    if args.ragas and (args.command!='evaluate' or args.extractive or args.judge):
+        parser.error('--ragas requires evaluate with generated answers; do not combine it with --extractive or --judge')
+    if args.ragas and args.ragas_limit<1:
+        parser.error('--ragas-limit must be positive')
     settings=Settings()
     if args.command=='generate':
         from campaign_hub.synthetic_data.generator import generate_corpus
@@ -68,6 +76,18 @@ def main():
         result=service.compare_with_history(args.campaign,options)
         print(json.dumps({k:v for k,v in result.items() if k!='evidence'},indent=2))
     elif args.command=='evaluate':
+        if args.ragas:
+            from dataclasses import replace
+            from campaign_hub.evaluation.ragas_assessment import RagasAssessor,run_assessment,METRICS
+            from campaign_hub.evaluation.runner import configurations
+            judge_settings=replace(settings,generation_provider=args.judge_provider or settings.generation_provider,
+                generation_model=args.judge_model or settings.generation_model)
+            with RagasAssessor(judge_settings) as assessor:
+                rows=run_assessment(service,settings.data/'runs/ragas/latest',configurations() if args.full else [options],
+                    assessor,limit=args.ragas_limit)
+            available={m:sum(r.get(m) is not None for r in rows) for m in METRICS}
+            print(f'{len(rows)} RAGAS assessments; measured scores: {available}. See data/runs/ragas/latest/results.json')
+            return
         from campaign_hub.evaluation.runner import run_experiments
         rows=run_experiments(service,settings.data/'runs/latest',smoke=not args.full,use_llm=not args.extractive,judge=args.judge)
         print(f"{len(rows)} experiments; {sum(bool(r.get('error')) for r in rows)} errors. See data/runs/latest/results.json")

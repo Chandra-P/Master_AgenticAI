@@ -105,6 +105,8 @@ python -m pytest -q
 
 Reranking downloads `cross-encoder/ms-marco-MiniLM-L-6-v2` on first use. Enable with `--rerank` or the UI toggle; the experiment matrix tests both states. Full evaluation may take considerable time on CPU. Run artifacts under `data/runs/` contain actual results/errors, not example scores. A retrieval-only experiment marks generation as skipped. Add `--judge` for a separate local model support judgment; source/number validation alone does not prove semantic faithfulness, and a model judge is not human verification.
 
+Actual **RAGAS faithfulness, passage context precision and reference-claim context recall** are available through the optional [RAGAS assessment workflow](docs/ragas-assessment.md). Install `requirements-ragas.txt`, then run `python -m campaign_hub evaluate --ragas --ragas-limit 1` with the selected generation/embedding providers. This assesses real generated answers, preserves exact contexts/references and judge identity, and saves separate results for the Evaluation Dashboard. It never substitutes document-ID overlap scores for RAGAS judgments. Local Ollama inference needs no paid API; missing judgments remain unavailable.
+
 Default model settings use local Ollama. `CIH_GENERATION_PROVIDER` and `CIH_EMBEDDING_PROVIDER` select the hosted Groq/CPU profile; see the cloud quickstart for server secrets. `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` configure the selected models. Model/chunker changes use isolated compatible indexes. No OpenAI adapter is enabled.
 
 ## Project layout
