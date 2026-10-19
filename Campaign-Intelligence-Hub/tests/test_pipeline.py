@@ -1,14 +1,14 @@
 import pytest
 
 
-def test_fixed_and_semantic_chunking(tmp_path):
+def test_fixed_and_section_chunking(tmp_path):
     from campaign_hub.synthetic_data.generator import generate_corpus
     from campaign_hub.ingestion.markdown import load_documents
     from campaign_hub.chunking.pipeline import chunk_documents, tokens
     manifest = generate_corpus(tmp_path)
     docs = load_documents(tmp_path, manifest)
     fixed = chunk_documents(docs, 'fixed')
-    semantic = chunk_documents(docs, 'semantic')
+    semantic = chunk_documents(docs, 'section')
     assert fixed and semantic
     assert all(len(tokens(c.text)) <= 500 for c in fixed)
     assert any(c.metadata['section_name'] == 'KPI Results' for c in semantic)

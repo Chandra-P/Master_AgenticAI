@@ -6,10 +6,12 @@ from pathlib import Path
 from campaign_hub.models import RetrievalOptions, FALLBACK
 from campaign_hub.evaluation.metrics import retrieval_metrics, citation_accuracy
 from campaign_hub.reporting.render import render_report
+from campaign_hub.reporting.citations import claim_section
 
 
 def configurations():
-    return [RetrievalOptions(chunking=c,retrieval=r,reranking=k) for c,r,k in itertools.product(['fixed','semantic'],['dense','hybrid'],[False,True])]
+    from campaign_hub.chunking.pipeline import STRATEGIES
+    return [RetrievalOptions(chunking=c,retrieval=r,reranking=k) for c,r,k in itertools.product(STRATEGIES,['dense','hybrid'],[False,True])]
 
 
 def completeness(answer,facts):
@@ -22,8 +24,8 @@ def experiment_identity(service,options,case,use_llm,judge):
     return {'options':options.model_dump(),'question':case['id'],'corpus':service.corpus_hash,
         'embedding':service.settings.embedding_model,'generation':service.settings.generation_model,
         'embedding_provider':service.settings.embedding_provider,'generation_provider':service.settings.generation_provider,
-        'embedding_config':create_embedder(service.settings).identity,'chunking_config':default_chunking_config(),
-        'use_llm':use_llm,'judge':judge,'runner_version':3}
+        'embedding_config':create_embedder(service.settings).identity,'chunking_config':default_chunking_config(options.chunking),
+        'use_llm':use_llm,'judge':judge,'runner_version':6}
 
 
 def run_experiments(service,output,smoke=False,use_llm=True,judge=False):
@@ -46,7 +48,7 @@ def run_experiments(service,output,smoke=False,use_llm=True,judge=False):
             row={**options.model_dump(),'case_id':case['id'],'identity':identity,'faithfulness':None,
                  'faithfulness_note':'No independent entailment judge run; score unavailable.', 'error':None}
             try:
-                cited=[]
+                cited=[]; cited_documents=[]; unresolved_sections=0; citation_count=0
                 claims=[]
                 evidence={}
                 if case['kind']=='report':
@@ -75,9 +77,19 @@ def run_experiments(service,output,smoke=False,use_llm=True,judge=False):
                     for cid in claim.citations:
                         if cid in evidence:
                             meta=evidence[cid].metadata
-                            cited.append(meta['document_id']+'#'+meta['section_anchor'])
-                row['citation_accuracy']=citation_accuracy(cited,case['ground_truth_citations'])
-                row['citation_metric_note']='Gold source/section overlap; not entailment accuracy.'
+                            cited_documents.append(meta['document_id']);citation_count+=1
+                            section=claim_section(claim.text,evidence[cid])
+                            if section:
+                                cited.append(meta['document_id']+'#'+section)
+                            else:
+                                unresolved_sections+=1
+                # Unknown sections are not false negatives or free credit for every
+                # section a chunk overlaps. Keep document and section overlap separate.
+                row['citation_accuracy']=citation_accuracy(cited,case['ground_truth_citations']) if not unresolved_sections else None
+                row['document_citation_accuracy']=citation_accuracy(cited_documents,[s.split('#')[0] for s in case['ground_truth_citations']])
+                row['section_citation_resolution']=1-unresolved_sections/citation_count if citation_count else None
+                row['unresolved_section_citations']=unresolved_sections
+                row['citation_metric_note']='Gold section overlap, unavailable if any cited span is unresolved; document overlap reported separately. Neither measures entailment.'
                 if judge and claims:
                     from campaign_hub.evaluation.judge import judge_claims
                     from campaign_hub.generation.providers import create_generator

@@ -15,7 +15,8 @@ def apply_server_secrets(secrets):
 
 def prepare_indexes(service):
     with _INDEX_LOCK:
-        for strategy in ('fixed','semantic'):
+        from campaign_hub.chunking.pipeline import STRATEGIES
+        for strategy in STRATEGIES:
             try:
                 service.store(strategy)
             except ValueError as error:

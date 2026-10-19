@@ -2,12 +2,13 @@ import argparse
 import json
 from campaign_hub.config import Settings
 from campaign_hub.models import RetrievalOptions
+from campaign_hub.chunking.pipeline import STRATEGIES
 
 
 def main():
     parser=argparse.ArgumentParser(description='Campaign Intelligence Hub')
     parser.add_argument('command',choices=['generate','validate','index','ask','report','client-report','compare','evaluate'])
-    parser.add_argument('--chunking',choices=['fixed','semantic','all'],default='semantic')
+    parser.add_argument('--chunking',choices=[*STRATEGIES,'all'],default='section')
     parser.add_argument('--retrieval',choices=['dense','hybrid'],default='hybrid')
     parser.add_argument('--rerank',action='store_true')
     parser.add_argument('--campaign',default='TX-CHK-001')
@@ -36,7 +37,7 @@ def main():
         from campaign_hub.reporting.client_packet import packet_markdown
         from campaign_hub.reporting.client_retrieval import retrieve_client_packet
         from campaign_hub.reporting.html_report import export_html
-        packet=retrieve_client_packet(service,args.campaign,RetrievalOptions(chunking=args.chunking if args.chunking!='all' else 'semantic',retrieval=args.retrieval,reranking=args.rerank))
+        packet=retrieve_client_packet(service,args.campaign,RetrievalOptions(chunking=args.chunking if args.chunking!='all' else 'section',retrieval=args.retrieval,reranking=args.rerank))
         if args.period and args.period!=packet['period']:
             raise ValueError('Requested period differs from source campaign reporting period')
         out=settings.data/'reports'
@@ -46,9 +47,9 @@ def main():
         (out/f'{args.campaign}-client.json').write_text(json.dumps(packet,indent=2),encoding='utf-8')
         print(f'Validated client report exported: {out}')
         return
-    options=RetrievalOptions(chunking=args.chunking if args.chunking!='all' else 'semantic',retrieval=args.retrieval,reranking=args.rerank)
+    options=RetrievalOptions(chunking=args.chunking if args.chunking!='all' else 'section',retrieval=args.retrieval,reranking=args.rerank)
     if args.command=='index':
-        for strategy in ['fixed','semantic'] if args.chunking=='all' else [args.chunking]:
+        for strategy in STRATEGIES if args.chunking=='all' else [args.chunking]:
             print(f'Indexing {strategy}...',flush=True)
             print(f'{service.index(strategy)} chunks indexed.',flush=True)
     elif args.command=='report':

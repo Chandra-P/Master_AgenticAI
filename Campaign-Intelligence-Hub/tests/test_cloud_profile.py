@@ -88,7 +88,7 @@ def test_bootstrap_builds_only_missing_indexes(tmp_path,monkeypatch):
     service=Service()
     prepare_indexes(service)
     prepare_indexes(service)
-    assert service.built==['semantic']
+    assert service.built==['section','semantic']
 
 
 def test_experiment_identity_separates_providers_with_same_model_names(tmp_path):

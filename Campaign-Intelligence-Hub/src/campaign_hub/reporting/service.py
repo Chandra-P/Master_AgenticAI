@@ -81,8 +81,9 @@ class CampaignService:
         from campaign_hub.chunking.pipeline import chunk_documents
         from campaign_hub.embeddings.providers import create_embedder
         from campaign_hub.vectordb.chroma_store import ChromaStore
-        chunks=chunk_documents(load_documents(self.settings.data,self.manifest),strategy)
-        store=ChromaStore(self.settings.data/'indexes',strategy,create_embedder(self.settings))
+        embedder=create_embedder(self.settings)
+        chunks=chunk_documents(load_documents(self.settings.data,self.manifest),strategy,embedder=embedder)
+        store=ChromaStore(self.settings.data/'indexes',strategy,embedder)
         store.build(chunks,self.corpus_hash)
         self._stores[strategy]=store
         return len(chunks)

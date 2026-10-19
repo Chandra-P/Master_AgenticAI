@@ -30,7 +30,9 @@ def service_for(model):
 
 
 def controls():
-    chunking=st.selectbox('Chunking',['semantic','fixed'])
+    from campaign_hub.chunking.pipeline import LABELS
+    chunking=st.selectbox('Chunking',['section','fixed','semantic'],format_func=LABELS.get,
+        help='Fixed-size uses token windows; section-based follows headings; embedding-based semantic detects topic changes using sentence embeddings.')
     retrieval=st.selectbox('Retrieval',['hybrid','dense'])
     reranking=st.checkbox('Cross-encoder reranking',value=False)
     return RetrievalOptions(chunking=chunking,retrieval=retrieval,reranking=reranking)
@@ -60,12 +62,13 @@ def build_indexes(service):
         return
     with st.expander('Knowledge base setup'):
         st.caption('Build once after generating or changing the corpus or embedding model.')
-        if st.button('Build both Chroma indexes',icon=':material/database:'):
+        if st.button('Build all three Chroma indexes',icon=':material/database:'):
             try:
                 with st.status('Embedding sources locally and building Chroma indexes…',expanded=True) as status:
-                    for strategy in ['fixed','semantic']:
+                    from campaign_hub.chunking.pipeline import STRATEGIES,LABELS
+                    for strategy in STRATEGIES:
                         count=service.index(strategy)
-                        st.write(f'{strategy}: {count} chunks indexed')
-                    status.update(label='Both indexes ready',state='complete')
+                        st.write(f'{LABELS[strategy]}: {count} chunks indexed')
+                    status.update(label='All three indexes ready',state='complete')
             except Exception as error:
                 st.error(str(error))

@@ -1,5 +1,6 @@
 from campaign_hub.models import FALLBACK,ReportResult
 import json
+from campaign_hub.reporting.citations import source_references
 
 
 def enrich_report_identity(report,campaign):
@@ -28,7 +29,7 @@ def render_report(report,client_facing=False):
                     section=chunk.metadata.get('section_name','')
                     text+=f"- [{ids.index(cid)+1}] {name} — {kind}: {section}\n"
                 else:
-                    text+=f"- [{ids.index(cid)+1}] {chunk.metadata['source_path']}#{chunk.metadata.get('section_anchor','')} — {chunk.metadata.get('section_name','')}\n"
+                    text+=f"- [{ids.index(cid)+1}] {', '.join(source_references(chunk))} — {chunk.metadata.get('section_name','')}\n"
         else:
             text+='\n\n'.join(c.text+' '+''.join(f'[{ids.index(cid)+1}]' for cid in c.citations if cid in ids) for c in section.claims)
             if section.gap or not section.claims:

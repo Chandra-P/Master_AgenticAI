@@ -39,7 +39,7 @@ def test_visual_pdf_and_editable_chart_workbooks(tmp_path):
         assert all(b'externalData' in deck.read(n) for n in charts)
 
 
-@pytest.mark.parametrize('chunking',['semantic','fixed'])
+@pytest.mark.parametrize('chunking',['section','fixed','semantic'])
 def test_final_packet_requires_attributable_retrieved_sources(tmp_path,monkeypatch,chunking):
     from campaign_hub.reporting.client_retrieval import retrieve_client_packet
     from campaign_hub.reporting.client_packet import validate_packet
@@ -47,7 +47,10 @@ def test_final_packet_requires_attributable_retrieved_sources(tmp_path,monkeypat
     from campaign_hub.chunking.pipeline import chunk_documents
     from campaign_hub.models import RetrievalOptions,SearchHit
     service=service_fixture(tmp_path)
-    chunks=chunk_documents(load_documents(service.settings.data,service.manifest),chunking)
+    class Embedder:
+        identity={'provider':'test','model':'constant'}
+        def embed_documents(self,texts):return [[1.,0.] for text in texts]
+    chunks=chunk_documents(load_documents(service.settings.data,service.manifest),chunking,embedder=Embedder())
     calls=[]
     def search(query,cid,options,kind):
         calls.append((cid,kind))

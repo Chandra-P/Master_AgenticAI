@@ -1,8 +1,9 @@
 def test_experiment_matrix_and_unknown_metric():
     from campaign_hub.evaluation.runner import configurations, completeness
     configs=configurations()
-    assert len(configs)==8
-    assert len({(c.chunking,c.retrieval,c.reranking) for c in configs})==8
+    assert len(configs)==12
+    assert len({(c.chunking,c.retrieval,c.reranking) for c in configs})==12
+    assert {c.chunking for c in configs}=={'fixed','section','semantic'}
     assert completeness('120 activations', ['120','funded'])==0.5
 
 

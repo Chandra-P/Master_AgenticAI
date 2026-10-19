@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Literal
 
 FALLBACK = "I could not find sufficient evidence in the knowledge base."
 SECTIONS = ["Executive Summary", "Goal Achievement Analysis", "KPI Performance Review",
@@ -26,7 +27,7 @@ class SearchHit(BaseModel):
 
 
 class RetrievalOptions(BaseModel):
-    chunking: str = "semantic"
+    chunking: Literal['fixed','section','semantic'] = "section"
     retrieval: str = "hybrid"
     reranking: bool = False
     candidate_k: int = 20
