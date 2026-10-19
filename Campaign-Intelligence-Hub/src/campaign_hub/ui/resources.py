@@ -6,7 +6,7 @@ from campaign_hub.models import RetrievalOptions
 
 
 @st.cache_resource(max_entries=4)
-def _cached_service(model,manifest_hash,provider_identity):
+def _cached_service(model,manifest_hash,provider_identity,code_hash):
     from campaign_hub.reporting.service import CampaignService
     service=CampaignService(replace(Settings(),generation_model=model))
     if service.settings.auto_index:
@@ -20,7 +20,13 @@ def service_for(model):
     settings=Settings()
     manifest_hash=hashlib.sha256((settings.data/'manifest.json').read_bytes()).hexdigest()
     identity=(settings.embedding_provider,settings.embedding_model,settings.generation_provider,settings.auto_index)
-    return _cached_service(model,manifest_hash,identity)
+    # A cached instance retains its original Python class/methods after a hot
+    # deployment. Include source content so new code gets a new service too.
+    code=hashlib.sha256()
+    for path in sorted((settings.root/'src/campaign_hub').rglob('*.py')):
+        code.update(str(path.relative_to(settings.root)).encode())
+        code.update(path.read_bytes())
+    return _cached_service(model,manifest_hash,identity,code.hexdigest())
 
 
 def controls():

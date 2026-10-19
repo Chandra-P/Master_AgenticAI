@@ -255,7 +255,14 @@ class CampaignService:
             campaign_id=match.group()
         if campaign_id and campaign_id not in self.campaigns:
             return {'answer':FALLBACK,'hits':[],'faithfulness':None}
-        hits=self.search(question,campaign_id,options)
+        # Questions about the original intent belong to the brief; achievement
+        # questions still need results across the campaign's evidence.
+        original_goals=bool(re.search(r'\b(objectives?|goals?)\b',question,re.I)) and not re.search(
+            r'\b(achiev\w*|perform\w*|track\w*|met|meet|actual|results?|compar\w*)\b',question,re.I)
+        if original_goals:
+            hits=self.search(question+' Objectives campaign goals intended targets',campaign_id,options,'brief')
+        else:
+            hits=self.search(question,campaign_id,options)
         if not hits:
             return {'answer':FALLBACK,'hits':[],'faithfulness':None}
         from campaign_hub.generation.providers import create_generator
