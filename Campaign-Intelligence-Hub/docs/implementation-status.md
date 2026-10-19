@@ -4,7 +4,7 @@ Audit date: 2026-10-18. Scope: the user's 102-item implementation checklist and 
 
 ## Implemented features
 
-The application includes the deterministic synthetic corpus, local LangChain/Ollama/Chroma RAG, chunking and retrieval experiments, a configurable cross-encoder, a five-page Streamlit workspace, automatic campaign geography, same-client historical comparisons, and standalone HTML client presentations with embedded charts and insights. Final generation retrieves chunks, expands validated parent documents, and uses source text and deterministic arithmetic. Unsupported model prose cannot enter the final presentation packet. The map remains a fast source-table snapshot. HTML is the default client output; PDF/PowerPoint export functions are retained only for compatibility.
+The application includes the deterministic synthetic corpus, LangChain/Chroma RAG with local Ollama and hosted CPU/Groq profiles, three distinct chunkers, retrieval experiments, a configurable cross-encoder, a five-page Streamlit workspace, automatic campaign geography, same-client historical comparisons, and standalone HTML client presentations with embedded charts and insights. Final generation retrieves chunks, expands validated parent documents, and uses source text and deterministic arithmetic. Unsupported model prose cannot enter the final presentation packet. The map remains a fast source-table snapshot. HTML is the default client output; PDF/PowerPoint export functions are retained only for compatibility. See the [deliverable audit](deliverable-audit.md) for comparison with the supplied peer solution kits.
 
 Report cover identity, all KPI units/directions/periods, plan targets, campaign/channel/geographic totals, source versions, citations and attribution maturity are checked. Every export revalidates the packet. Audience and channel observations are distinguished from causal lift; unmeasured ROI is unavailable. Small historical cohorts and synthetic data are disclosed. Balances mean opening account balances in USD, not revenue or current deposits.
 
@@ -53,8 +53,8 @@ Paths below are relative to the project. Validation commands and measured result
 | Item | Status | Evidence / boundary |
 |---|---|---|
 | Fixed chunking implementation | IMPLEMENTED | `chunking/pipeline.py`; 500 tokens, 50 overlap |
-| Semantic chunking implementation | IMPLEMENTED | Business-heading structural semantic baseline, bounded to 500 tokens; not embedding-based topic segmentation |
-| Chunking comparison experiment | IMPLEMENTED | Eight-configuration experiment matrix; retained measured outputs |
+| Semantic chunking implementation | IMPLEMENTED | `chunking/semantic.py`; sentence/unit embeddings and 65th-percentile cosine breakpoints, source spans and bounded overflow. Heading-based splitting remains separate as `section` |
+| Chunking comparison experiment | IMPLEMENTED | Twelve configurations across fixed/section/semantic, dense/hybrid and rerank off/on; historical eight-configuration results are labeled separately |
 | Chunk metadata storage | IMPLEMENTED | Token count, strategy, tokenizer, source/section and content hash stored in Chroma |
 
 ### Retrieval
@@ -65,7 +65,7 @@ Paths below are relative to the project. Validation commands and measured result
 | Hybrid retrieval | IMPLEMENTED | Dense/BM25 reciprocal-rank fusion |
 | BM25 retrieval | IMPLEMENTED | `retrieval/pipeline.py`; lexical leg of hybrid search, no standalone BM25 UI mode |
 | Top-K retrieval | IMPLEMENTED | Candidate K and final K in `RetrievalOptions` |
-| Retrieval comparison experiment | IMPLEMENTED | Dense/hybrid across fixed/semantic and reranking states |
+| Retrieval comparison experiment | IMPLEMENTED | Dense/hybrid across three chunkers and reranking states |
 
 ### Reranking
 
@@ -95,7 +95,7 @@ Paths below are relative to the project. Validation commands and measured result
 |---|---|---|
 | Persistent ChromaDB setup | IMPLEMENTED | `data/indexes`; PersistentClient |
 | Collection creation | IMPLEMENTED | Strategy + embedding identity collection names |
-| Metadata schema | IMPLEMENTED | Source/campaign/client/period/section/chunk metadata |
+| Metadata schema | IMPLEMENTED | Source/campaign/client/period/section/chunk metadata; semantic character spans, boundary reason, threshold and segmentation embedder |
 | Document indexing | IMPLEMENTED | Upserts, stale chunk deletion, compatibility manifest |
 | Query functionality | IMPLEMENTED | Filtered similarity search and lexical candidate enumeration |
 
@@ -104,7 +104,7 @@ Paths below are relative to the project. Validation commands and measured result
 | Item | Status | Evidence / boundary |
 |---|---|---|
 | Llama generation model | IMPLEMENTED | LangChain ChatOllama; `llama3.2:3b` default |
-| Open-source embedding model | IMPLEMENTED | Ollama `embeddinggemma` default |
+| Open-source embedding model | IMPLEMENTED | Ollama `embeddinggemma` local default; CPU all-MiniLM-L6-v2 hosted profile |
 | Configurable model selection | IMPLEMENTED | Environment variables, generation model UI; embedding changes require rebuild |
 
 ### Streamlit UI
@@ -130,7 +130,7 @@ Paths below are relative to the project. Validation commands and measured result
 | Item | Status | Evidence / boundary |
 |---|---|---|
 | Fixed chunking toggle | IMPLEMENTED | Analyst chunking selector / CLI |
-| Semantic chunking toggle | IMPLEMENTED | Same selector |
+| Semantic chunking toggle | IMPLEMENTED | Separate Fixed-size, Section-based and Embedding-based semantic choices in controls, explorer and CLI |
 | Dense retrieval toggle | IMPLEMENTED | Analyst retrieval selector / CLI |
 | Hybrid retrieval toggle | IMPLEMENTED | Same selector |
 | Reranking toggle | IMPLEMENTED | Cross-encoder checkbox / CLI |
@@ -179,14 +179,14 @@ Paths below are relative to the project. Validation commands and measured result
 | Fixed chunking vs semantic chunking | IMPLEMENTED | Actual matrix outputs |
 | Dense retrieval vs hybrid retrieval | IMPLEMENTED | Actual matrix outputs |
 | No reranking vs reranking | IMPLEMENTED | Actual matrix outputs |
-| Embedding model comparison | FUTURE WORK | Only embeddinggemma measured. Add second downloaded model, isolated indexes, matched cases and measured quality/latency/storage results |
+| Embedding model comparison | FUTURE WORK | Both embeddinggemma and MiniLM profiles have measurements, but no controlled matched-model experiment with identical chunker versions/cases and quality/latency/storage comparisons has been completed |
 
 ### Visualizations
 
 | Item | Status | Evidence / boundary |
 |---|---|---|
 | Retrieval comparison charts | IMPLEMENTED | Evaluation dashboard grouped MRR/precision/recall |
-| Chunking comparison charts | IMPLEMENTED | Fixed/semantic configuration charts |
+| Chunking comparison charts | IMPLEMENTED | Three chunkers across twelve configuration labels; bundled CPU measurements are distinct from hosted performance |
 | Reranking impact charts | IMPLEMENTED | On/off configurations visible in chart labels |
 | Faithfulness charts | IMPLEMENTED | Conditional chart shown only when measured non-null judge results exist; current retrieval-only run has no such values |
 | Latency charts | IMPLEMENTED | Measured seconds by configuration |
@@ -200,7 +200,7 @@ Paths below are relative to the project. Validation commands and measured result
 | README | IMPLEMENTED | Main project setup, workflows, limits and artifact links |
 | Setup instructions | IMPLEMENTED | Windows and cross-platform notes |
 | Streamlit deployment instructions | IMPLEMENTED | [Deployment guide](deployment.md); local/managed server |
-| Streamlit Community Cloud deployment guide | IMPLEMENTED | Guide with remote Ollama/import/dependency/persistence constraints; no live cloud deployment claimed |
+| Streamlit Community Cloud deployment guide | IMPLEMENTED | Live CPU/Groq deployment, visitor access and chart-led report checks documented in cloud-quickstart.md; model credentials remain server-side |
 
 ## Future enhancements and release boundaries
 
@@ -208,7 +208,7 @@ Paths below are relative to the project. Validation commands and measured result
 2. Real client data ingestion/connectors, row-level access controls, authentication, client isolation, audited analyst approval, report version storage and durable multi-user persistence. Current selectors filter synthetic campaign data; they are not an authorization system.
 3. Verified, licensed industry benchmark data with industry/product/geography/window eligibility, publication date and sample sizes. Fictional cross-client references must never be labeled real industry performance.
 4. Independent human factual evaluation, measured faithfulness-judge runs, model upgrade regression suites and an accepted real-data quality threshold. Retrieval-only results cannot establish narrative faithfulness or abstention quality.
-5. Full accessibility testing, cloud resource/load/restart tests, protected model hosting and a verified live Community Cloud deployment. The current HTML example has been checked in Edge at desktop/mobile viewport sizes, with all chart elements and citation targets verified; that is not a comprehensive accessibility or production browser test matrix.
+5. Full accessibility testing, cloud resource/load/restart tests and production model-hosting controls. A live Community Cloud demo, incognito visitor access, cited answers and a chart-led report preview have been verified. The HTML example was checked in Edge at desktop/mobile viewport sizes; these checks are not a comprehensive accessibility, capacity or production browser test matrix.
 6. Broader source schemas, arbitrary spreadsheet/PDF/slide ingestion and zero-total campaign KPI support. The current typed synthetic Markdown contract blocks unsupported schemas rather than guessing. Zero-activation channel CPA is unavailable; campaign-wide zero-activation cost handling needs a separate source contract.
 7. Client-specific HTML brand templates, richer interactive chart filtering and account-level geospatial integration. Current HTML embeds portable SVG comparison charts; map points are approximate synthetic city aggregates.
 

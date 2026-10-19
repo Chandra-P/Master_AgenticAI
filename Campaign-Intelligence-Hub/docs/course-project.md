@@ -11,16 +11,16 @@ The complete [implementation audit](implementation-status.md) records all 102 ch
 ## Demonstration sequence
 
 1. Inspect one linked campaign in `data/corpus/`; confirm common campaign ID and distinct brief/plan/results/deck purposes.
-2. Build fixed and semantic Chroma collections with the CLI or setup button.
+2. Build fixed-size, section-based and embedding-based semantic Chroma collections with the CLI or setup button; hosted startup prepares them automatically.
 3. Generate TX-CHK-001's report and inspect the target-versus-actual table.
 4. Expand cited evidence and verify a numerical statement against the source.
-5. Compare fixed/dense against semantic/hybrid in Retrieval Explorer.
+5. Compare all three chunkers in Retrieval Explorer, then vary dense/hybrid search while keeping the same campaign and question.
 6. Enable real reranking, then inspect the changed ranks and scores.
 7. Run the smoke matrix; inspect actual MRR, precision, recall, completeness proxies, errors, and latency.
 8. Request an unknown campaign or unsupported fact and demonstrate abstention or explicit gaps.
 
 ## Interpretation
 
-This small synthetic dataset demonstrates architecture and experiment mechanics, not real-world model quality. Similar wording and source-derived gold facts may inflate retrieval results. Business-heading chunking is a structural semantic baseline. Cite each finding, separate historical analogies from current results, and distinguish measured evidence from proposed tests.
+This small synthetic dataset demonstrates architecture and experiment mechanics, not real-world model quality. Similar wording and source-derived gold facts may inflate retrieval results. Section-based chunking follows headings; embedding-based semantic chunking uses sentence/unit cosine-distance breakpoints. They are separate controls and indexes. Cite each finding, separate historical analogies from current results, and distinguish measured evidence from proposed tests.
 
-All embeddings and generation run through free local APIs. Hardware, memory, model size, and cold downloads affect latency. No external financial recommendations or customer records are used.
+The local profile uses Ollama embeddings and generation; the hosted demo uses CPU embeddings and the owner's Groq free-tier API. Hardware, quotas, memory, model size, and cold downloads affect latency. No customer records are used.

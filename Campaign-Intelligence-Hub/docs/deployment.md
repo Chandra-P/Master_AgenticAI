@@ -1,6 +1,6 @@
 # Deployment guide
 
-For a browser-only full interactive demo, use the [Streamlit Community Cloud quickstart](cloud-quickstart.md). The new hosted profile uses Groq for questions, CPU embeddings and automatic Chroma setup. It removes the local-Ollama dependency for hosted visitors. Owner sign-in/secrets configuration and live cloud acceptance checks are still required before sharing a public URL.
+For a browser-only full interactive demo, use the [Streamlit Community Cloud quickstart](cloud-quickstart.md). The hosted profile uses Groq for questions, CPU embeddings and automatic Chroma setup. The public demo has passed focused incognito-access, cited-answer and report checks. A new deployment still needs its owner's sign-in/secrets configuration and acceptance checks before sharing.
 
 ## Local or managed server
 
@@ -26,13 +26,13 @@ Configure `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` be
 
 ## Streamlit Community Cloud
 
-The guide is implemented; a live cloud deployment has **not** been performed. Community Cloud runs on a remote host, so its `localhost:11434` cannot reach Ollama on your laptop. This is a hosting constraint, not an API key requirement.
+The [live CPU/Groq demo](https://9swrtwtm4lvrbw2zrh2pyg.streamlit.app/) is deployed. Community Cloud runs on a remote host, so its `localhost:11434` cannot reach Ollama on your laptop. The hosted profile prepares all three compatible chunking indexes automatically and does not require visitor setup.
 
 1. Push the project to the intended GitHub branch. Keep the synthetic corpus and manifest in the repository; do not commit local models, caches, indexes or secrets.
 2. In Community Cloud, create an app and select the repository, branch and `Campaign-Intelligence-Hub/app.py` as entry point. Use a Python version compatible with `pyproject.toml`.
 3. Install dependencies from `Campaign-Intelligence-Hub/requirements.txt`. The app entry point adds its own `src` directory to the import path, so an editable package install is not required for the hosted UI. Confirm dependency-file selection in the cloud build logs.
 4. Use the matching project theme. Confirm corpus validation, client/campaign selection and the map table first; those do not need Ollama. The HTML report workflow needs a reachable embedding service and built index before generation; a downloaded report can be viewed offline.
-5. Select the new hosted profile from the quickstart to run embeddings locally on the cloud CPU and questions through an owner-configured Groq endpoint. Keeping the original Ollama profile instead requires a protected remotely reachable Ollama service; Community Cloud cannot use the owner's laptop localhost. Cloud resource/cold-start/persistence and full live acceptance checks remain unverified. Free-tier model access is rate-limited, not an unlimited service promise.
+5. Select the hosted profile from the quickstart to run embeddings on the cloud CPU and questions through an owner-configured Groq endpoint. Keeping the original Ollama profile instead requires a protected remotely reachable Ollama service; Community Cloud cannot use the owner's laptop localhost. Focused functional checks are complete; sustained resource/concurrency, repeated cold-start and persistence testing remain future work. Free-tier model access is rate-limited.
 6. Review cloud logs and run the same functional checks after deployment. Never treat missing model/judge results as successful evaluation.
 
 Platform references (checked 2026-10-17): [deployment setup](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy), [dependency management](https://docs.streamlit.io/deploy/concepts/dependencies), and [secrets configuration](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management). The localhost inference constraint above follows from the app's configured endpoint and the remote-host deployment model.

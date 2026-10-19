@@ -1,6 +1,36 @@
 # Evaluation and verification results
 
-## Current local verification: 2026-10-18
+## Current three-method verification: 2026-10-18
+
+- **91 automated tests passed** after semantic chunking, configuration isolation, controls, source-span and citation regression changes.
+- Built real persistent CPU Chroma indexes with LangChain embeddings (`sentence-transformers/all-MiniLM-L6-v2`, 384 dimensions): **130 fixed-size, 490 section-based, 445 embedding-based semantic chunks** from 110 validated documents.
+- Each method generated the default campaign's validated HTML report with **10 charts and 9 source documents**. Fixed retrieval used 12 chunks; section and semantic used 38 each. These are functional checks, not a guarantee about all possible real-data inputs.
+- Ran **12 configurations × 27 held-out cases = 324 rows**, zero execution errors, using actual dense/hybrid search and a local cross-encoder. Three calibration cases were excluded. Questions used retrieved text; analytical report cases used source-backed extractive claims. No generation API or entailment judge was used.
+
+| Chunking | Retrieval | Rerank | MRR@5 | Document precision | Document recall | Mean seconds |
+|---|---|---|---:|---:|---:|---:|
+| fixed | dense | Off | 0.4660 | 0.2981 | 0.9886 | 0.4567 |
+| fixed | dense | On | 0.5000 | 0.2833 | 0.9659 | 2.3729 |
+| fixed | hybrid | Off | 0.4938 | 0.3056 | 1.0000 | 0.4401 |
+| fixed | hybrid | On | 0.5000 | 0.2833 | 0.9659 | 1.5761 |
+| section | dense | Off | 0.4105 | 0.3457 | 1.0000 | 0.4867 |
+| section | dense | On | 0.4815 | 0.3506 | 0.9886 | 2.7427 |
+| section | hybrid | Off | 0.4691 | 0.3364 | 1.0000 | 0.4962 |
+| section | hybrid | On | 0.4815 | 0.3580 | 1.0000 | 2.7940 |
+| semantic | dense | Off | 0.5000 | 0.3537 | 0.9886 | 0.4277 |
+| semantic | dense | On | 0.5000 | 0.3432 | 0.9773 | 3.3240 |
+| semantic | hybrid | Off | 0.4938 | 0.3457 | 1.0000 | 0.4805 |
+| semantic | hybrid | On | 0.5000 | 0.3432 | 0.9773 | 3.1970 |
+
+Analytical report statuses: **36 complete / 24 partial**. Partial reports disclose missing compatible historical cohorts rather than inventing a comparison.
+
+Raw artifacts: [324 measured rows](evaluation/three-chunking-results.json), [configuration means](evaluation/three-chunking-comparison.csv). These are bundled in the dashboard for the matching CPU profile. Existing local `data/runs/latest` takes precedence and must match the corpus, embedding, chunker and citation-scoring version. Raw identities record the exact configurations; model-generated answer quality is not measured here.
+
+Section citation overlap now resolves exact claim spans in multi-section chunks. Unknown or ambiguous sections make that case's section score unavailable; document citation overlap and section-resolution coverage are separate metrics. Whole-chunk exports list real sections and never invent `#document`. None of these overlap metrics establishes entailment. Faithfulness is **unmeasured (null)**. Source-derived synthetic gold, simple fact matching, small cohorts and uncontrolled development-machine cold starts limit interpretation. These latency values are not hosted benchmarks, and this is not a controlled embedding-model comparison. See the [deliverable audit](deliverable-audit.md) for remaining requirements.
+
+## Historical local verification: 2026-10-18, before three-method migration
+
+The results in this historical section used the old heading-based strategy named `semantic`. That strategy is now called `section`. These measurements do not evaluate the new embedding-based semantic algorithm. Current three-method results are recorded separately above this historical record.
 
 - **51 automated tests passed.** Tests cover corpus construction, chunking, metadata filters, KPI/attribution arithmetic, benchmark eligibility, evidence validation, client selection, report export, source-conflict rejection and unavailable zero-channel CPA.
 - Exactly **110 source documents**: 20 briefs, 20 success plans, 20 performance reports, 20 historical deck documents, 10 strategy documents, 10 best-practice guides, 5 KPI dictionaries and 5 methodology documents. There are 20 campaigns, five fictional clients, 200 location/channel rows and 30 evaluation cases.
@@ -10,7 +40,7 @@
 - Streamlit AppTest exercised automatic channel filtering, real retrieval-backed generation, the embedded HTML preview and HTML/source-packet download controls. PDF/PowerPoint are no longer offered by the default UI/CLI workflow; legacy export functions retain regression tests.
 - Read-only code review found no remaining Critical/Important issues in the targeted source reconciliation, zero-channel CPA, peer isolation, HTML/chart/source attribution or checklist tally.
 
-## Measured retrieval experiment
+## Historical eight-configuration retrieval experiment
 
 Executed the eight-configuration matrix on **27 held-out cases: 216 result rows, zero execution errors**, against the current regenerated corpus. Three calibration cases were excluded. The run used actual Chroma search, BM25/fusion, LangChain Ollama embeddings and the downloaded cross-encoder.
 
@@ -31,7 +61,7 @@ Raw artifacts: [all measured rows](evaluation/held-out-results.json), [configura
 
 These are small synthetic-corpus measurements. Source-derived gold and similar wording can inflate results. Document metrics are not token-level context judgments. Expected-fact completeness is string matching, not overall narrative quality. Citation accuracy is gold source/section overlap; the low aggregate values (about 0.084–0.087) reflect the narrow expected-section gold and additional analytical-report citations and must not be presented as strong semantic citation accuracy. Latency includes cold starts and concurrent local work; it is not a controlled throughput benchmark. Reranking does not uniformly improve retrieval.
 
-**No entailment judge ran in this matrix**: all faithfulness values remain null. Faithfulness charts appear only after actual judge measurements. Retrieval-only unsupported-question abstention is unscored. Independent factual evaluation, a measured second embedding model, calibrated confidence, production/browser/cloud checks and the separate graph-node expansion remain documented future work. See the full [implementation status report](implementation-status.md).
+**No entailment judge ran in this historical matrix**: all faithfulness values remain null. Faithfulness charts appear only after actual judge measurements. Retrieval-only unsupported-question abstention is unscored. Independent factual evaluation, a controlled matched embedding-model experiment, calibrated confidence, sustained production/cloud testing and separate graph-stage nodes remain future work. Focused hosted/browser checks have since been completed; see the [cloud quickstart](cloud-quickstart.md) and full [implementation status report](implementation-status.md).
 
 ## Reproduce
 

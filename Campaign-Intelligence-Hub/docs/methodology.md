@@ -2,7 +2,7 @@
 
 Corpus generation is seeded Python rendering, not an API-generated dataset. Four linked documents describe each of 20 fictional campaigns; 30 shared guides complete the 110-document corpus. Canonical values determine both source documents and gold facts. Generation never uses actual customer data.
 
-Fixed chunks use the documented cl100k_base tokenizer, 500-token maximum and 50-token overlap. Business-section chunking follows Markdown headings, with the same bounds for oversized sections. This is structure-aware chunking, not learned semantic breakpoint detection. The tokenizer is a consistent course comparison unit, not a claim to reproduce every provider's internal tokenizer.
+Three methods use the documented cl100k_base tokenizer, 500-token maximum and 50-token overflow overlap. Fixed-size chunks use token windows. Section-based chunks follow Markdown headings. Embedding-based semantic chunks split at adjacent sentence/unit cosine distances above the document's 65th percentile, using the configured embedding provider; headings do not force these boundaries. Contiguous tables are protected within the token budget. Exact source spans, segmentation parameters and embedding identity are preserved. The tokenizer is a course comparison unit, not a claim to reproduce every provider's tokenizer. See the [chunking comparison](chunking-comparison.md).
 
 Dense and BM25 searches apply identical metadata filters. Hybrid ranking combines document ranks with reciprocal rank fusion, constant 60. Cross-encoder scores and dense/fusion scores have different scales and must not be displayed as calibrated confidence probabilities.
 

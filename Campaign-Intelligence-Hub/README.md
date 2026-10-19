@@ -9,7 +9,7 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 - 110 deterministic synthetic Markdown documents for 20 campaigns and shared guidance.
 - 30 evaluation cases with expected facts and source/section citations.
 - LangChain `OllamaEmbeddings`, `ChatOllama`, prompt/structured-output chains, and the LangChain Chroma integration; no API key or paid API calls by default.
-- Persistent ChromaDB, fixed 500-token/50-overlap chunks and business-section chunks.
+- Persistent ChromaDB with fixed-size, section-based, and embedding-based semantic chunks. All use a 500-token bound and 50-token overflow overlap; semantic boundaries use sentence/unit embeddings and cosine-distance percentiles.
 - Dense retrieval, dense/BM25 reciprocal-rank fusion, and optional real cross-encoder reranking.
 - LangGraph report orchestration and explicit insufficient-evidence behavior.
 - Streamlit report generation, historical campaign comparison, questions, retrieval exploration, and measured evaluation views.
@@ -17,6 +17,8 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 - A standalone HTML client presentation with embedded SVG comparison charts, findings directly below each chart, and clickable source evidence. The final report retrieves chunks through Chroma, expands validated source documents, and calculates metrics in Python.
 
 See the complete [implementation status report](docs/implementation-status.md): **94 of 102 checklist items implemented (92.2%)**, with eight explicit future-work items and production release boundaries. See the [deployment guide](docs/deployment.md) for local/server/Community Cloud instructions.
+
+See the [three-method chunking comparison](docs/chunking-comparison.md) and [deliverable audit](docs/deliverable-audit.md) for the distinction between structural and embedding-based boundaries, experiment rules, and remaining requirements. The earlier heading-based `semantic` mode is now `section`; `semantic` now means actual embedding-based topic segmentation. Rebuild all indexes after updating.
 
 **[Open the live demo](https://9swrtwtm4lvrbw2zrh2pyg.streamlit.app/)** with no installation or visitor API key. Public access, cited Groq answers, and hosted chart-led report generation were checked on 2026-10-18. The [cloud quickstart](docs/cloud-quickstart.md) documents the deployment and verification limits. Hosting uses Streamlit Community Cloud, server-side CPU embeddings, automatic Chroma indexes and Groq generation; free-tier sleeping and API quotas apply. Local Ollama remains the default for local setup.
 
@@ -70,7 +72,7 @@ Open the [example HTML presentation](docs/example-client-report.html). HTML is n
 python -m campaign_hub client-report --campaign TX-CHK-001
 ```
 
-The final report uses the selected fixed/semantic, dense/hybrid and reranking settings against the built Chroma index. Retrieved chunk IDs, queries, scores and source hashes are recorded in the frozen JSON packet. Validated parent-document expansion preserves complete source tables for Python calculations; it does not substitute manifest KPI values. The CLI writes HTML, diagnostic Markdown and JSON under `data/reports/`. Report generation needs Ollama embeddings and a compatible index; it does not require Llama prose generation. The landing map remains a fast deterministic source-table snapshot. Map filters do not change the full-campaign report scope. Opening balances mean account balances at opening in USD, not current balances, net new deposits or revenue.
+The final report uses the selected fixed-size/section-based/embedding-based semantic, dense/hybrid and reranking settings against the corresponding Chroma index. Retrieved chunk IDs, queries, scores and source hashes are recorded in the frozen JSON packet. Validated parent expansion preserves complete source tables for Python calculations. The CLI writes HTML, diagnostic Markdown and JSON under `data/reports/`. Report generation needs a configured embedding provider and compatible index; it does not require model prose generation. The landing map remains a fast source-table snapshot. Map filters do not change the full-campaign report scope. Opening balances mean account balances at opening in USD, not current balances, net new deposits or revenue.
 
 The current input corpus is synthetic Markdown under `data/corpus/`. Real PDF, Word, PowerPoint, Excel/CSV and database ingestion is explicitly future work; the app does not yet ingest real client files.
 
@@ -103,7 +105,7 @@ python -m pytest -q
 
 Reranking downloads `cross-encoder/ms-marco-MiniLM-L-6-v2` on first use. Enable with `--rerank` or the UI toggle; the experiment matrix tests both states. Full evaluation may take considerable time on CPU. Run artifacts under `data/runs/` contain actual results/errors, not example scores. A retrieval-only experiment marks generation as skipped. Add `--judge` for a separate local model support judgment; source/number validation alone does not prove semantic faithfulness, and a model judge is not human verification.
 
-Default model settings use `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` environment variables. Changing embedding model requires rebuilding indexes. `.env.example` documents names; environment variables must be exported in the shell. Current implementation uses local Ollama providers; the optional OpenAI adapter in the design is not enabled in this build.
+Default model settings use local Ollama. `CIH_GENERATION_PROVIDER` and `CIH_EMBEDDING_PROVIDER` select the hosted Groq/CPU profile; see the cloud quickstart for server secrets. `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` configure the selected models. Model/chunker changes use isolated compatible indexes. No OpenAI adapter is enabled.
 
 ## Project layout
 
@@ -112,7 +114,7 @@ app.py                 Streamlit entry point
 src/campaign_hub/
   synthetic_data/      Seeded corpus and manifest validation
   ingestion/           Source parsing and path validation
-  chunking/            Fixed and business-section chunking
+  chunking/            Fixed, section-based and embedding-based semantic chunking
   embeddings/          Local embedding client and cache
   generation/          Local structured generation client
   vectordb/            Persistent Chroma indexes

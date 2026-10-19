@@ -8,9 +8,11 @@ Final client generation runs metadata-filtered Chroma retrieval with the selecte
 flowchart TD
     C[110 synthetic Markdown sources] --> I[Validated ingestion]
     I --> F[Fixed 500 tokens / 50 overlap]
-    I --> S[Business-section chunking]
-    F --> E[Local Ollama embeddings]
+    I --> S[Section-based chunking]
+    I --> T[Sentence embeddings and cosine breakpoints]
+    F --> E[LangChain embedding providers]
     S --> E
+    T --> E
     E --> D[LangChain Chroma / persistent collections]
     U[Campaign report request] --> L[LangGraph coverage plan]
     L --> R[Per-section retrieval]
@@ -27,7 +29,7 @@ flowchart TD
     O --> UI[Streamlit preview / Markdown download]
 ```
 
-Chroma stores chunk text, vectors, and source metadata. It does not generate answers. LangChain's OllamaEmbeddings converts source text/questions into embeddings; ChatPromptTemplate and ChatOllama structured-output chains provide generation. LangChain Chroma performs vector search. BM25 complements vector search for exact identifiers and terminology. Report sections use independent retrieval queries rather than sharing only five chunks for a whole report.
+Chroma stores chunk text, vectors, and source metadata. It does not generate answers. LangChain's embedding interface supports local Ollama and hosted CPU sentence transformers; ChatPromptTemplate with ChatOllama or ChatGroq provides structured generation. Embedding-based semantic segmentation also calls the configured embedder before final-chunk indexing. Collection identities isolate all three chunkers and their parameters. LangChain Chroma performs vector search. BM25 complements vector search for exact identifiers and terminology. Report sections use independent retrieval queries rather than sharing only five chunks for a whole report.
 
 Direct mail uses 60 days from mail/drop date; display uses 30 days from exposure. Historical comparisons use retrieved channel outcome tables and require compatible product/channel/measurement rules, an earlier reporting period, and mature attribution windows. The UI and report show peer-level evidence, medians, ranks, and direction-aware performance percentiles.
 
