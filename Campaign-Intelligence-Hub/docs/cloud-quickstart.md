@@ -2,7 +2,7 @@
 
 Recommended demonstration setup: **Streamlit Community Cloud + Groq free-tier generation + server-side CPU embeddings and Chroma**. Visitors only need a browser. They do not install Python/Ollama, download models themselves, build indexes, or supply API keys. The hosted version runs independently of the owner's laptop.
 
-The cloud profile is implemented. **A public deployment and a live Groq call have not yet been verified:** an owner account/key must be configured first. Do not present the local app URL or an HTML example as a hosted interactive application.
+Deployment created on 2026-10-18: [Campaign Intelligence Hub](https://9swrtwtm4lvrbw2zrh2pyg.streamlit.app/). The hosted workspace started successfully with automatic CPU embeddings/Chroma initialization, campaign KPI totals, the geographic map, attribution rules, and historical comparisons visible. **Hosted report generation, a live Groq answer, and access from a separate visitor session still require acceptance verification.**
 
 Local verification on 2026-10-18 built both indexes with the CPU model and generated the default campaign's HTML report with 10 SVG charts, without Ollama or an API key. Embeddings have 384 dimensions. Long chunks are split using the embedding model's own token budget, then pooled and normalized, so the encoder does not silently discard their tails. These checks do not establish cloud memory usage, hosted availability, or live Groq answer quality.
 
