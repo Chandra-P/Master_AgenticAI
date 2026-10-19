@@ -20,7 +20,7 @@ See the complete [implementation status report](docs/implementation-status.md): 
 
 See the [three-method chunking comparison](docs/chunking-comparison.md) and [deliverable audit](docs/deliverable-audit.md) for the distinction between structural and embedding-based boundaries, experiment rules, and remaining requirements. The earlier heading-based `semantic` mode is now `section`; `semantic` now means actual embedding-based topic segmentation. Rebuild all indexes after updating.
 
-**[Open the live demo](https://9swrtwtm4lvrbw2zrh2pyg.streamlit.app/)** with no installation or visitor API key. Public access, cited Groq answers, and hosted chart-led report generation were checked on 2026-10-18. The [cloud quickstart](docs/cloud-quickstart.md) documents the deployment and verification limits. Hosting uses Streamlit Community Cloud, server-side CPU embeddings, automatic Chroma indexes and Groq generation; free-tier sleeping and API quotas apply. Local Ollama remains the default for local setup.
+**[Open the live demo](https://campaign-intelligence.streamlit.app/)** with no installation or visitor API key. Public access, cited Groq answers, and hosted chart-led report generation were checked on 2026-10-18. The [cloud quickstart](docs/cloud-quickstart.md) documents the deployment and verification limits. Hosting uses Streamlit Community Cloud, server-side CPU embeddings, automatic Chroma indexes and Groq generation; free-tier sleeping and API quotas apply. Local Ollama remains the default for local setup.
 
 ## Channels, attribution, and historical standing
 

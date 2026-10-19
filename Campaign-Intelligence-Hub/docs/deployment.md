@@ -26,7 +26,7 @@ Configure `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` be
 
 ## Streamlit Community Cloud
 
-The [live CPU/Groq demo](https://9swrtwtm4lvrbw2zrh2pyg.streamlit.app/) is deployed. Community Cloud runs on a remote host, so its `localhost:11434` cannot reach Ollama on your laptop. The hosted profile prepares all three compatible chunking indexes automatically and does not require visitor setup.
+The [live CPU/Groq demo](https://campaign-intelligence.streamlit.app/) is deployed. Community Cloud runs on a remote host, so its `localhost:11434` cannot reach Ollama on your laptop. The hosted profile prepares all three compatible chunking indexes automatically and does not require visitor setup.
 
 1. Push the project to the intended GitHub branch. Keep the synthetic corpus and manifest in the repository; do not commit local models, caches, indexes or secrets.
 2. In Community Cloud, create an app and select the repository, branch and `Campaign-Intelligence-Hub/app.py` as entry point. Use a Python version compatible with `pyproject.toml`.
