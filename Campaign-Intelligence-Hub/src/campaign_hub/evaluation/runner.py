@@ -16,6 +16,16 @@ def completeness(answer,facts):
     return sum(str(f).lower() in answer.lower() for f in facts)/len(facts) if facts else None
 
 
+def experiment_identity(service,options,case,use_llm,judge):
+    from campaign_hub.embeddings.providers import create_embedder
+    from campaign_hub.vectordb.chroma_store import default_chunking_config
+    return {'options':options.model_dump(),'question':case['id'],'corpus':service.corpus_hash,
+        'embedding':service.settings.embedding_model,'generation':service.settings.generation_model,
+        'embedding_provider':service.settings.embedding_provider,'generation_provider':service.settings.generation_provider,
+        'embedding_config':create_embedder(service.settings).identity,'chunking_config':default_chunking_config(),
+        'use_llm':use_llm,'judge':judge,'runner_version':3}
+
+
 def run_experiments(service,output,smoke=False,use_llm=True,judge=False):
     output=Path(output)
     output.mkdir(parents=True,exist_ok=True)
@@ -26,8 +36,7 @@ def run_experiments(service,output,smoke=False,use_llm=True,judge=False):
     rows=[]
     for options in configurations():
         for case in cases:
-            identity={'options':options.model_dump(),'question':case['id'],'corpus':service.corpus_hash,
-                      'embedding':service.settings.embedding_model,'generation':service.settings.generation_model,'use_llm':use_llm,'judge':judge,'runner_version':2}
+            identity=experiment_identity(service,options,case,use_llm,judge)
             key=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()
             path=output/(key+'.json')
             if path.exists():
@@ -71,8 +80,8 @@ def run_experiments(service,output,smoke=False,use_llm=True,judge=False):
                 row['citation_metric_note']='Gold source/section overlap; not entailment accuracy.'
                 if judge and claims:
                     from campaign_hub.evaluation.judge import judge_claims
-                    from campaign_hub.generation.providers import OllamaGenerator
-                    row.update(judge_claims(claims,evidence,OllamaGenerator(service.settings)))
+                    from campaign_hub.generation.providers import create_generator
+                    row.update(judge_claims(claims,evidence,create_generator(service.settings)))
                     row['judge_model']=service.settings.generation_model
                 row['answer_completeness']=completeness(answer,case['expected_facts'])
                 row['abstention_accuracy']=float(answer==FALLBACK) if case['kind']=='unsupported' and use_llm else None

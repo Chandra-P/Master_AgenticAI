@@ -7,14 +7,18 @@ from langchain_chroma import Chroma
 from campaign_hub.models import Chunk, SearchHit
 
 
+def default_chunking_config():
+    return {'tokenizer':'cl100k_base','tokenizer_version':version('tiktoken'),
+            'window':500,'overlap':50,'pipeline_version':1}
+
+
 class ChromaStore:
     def __init__(self, root: Path, strategy: str, embedder, chunking_config=None):
         self.root = Path(root)
         self.root.mkdir(parents=True,exist_ok=True)
         self.embedder = embedder
         self.strategy = strategy
-        self.chunking_config=chunking_config or {'tokenizer':'cl100k_base','tokenizer_version':version('tiktoken'),
-                                               'window':500,'overlap':50,'pipeline_version':1}
+        self.chunking_config=chunking_config or default_chunking_config()
         identity = hashlib.sha256(json.dumps(embedder.identity,sort_keys=True).encode()).hexdigest()[:12]
         self.name = f'campaign-{strategy}-{identity}'
         self.client = chromadb.PersistentClient(path=str(root))

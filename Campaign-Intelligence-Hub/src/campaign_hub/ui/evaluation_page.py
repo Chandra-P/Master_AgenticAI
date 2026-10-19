@@ -21,6 +21,24 @@ def show(service,options):
     if any(r.get('identity',{}).get('corpus')!=service.corpus_hash for r in rows):
         st.warning('These evaluation results belong to an earlier corpus. Run a fresh evaluation before comparing current performance.')
         return
+    if any(r.get('identity',{}).get('embedding_provider','ollama')!=service.settings.embedding_provider
+        or r.get('identity',{}).get('embedding')!=service.settings.embedding_model for r in rows):
+        st.warning('These measurements use a different embedding provider/model. Run a fresh evaluation for this deployment profile.')
+        return
+    from campaign_hub.embeddings.providers import create_embedder
+    from campaign_hub.vectordb.chroma_store import default_chunking_config
+    embedding_config=create_embedder(service.settings).identity
+    if any(r.get('identity',{}).get('embedding_config',embedding_config if service.settings.embedding_provider=='ollama' else None)!=embedding_config for r in rows):
+        st.warning('These measurements use a different embedding configuration. Run a fresh evaluation for this deployment profile.')
+        return
+    if any(r.get('identity',{}).get('chunking_config')!=default_chunking_config() for r in rows):
+        st.warning('These measurements lack the current chunking configuration. Run a fresh evaluation before comparing performance.')
+        return
+    generated=[r.get('identity',{}) for r in rows if r.get('identity',{}).get('use_llm') or r.get('identity',{}).get('judge')]
+    if any(i.get('generation_provider','ollama')!=service.settings.generation_provider
+        or i.get('generation')!=service.settings.generation_model for i in generated):
+        st.warning('These measurements use a different generation provider/model. Run a fresh evaluation for this deployment profile.')
+        return
     df=pd.DataFrame(rows)
     st.dataframe(df.drop(columns=['answer','identity','judgments'],errors='ignore'),alt='Actual evaluation results by configuration')
     good=df[df['error'].isna()] if 'error' in df else df

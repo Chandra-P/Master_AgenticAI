@@ -18,6 +18,8 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 
 See the complete [implementation status report](docs/implementation-status.md): **94 of 102 checklist items implemented (92.2%)**, with eight explicit future-work items and production release boundaries. See the [deployment guide](docs/deployment.md) for local/server/Community Cloud instructions.
 
+**Share without visitor setup:** the [cloud quickstart](docs/cloud-quickstart.md) configures Streamlit Community Cloud, server-side CPU embeddings, automatic Chroma indexes and Groq generation. Visitors use one browser link; the owner configures the hosting account and API key once. The deployment profile is implemented, but a public URL/live Groq call still needs owner account configuration and cloud verification. Local Ollama remains the default.
+
 ## Channels, attribution, and historical standing
 
 Only **direct mail** and **display** are included:

@@ -6,14 +6,21 @@ from campaign_hub.models import RetrievalOptions
 
 
 @st.cache_resource(max_entries=4)
-def _cached_service(model,manifest_hash):
+def _cached_service(model,manifest_hash,provider_identity):
     from campaign_hub.reporting.service import CampaignService
-    return CampaignService(replace(Settings(),generation_model=model))
+    service=CampaignService(replace(Settings(),generation_model=model))
+    if service.settings.auto_index:
+        from campaign_hub.hosting.bootstrap import prepare_indexes
+        with st.spinner('Preparing the hosted knowledge base. The first startup can take a few minutes…'):
+            prepare_indexes(service)
+    return service
 
 
 def service_for(model):
-    manifest_hash=hashlib.sha256((Settings().data/'manifest.json').read_bytes()).hexdigest()
-    return _cached_service(model,manifest_hash)
+    settings=Settings()
+    manifest_hash=hashlib.sha256((settings.data/'manifest.json').read_bytes()).hexdigest()
+    identity=(settings.embedding_provider,settings.embedding_model,settings.generation_provider,settings.auto_index)
+    return _cached_service(model,manifest_hash,identity)
 
 
 def controls():
@@ -42,6 +49,9 @@ def source_viewer(service,evidence):
 
 
 def build_indexes(service):
+    if service.settings.auto_index:
+        st.caption('Hosted knowledge-base indexes are prepared automatically; visitors do not need setup.')
+        return
     with st.expander('Knowledge base setup'):
         st.caption('Build once after generating or changing the corpus or embedding model.')
         if st.button('Build both Chroma indexes',icon=':material/database:'):

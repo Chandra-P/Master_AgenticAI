@@ -1,5 +1,7 @@
 # Deployment guide
 
+For a browser-only full interactive demo, use the [Streamlit Community Cloud quickstart](cloud-quickstart.md). The new hosted profile uses Groq for questions, CPU embeddings and automatic Chroma setup. It removes the local-Ollama dependency for hosted visitors. Owner sign-in/secrets configuration and live cloud acceptance checks are still required before sharing a public URL.
+
 ## Local or managed server
 
 The complete application runs locally with free Ollama APIs. Python 3.12+, sufficient RAM for the selected models, and disk for models/indexes are required.
@@ -30,7 +32,7 @@ The guide is implemented; a live cloud deployment has **not** been performed. Co
 2. In Community Cloud, create an app and select the repository, branch and `Campaign-Intelligence-Hub/app.py` as entry point. Use a Python version compatible with `pyproject.toml`.
 3. Install dependencies from `Campaign-Intelligence-Hub/requirements.txt`. The app entry point adds its own `src` directory to the import path, so an editable package install is not required for the hosted UI. Confirm dependency-file selection in the cloud build logs.
 4. Use the matching project theme. Confirm corpus validation, client/campaign selection and the map table first; those do not need Ollama. The HTML report workflow needs a reachable embedding service and built index before generation; a downloaded report can be viewed offline.
-5. Full RAG requires a remotely reachable, protected Ollama endpoint, adequate resources and an index lifecycle. Do not expose an unauthenticated local Ollama service publicly. Provisioning a protected endpoint, cloud index persistence, cold-start/resource testing and full cloud RAG verification are future work. No free hosted model endpoint is promised.
+5. Select the new hosted profile from the quickstart to run embeddings locally on the cloud CPU and questions through an owner-configured Groq endpoint. Keeping the original Ollama profile instead requires a protected remotely reachable Ollama service; Community Cloud cannot use the owner's laptop localhost. Cloud resource/cold-start/persistence and full live acceptance checks remain unverified. Free-tier model access is rate-limited, not an unlimited service promise.
 6. Review cloud logs and run the same functional checks after deployment. Never treat missing model/judge results as successful evaluation.
 
 Platform references (checked 2026-10-17): [deployment setup](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy), [dependency management](https://docs.streamlit.io/deploy/concepts/dependencies), and [secrets configuration](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management). The localhost inference constraint above follows from the app's configured endpoint and the remote-host deployment model.
