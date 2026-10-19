@@ -6,6 +6,13 @@ import streamlit as st
 def results_path(settings):
     latest=settings.data/'runs/latest/results.json'
     bundled=settings.root/'docs/evaluation/three-chunking-results.json'
+    if latest.exists() and bundled.exists():
+        try:
+            rows=json.loads(latest.read_text(encoding='utf-8'))
+            if any(r.get('identity',{}).get('runner_version')!=6 for r in rows):
+                return bundled
+        except (ValueError,TypeError,AttributeError):
+            return bundled
     return latest if latest.exists() or not bundled.exists() else bundled
 
 
@@ -30,6 +37,8 @@ def show(service,options):
         return
     if path.parent.name=='evaluation':
         st.caption('Bundled development-machine CPU measurements; these are not hosted latency or generated-answer faithfulness benchmarks.')
+        if (service.settings.data/'runs/latest/results.json').exists():
+            st.caption('An older or unreadable saved run is preserved; the bundled comparison uses the current citation-scoring version.')
     if any(r.get('identity',{}).get('corpus')!=service.corpus_hash for r in rows):
         st.warning('These evaluation results belong to an earlier corpus. Run a fresh evaluation before comparing current performance.')
         return

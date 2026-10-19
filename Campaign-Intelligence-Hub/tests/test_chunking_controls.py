@@ -20,3 +20,17 @@ def test_evaluation_can_show_bundled_measurements_without_overwriting_local_runs
     latest.parent.mkdir(parents=True)
     latest.write_text('[]')
     assert results_path(settings)==latest
+
+
+def test_bundled_measurements_remain_visible_when_saved_run_uses_old_scoring(tmp_path):
+    from campaign_hub.config import Settings
+    from campaign_hub.ui.evaluation_page import results_path
+    settings=Settings(root=tmp_path)
+    bundled=tmp_path/'docs/evaluation/three-chunking-results.json'
+    bundled.parent.mkdir(parents=True);bundled.write_text('[]')
+    latest=settings.data/'runs/latest/results.json'
+    latest.parent.mkdir(parents=True)
+    latest.write_text('[{"identity":{"runner_version":3}}]')
+    assert results_path(settings)==bundled
+    latest.write_text('[{"identity":{"runner_version":6}}]')
+    assert results_path(settings)==latest

@@ -2,7 +2,7 @@
 
 ## Current three-method verification: 2026-10-18
 
-- **91 automated tests passed** after semantic chunking, configuration isolation, controls, source-span and citation regression changes.
+- **92 automated tests passed** after semantic chunking, configuration isolation, controls, source-span, citation and hosted stale-result fallback regression changes.
 - Built real persistent CPU Chroma indexes with LangChain embeddings (`sentence-transformers/all-MiniLM-L6-v2`, 384 dimensions): **130 fixed-size, 490 section-based, 445 embedding-based semantic chunks** from 110 validated documents.
 - Each method generated the default campaign's validated HTML report with **10 charts and 9 source documents**. Fixed retrieval used 12 chunks; section and semantic used 38 each. These are functional checks, not a guarantee about all possible real-data inputs.
 - Ran **12 configurations × 27 held-out cases = 324 rows**, zero execution errors, using actual dense/hybrid search and a local cross-encoder. Three calibration cases were excluded. Questions used retrieved text; analytical report cases used source-backed extractive claims. No generation API or entailment judge was used.
@@ -24,7 +24,7 @@
 
 Analytical report statuses: **36 complete / 24 partial**. Partial reports disclose missing compatible historical cohorts rather than inventing a comparison.
 
-Raw artifacts: [324 measured rows](evaluation/three-chunking-results.json), [configuration means](evaluation/three-chunking-comparison.csv). These are bundled in the dashboard for the matching CPU profile. Existing local `data/runs/latest` takes precedence and must match the corpus, embedding, chunker and citation-scoring version. Raw identities record the exact configurations; model-generated answer quality is not measured here.
+Raw artifacts: [324 measured rows](evaluation/three-chunking-results.json), [configuration means](evaluation/three-chunking-comparison.csv). These are bundled in the dashboard for the matching CPU profile. Existing local `data/runs/latest` takes precedence when its citation-scoring version is current and must match the corpus, embedding and chunker. Older-scoring or unreadable saved runs are preserved while the bundled comparison is shown. Raw identities record the exact configurations; model-generated answer quality is not measured here.
 
 Section citation overlap now resolves exact claim spans in multi-section chunks. Unknown or ambiguous sections make that case's section score unavailable; document citation overlap and section-resolution coverage are separate metrics. Whole-chunk exports list real sections and never invent `#document`. None of these overlap metrics establishes entailment. Faithfulness is **unmeasured (null)**. Source-derived synthetic gold, simple fact matching, small cohorts and uncontrolled development-machine cold starts limit interpretation. These latency values are not hosted benchmarks, and this is not a controlled embedding-model comparison. See the [deliverable audit](deliverable-audit.md) for remaining requirements.
 

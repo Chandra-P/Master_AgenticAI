@@ -25,7 +25,7 @@ Semantic boundaries must depend on embeddings rather than headings. Every return
 
 ## Verification ledger
 
-- Full regression suite: 91 passed. Actual CPU indexes: fixed 130, section 490, semantic 445 chunks; each generated a validated ten-chart default-campaign report.
+- Full regression suite: 92 passed, including the hosted stale-experiment fallback regression. Actual CPU indexes: fixed 130, section 490, semantic 445 chunks; each generated a validated ten-chart default-campaign report.
 - Final runner-version-6 held-out experiment: 324 rows, zero execution errors; 36 complete and 24 partial analytical reports. Faithfulness was not measured. Raw rows and configuration means are archived under `Campaign-Intelligence-Hub/docs/evaluation/three-chunking-*`.
 - Read-only review caught multi-section citation and leading partial-section attribution issues. Regression tests reproduced both; conservative span resolution and versioned score invalidation fixed them. Follow-up review reported no remaining Critical/Important finding in that scope.
 - Implementation pushed as `426b542`. Incognito hosted verification selected Embedding-based semantic and generated the validated report, displaying all ten charts, findings, citations and HTML download.
