@@ -2,11 +2,11 @@
 
 Recommended demonstration setup: **Streamlit Community Cloud + Groq free-tier generation + server-side CPU embeddings and Chroma**. Visitors only need a browser. They do not install Python/Ollama, download models themselves, build indexes, or supply API keys. The hosted version runs independently of the owner's laptop.
 
-Deployment created on 2026-10-18: [Campaign Intelligence Hub](https://9swrtwtm4lvrbw2zrh2pyg.streamlit.app/). The hosted workspace started successfully with automatic CPU embeddings/Chroma initialization, campaign KPI totals, the geographic map, attribution rules, and historical comparisons visible. **Hosted report generation, a live Groq answer, and access from a separate visitor session still require acceptance verification.**
+Live demo: [Campaign Intelligence Hub](https://9swrtwtm4lvrbw2zrh2pyg.streamlit.app/). Hosted acceptance checks on 2026-10-18 verified automatic CPU embeddings/Chroma startup, campaign KPI totals, the geographic map, attribution rules, and historical comparisons. Report generation passed source reconciliation and narrative checks, offered the HTML download, and rendered comparison charts with insights and source citations. A separate incognito browser session opened the app without owner login or visitor API-key setup and received cited Groq answers for the campaign objectives and the USD 540,000 opening-balance goal.
 
 Local verification on 2026-10-18 built both indexes with the CPU model and generated the default campaign's HTML report with 10 SVG charts, without Ollama or an API key. Embeddings have 384 dimensions. Long chunks are split using the embedding model's own token budget, then pooled and normalized, so the encoder does not silently discard their tails. These checks do not establish cloud memory usage, hosted availability, or live Groq answer quality.
 
-Validation: 59 automated tests passed. A Streamlit AppTest using the hosted configuration confirmed startup, automatic indexes, owner-controlled model selection, and a visible configuration error when the owner key is absent. The live CPU index/report smoke check completed in 61.52 seconds on the development machine; this is not a hosting latency guarantee.
+Validation: 71 automated tests passed after hosted acceptance fixes, including cached-module compatibility, source-code cache invalidation, credential-safe model errors, verbatim question grounding, and document scoping for generic objectives versus metric goals and achievement questions. A Streamlit AppTest using the hosted configuration confirmed startup, automatic indexes, owner-controlled model selection, and a visible configuration error when the owner key is absent. The local CPU index/report smoke check completed in 61.52 seconds on the development machine; this is not a hosting latency guarantee.
 
 ## One-time owner setup
 
@@ -36,7 +36,7 @@ The root-level secret values are loaded only into server configuration. Generati
 - Switch fixed/semantic and dense/hybrid retrieval; inspect retrieved chunks. Try reranking and check resource usage.
 - Confirm that no visitor-facing setup, model-download or API-key entry is required.
 
-If the cloud host exceeds memory/CPU limits, start with reranking off and inspect its resource logs. Actual Community Cloud memory, cold-start behavior, concurrent users, live Groq generation and reboot persistence still need verification on the deployed service; local tests cannot establish those.
+If the cloud host exceeds memory/CPU limits, start with reranking off and inspect its resource logs. The live checks above cover a small functional sample. Sustained Community Cloud memory usage, concurrent-user capacity, repeated cold starts, broad model-answer quality, and persistence across host resets remain unmeasured.
 
 ## What changes between local and hosted modes?
 

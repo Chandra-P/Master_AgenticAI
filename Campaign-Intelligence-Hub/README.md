@@ -18,7 +18,7 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 
 See the complete [implementation status report](docs/implementation-status.md): **94 of 102 checklist items implemented (92.2%)**, with eight explicit future-work items and production release boundaries. See the [deployment guide](docs/deployment.md) for local/server/Community Cloud instructions.
 
-**Share without visitor setup:** the [cloud quickstart](docs/cloud-quickstart.md) configures Streamlit Community Cloud, server-side CPU embeddings, automatic Chroma indexes and Groq generation. Visitors use one browser link; the owner configures the hosting account and API key once. The deployment profile is implemented, but a public URL/live Groq call still needs owner account configuration and cloud verification. Local Ollama remains the default.
+**[Open the live demo](https://9swrtwtm4lvrbw2zrh2pyg.streamlit.app/)** with no installation or visitor API key. Public access, cited Groq answers, and hosted chart-led report generation were checked on 2026-10-18. The [cloud quickstart](docs/cloud-quickstart.md) documents the deployment and verification limits. Hosting uses Streamlit Community Cloud, server-side CPU embeddings, automatic Chroma indexes and Groq generation; free-tier sleeping and API quotas apply. Local Ollama remains the default for local setup.
 
 ## Channels, attribution, and historical standing
 
