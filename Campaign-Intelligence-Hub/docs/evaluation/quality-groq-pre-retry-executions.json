@@ -1,0 +1,384 @@
+[
+  {
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "focus_context": true,
+    "case_id": "q04",
+    "case_kind": "question",
+    "identity": {
+      "framework": "ragas",
+      "version": "0.3.9",
+      "assessment_version": 1,
+      "judge_provider": "groq",
+      "judge_model": "openai/gpt-oss-120b",
+      "judge_context_tokens": null,
+      "judge_output_tokens": 2048,
+      "judge_json_mode": true,
+      "metric_timeout_seconds": 120,
+      "metrics": [
+        "ragas_faithfulness",
+        "ragas_context_precision",
+        "ragas_context_recall",
+        "ragas_factual_correctness"
+      ],
+      "quality_assessment": true,
+      "precision_prompt_version": 2,
+      "precision_output_tokens": 256,
+      "precision_prompt_sha256": "3fed3e505ccb5f938543a8909a1f9a5f2fbe0a0591546a59a295a71aef9d13ef",
+      "judge_calibration": {
+        "version": 1,
+        "passed": true,
+        "controls": [
+          {
+            "context": "Acquire 180 verified product activations during 2026-Q2.",
+            "expected": 1,
+            "score": 0.9999999999,
+            "passed": true
+          },
+          {
+            "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          },
+          {
+            "context": "Approved budget: USD 24000.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          },
+          {
+            "context": "Digitally active local households; existing and prospective members.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          }
+        ]
+      },
+      "corpus": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
+      "options": {
+        "chunking": "section",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5,
+        "focus_context": true
+      },
+      "embedding_config": {
+        "provider": "sentence-transformers",
+        "model": "sentence-transformers/all-MiniLM-L6-v2",
+        "normalization": "model-token-windows-weighted-mean-l2-v2"
+      },
+      "chunking_config": {
+        "tokenizer": "cl100k_base",
+        "tokenizer_version": "0.14.0",
+        "window": 500,
+        "overlap": 50,
+        "pipeline_version": 2,
+        "strategy": "section",
+        "algorithm": "markdown_sections"
+      },
+      "generation_provider": "groq",
+      "generation_model": "qwen/qwen3.8-27b",
+      "case_id": "q04",
+      "reference_hash": "54f5a4d1196842ef9900cfa27c24f2ed91e566a8b074775c17ef05cd91bf1247"
+    },
+    "ragas_faithfulness": 0.0,
+    "ragas_context_precision": 0.9999999999,
+    "ragas_context_recall": 1.0,
+    "metric_errors": {},
+    "error": null,
+    "created_at": "2026-10-19T05:19:36.322203+00:00",
+    "judge_calibration_passed": true,
+    "same_generation_and_judge_model": false,
+    "sample": {
+      "user_input": "What were the objectives of campaign FL-CMP-004?",
+      "response": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions. [FL-CMP-004-brief:section:objectives:0:54f5a4d1]",
+      "retrieved_contexts": [
+        "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+      ],
+      "reference": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+    },
+    "chunk_ids": [
+      "FL-CMP-004-brief:section:objectives:0:54f5a4d1"
+    ],
+    "document_ids": [
+      "FL-CMP-004-brief"
+    ],
+    "abstained": false,
+    "answer_validation": {
+      "accepted_claims": 1,
+      "draft_claims": 1
+    },
+    "generation_seconds": 1.1482377000065753,
+    "ragas_factual_correctness": 1.0,
+    "passage_verdicts": [
+      {
+        "context": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions.",
+        "verdict": 1,
+        "reason": "The passage directly states the campaign objective of acquiring 249 verified product activations in 2026-Q2."
+      }
+    ],
+    "passage_relevance_precision": 1.0,
+    "latency_seconds": 11.690693399999873
+  },
+  {
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "focus_context": true,
+    "case_id": "q04",
+    "case_kind": "question",
+    "identity": {
+      "framework": "ragas",
+      "version": "0.3.9",
+      "assessment_version": 1,
+      "judge_provider": "groq",
+      "judge_model": "openai/gpt-oss-120b",
+      "judge_context_tokens": null,
+      "judge_output_tokens": 2048,
+      "judge_json_mode": true,
+      "metric_timeout_seconds": 120,
+      "metrics": [
+        "ragas_faithfulness",
+        "ragas_context_precision",
+        "ragas_context_recall",
+        "ragas_factual_correctness"
+      ],
+      "quality_assessment": true,
+      "precision_prompt_version": 2,
+      "precision_output_tokens": 256,
+      "precision_prompt_sha256": "3fed3e505ccb5f938543a8909a1f9a5f2fbe0a0591546a59a295a71aef9d13ef",
+      "judge_calibration": {
+        "version": 1,
+        "passed": true,
+        "controls": [
+          {
+            "context": "Acquire 180 verified product activations during 2026-Q2.",
+            "expected": 1,
+            "score": 0.9999999999,
+            "passed": true
+          },
+          {
+            "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          },
+          {
+            "context": "Approved budget: USD 24000.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          },
+          {
+            "context": "Digitally active local households; existing and prospective members.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          }
+        ]
+      },
+      "corpus": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
+      "options": {
+        "chunking": "section",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5,
+        "focus_context": true
+      },
+      "embedding_config": {
+        "provider": "sentence-transformers",
+        "model": "sentence-transformers/all-MiniLM-L6-v2",
+        "normalization": "model-token-windows-weighted-mean-l2-v2"
+      },
+      "chunking_config": {
+        "tokenizer": "cl100k_base",
+        "tokenizer_version": "0.14.0",
+        "window": 500,
+        "overlap": 50,
+        "pipeline_version": 2,
+        "strategy": "section",
+        "algorithm": "markdown_sections"
+      },
+      "generation_provider": "groq",
+      "generation_model": "qwen/qwen3.8-27b",
+      "case_id": "q04",
+      "reference_hash": "54f5a4d1196842ef9900cfa27c24f2ed91e566a8b074775c17ef05cd91bf1247"
+    },
+    "ragas_faithfulness": 1.0,
+    "ragas_context_precision": 0.9999999999,
+    "ragas_context_recall": 1.0,
+    "metric_errors": {
+      "ragas_factual_correctness": "RateLimitError: judgment failed or returned an invalid score."
+    },
+    "error": null,
+    "created_at": "2026-10-19T05:20:58.231127+00:00",
+    "judge_calibration_passed": true,
+    "same_generation_and_judge_model": false,
+    "sample": {
+      "user_input": "What were the objectives of campaign FL-CMP-004?",
+      "response": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions. [FL-CMP-004-brief:section:objectives:0:54f5a4d1]",
+      "retrieved_contexts": [
+        "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+      ],
+      "reference": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+    },
+    "chunk_ids": [
+      "FL-CMP-004-brief:section:objectives:0:54f5a4d1"
+    ],
+    "document_ids": [
+      "FL-CMP-004-brief"
+    ],
+    "abstained": false,
+    "answer_validation": {
+      "accepted_claims": 1,
+      "draft_claims": 1
+    },
+    "generation_seconds": 1.364295499995933,
+    "ragas_factual_correctness": null,
+    "passage_verdicts": [
+      {
+        "context": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions.",
+        "verdict": 1,
+        "reason": "The passage directly states the campaign objective of acquiring 249 verified product activations in 2026-Q2."
+      }
+    ],
+    "passage_relevance_precision": 1.0,
+    "latency_seconds": 13.441095399990445
+  },
+  {
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "focus_context": true,
+    "case_id": "q05",
+    "case_kind": "question",
+    "identity": {
+      "framework": "ragas",
+      "version": "0.3.9",
+      "assessment_version": 1,
+      "judge_provider": "groq",
+      "judge_model": "openai/gpt-oss-120b",
+      "judge_context_tokens": null,
+      "judge_output_tokens": 2048,
+      "judge_json_mode": true,
+      "metric_timeout_seconds": 120,
+      "metrics": [
+        "ragas_faithfulness",
+        "ragas_context_precision",
+        "ragas_context_recall",
+        "ragas_factual_correctness"
+      ],
+      "quality_assessment": true,
+      "precision_prompt_version": 2,
+      "precision_output_tokens": 256,
+      "precision_prompt_sha256": "3fed3e505ccb5f938543a8909a1f9a5f2fbe0a0591546a59a295a71aef9d13ef",
+      "judge_calibration": {
+        "version": 1,
+        "passed": true,
+        "controls": [
+          {
+            "context": "Acquire 180 verified product activations during 2026-Q2.",
+            "expected": 1,
+            "score": 0.9999999999,
+            "passed": true
+          },
+          {
+            "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          },
+          {
+            "context": "Approved budget: USD 24000.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          },
+          {
+            "context": "Digitally active local households; existing and prospective members.",
+            "expected": 0,
+            "score": 0.0,
+            "passed": true
+          }
+        ]
+      },
+      "corpus": "8afccd09e5d5c9daedc461c59271a460e407aee91718362480d0c8042de754ac",
+      "options": {
+        "chunking": "section",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5,
+        "focus_context": true
+      },
+      "embedding_config": {
+        "provider": "sentence-transformers",
+        "model": "sentence-transformers/all-MiniLM-L6-v2",
+        "normalization": "model-token-windows-weighted-mean-l2-v2"
+      },
+      "chunking_config": {
+        "tokenizer": "cl100k_base",
+        "tokenizer_version": "0.14.0",
+        "window": 500,
+        "overlap": 50,
+        "pipeline_version": 2,
+        "strategy": "section",
+        "algorithm": "markdown_sections"
+      },
+      "generation_provider": "groq",
+      "generation_model": "qwen/qwen3.8-27b",
+      "case_id": "q05",
+      "reference_hash": "d0beb910daaaf10aff6b2aab086bc521bb209dfc82f949baf3eb0771606158cc"
+    },
+    "ragas_faithfulness": 1.0,
+    "ragas_context_precision": 0.9999999999,
+    "ragas_context_recall": 1.0,
+    "metric_errors": {
+      "ragas_factual_correctness": "RateLimitError: judgment failed or returned an invalid score."
+    },
+    "error": null,
+    "created_at": "2026-10-19T05:21:11.675553+00:00",
+    "judge_calibration_passed": true,
+    "same_generation_and_judge_model": false,
+    "sample": {
+      "user_input": "What were the objectives of campaign NY-CMP-005?",
+      "response": "Acquire 272 verified product activations during 2026-Q2 for HELOC Campaigns. [NY-CMP-005-brief:section:objectives:0:d0beb910]",
+      "retrieved_contexts": [
+        "Acquire 272 verified product activations during 2026-Q2 for HELOC Campaigns."
+      ],
+      "reference": "Acquire 272 verified product activations during 2026-Q2 for HELOC Campaigns."
+    },
+    "chunk_ids": [
+      "NY-CMP-005-brief:section:objectives:0:d0beb910"
+    ],
+    "document_ids": [
+      "NY-CMP-005-brief"
+    ],
+    "abstained": false,
+    "answer_validation": {
+      "accepted_claims": 1,
+      "draft_claims": 1
+    },
+    "generation_seconds": 0.7176773999963189,
+    "ragas_factual_correctness": null,
+    "passage_verdicts": [
+      {
+        "context": "Acquire 272 verified product activations during 2026-Q2 for HELOC Campaigns.",
+        "verdict": 1,
+        "reason": "The passage directly states the campaign objective, matching the answer."
+      }
+    ],
+    "passage_relevance_precision": 1.0,
+    "latency_seconds": 36.327772699994966
+  }
+]

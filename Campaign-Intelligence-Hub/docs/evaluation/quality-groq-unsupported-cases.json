@@ -1,0 +1,116 @@
+[
+  {
+    "case_id": "q26",
+    "question": "What was the CEO's private salary?",
+    "generation_model": "qwen/qwen3.8-27b",
+    "options": {
+      "chunking": "section",
+      "retrieval": "hybrid",
+      "reranking": false,
+      "candidate_k": 20,
+      "final_k": 5,
+      "focus_context": true
+    },
+    "error": null,
+    "answer": "I could not find sufficient evidence in the knowledge base.",
+    "abstained": true,
+    "chunk_ids": [
+      "TX-CHK-001-performance_report:section:audience-insights:0:b539c037",
+      "TX-CHK-001-brief:section:budget:0:f7c5794f",
+      "TX-CHK-001-historical_deck:section:executive-summary:0:83e47353",
+      "TX-CHK-001-historical_deck:section:findings:0:d9935e85",
+      "TX-CHK-001-performance_report:section:channel-results:0:1caaa807"
+    ],
+    "seconds": 6.685860500001581
+  },
+  {
+    "case_id": "q27",
+    "question": "What is the campaign's randomized causal lift?",
+    "generation_model": "qwen/qwen3.8-27b",
+    "options": {
+      "chunking": "section",
+      "retrieval": "hybrid",
+      "reranking": false,
+      "candidate_k": 20,
+      "final_k": 5,
+      "focus_context": true
+    },
+    "error": null,
+    "answer": "I could not find sufficient evidence in the knowledge base.",
+    "abstained": true,
+    "chunk_ids": [
+      "TX-CHK-001-performance_report:section:measurement-limitations:0:cb56927d",
+      "TX-CHK-001-performance_report:section:performance-drivers:0:d0715acf",
+      "TX-CHK-001-brief:section:offer:0:f6c41402",
+      "TX-CHK-001-success_plan:section:reporting-window:0:9c64fd75",
+      "TX-CHK-001-historical_deck:section:suggested-next-steps:0:3c145ba3"
+    ],
+    "seconds": 1.4448441000131425
+  },
+  {
+    "case_id": "q28",
+    "question": "What was the channel ROI without channel revenue?",
+    "generation_model": "qwen/qwen3.8-27b",
+    "options": {
+      "chunking": "section",
+      "retrieval": "hybrid",
+      "reranking": false,
+      "candidate_k": 20,
+      "final_k": 5,
+      "focus_context": true
+    },
+    "error": null,
+    "answer": "Financial return is unavailable, so channel ROI cannot be calculated. [TX-CHK-001-performance_report:section:channel-insights:0:c52540c3]",
+    "abstained": false,
+    "chunk_ids": [
+      "TX-CHK-001-performance_report:section:channel-insights:0:c52540c3",
+      "TX-CHK-001-performance_report:section:measurement-limitations:0:cb56927d",
+      "TX-CHK-001-success_plan:section:reporting-window:0:9c64fd75",
+      "TX-CHK-001-performance_report:section:performance-drivers:0:d0715acf",
+      "TX-CHK-001-historical_deck:section:findings:0:d9935e85"
+    ],
+    "seconds": 1.9319150000083027
+  },
+  {
+    "case_id": "q29",
+    "question": "Generate a report for ZZ-UNKNOWN-999",
+    "generation_model": "qwen/qwen3.8-27b",
+    "options": {
+      "chunking": "section",
+      "retrieval": "hybrid",
+      "reranking": false,
+      "candidate_k": 20,
+      "final_k": 5,
+      "focus_context": true
+    },
+    "error": null,
+    "answer": "I could not find sufficient evidence in the knowledge base.",
+    "abstained": true,
+    "chunk_ids": [],
+    "seconds": 0.00011339999036863446
+  },
+  {
+    "case_id": "q30",
+    "question": "What are activation results by exact customer age?",
+    "generation_model": "qwen/qwen3.8-27b",
+    "options": {
+      "chunking": "section",
+      "retrieval": "hybrid",
+      "reranking": false,
+      "candidate_k": 20,
+      "final_k": 5,
+      "focus_context": true
+    },
+    "error": null,
+    "answer": "Existing members supplied 138 activations and prospective members 92; no age-level or income-level outcome breakdown was measured. [TX-CHK-001-performance_report:section:audience-insights:0:b539c037]\n\nDirect mail: 138 activations within 60 days of mail/drop date; display: 92 within 30 days of exposure. [TX-CHK-001-performance_report:section:channel-insights:0:c52540c3]\n\nAcquire 180 verified product activations during 2026-Q2 for Checking Account Acquisition. [TX-CHK-001-brief:section:objectives:0:a4b2c091]",
+    "abstained": false,
+    "chunk_ids": [
+      "TX-CHK-001-performance_report:section:audience-insights:0:b539c037",
+      "TX-CHK-001-success_plan:section:kpi-definitions:0:925b8a7b",
+      "TX-CHK-001-performance_report:section:channel-insights:0:c52540c3",
+      "TX-CHK-001-historical_deck:section:findings:0:d9935e85",
+      "TX-CHK-001-brief:section:objectives:0:a4b2c091"
+    ],
+    "seconds": 2.0347269999911077
+  }
+]

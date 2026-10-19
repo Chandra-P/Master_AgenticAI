@@ -85,3 +85,25 @@ def test_judge_reuses_one_event_loop_for_consecutive_cases():
         assert assessor.assess(sample)['ragas_faithfulness']==.5
         assert loops[0] is loops[1]
     assert loops[0].is_closed()
+
+
+def test_interrupted_run_checkpoints_current_rows_instead_of_stale_results(tmp_path):
+    import json,pytest
+    from campaign_hub.config import Settings
+    from campaign_hub.evaluation.ragas_assessment import run_assessment
+    settings=Settings(root=tmp_path);(settings.data/'evaluation').mkdir(parents=True)
+    cases=[{'id':name,'kind':'unsupported','split':'held_out','question':'Unsupported?',
+            'expected_answer':'Unavailable','campaign_id':'C'} for name in ['u1','u2']]
+    (settings.data/'evaluation/questions.json').write_text(json.dumps(cases))
+    calls=[]
+    def answer(*args):
+        calls.append(1)
+        if len(calls)>1:raise KeyboardInterrupt
+        return {'answer':FALLBACK,'hits':[]}
+    service=SimpleNamespace(settings=settings,corpus_hash='version',answer_question=answer)
+    assessor=SimpleNamespace(identity={'judge_calibration':{'passed':True}})
+    out=tmp_path/'runs';out.mkdir();(out/'results.json').write_text('[{"case_id":"stale"}]')
+    with pytest.raises(KeyboardInterrupt):
+        run_assessment(service,out,[RetrievalOptions()],assessor,limit=2,quality=True)
+    assert [r['case_id'] for r in json.loads((out/'results.json').read_text())]==['u1']
+    assert json.loads((out/'quality-summary.json').read_text())[0]['status']=='incomplete'

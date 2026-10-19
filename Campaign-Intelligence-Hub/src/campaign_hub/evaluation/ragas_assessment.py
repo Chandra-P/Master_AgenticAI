@@ -69,7 +69,7 @@ class RagasAssessor:
             model=model.model_copy(update={'max_tokens':2048,
                 'model_kwargs':{**model.model_kwargs,'response_format':{'type':'json_object'}}})
         wrapper=LangchainLLMWrapper(model,run_config=RunConfig(timeout=180,max_retries=1,max_workers=1))
-        from campaign_hub.evaluation.precision_prompt import create_precision_prompt
+        from campaign_hub.evaluation.precision_prompt import create_precision_prompt,PRECISION_OUTPUT_TOKENS
         self.precision_verdicts=[]
         precision_prompt=create_precision_prompt(model,settings.generation_provider,verdict_sink=self.precision_verdicts)
         self.metrics=dict(zip(METRICS,[Faithfulness(llm=wrapper),
@@ -86,7 +86,7 @@ class RagasAssessor:
             'judge_output_tokens':2048,'judge_json_mode':True,'metric_timeout_seconds':timeout,'metrics':list(self.metrics),
             'judge_provider_max_retries':provider_retries,
             'quality_assessment':quality}
-        self.identity.update(precision_prompt_version=2,precision_output_tokens=256,
+        self.identity.update(precision_prompt_version=3,precision_output_tokens=PRECISION_OUTPUT_TOKENS[settings.generation_provider],
             precision_prompt_sha256=hashlib.sha256(precision_prompt.to_string().encode()).hexdigest())
 
     def assess(self,sample):
@@ -120,6 +120,7 @@ def run_assessment(service,output,options,assessor,limit=1,quality=False):
     expected=[c for c in cases if c['split']=='held_out' and (c['kind']=='question' or quality and c['kind']=='unsupported')]
     cases=expected[:limit]
     output=Path(output);output.mkdir(parents=True,exist_ok=True);rows=[]
+    _write_assessment_outputs(output,rows,options,expected,quality)
     if quality and assessor.identity.get('judge_calibration',{}).get('passed') is False:
         (output/'judge-controls.json').write_text(json.dumps(assessor.identity['judge_calibration'],indent=2),encoding='utf-8')
         print('Judge failed calibration; skipping answer assessments and leaving the quality target incomplete.',flush=True)
@@ -158,7 +159,14 @@ def run_assessment(service,output,options,assessor,limit=1,quality=False):
             key=hashlib.sha256(json.dumps(row,sort_keys=True).encode()).hexdigest()
             (output/(key+'.json')).write_text(json.dumps(row,indent=2,allow_nan=False),encoding='utf-8')
             rows.append(row)
+            _write_assessment_outputs(output,rows,options,expected,quality)
             print(f"Assessment {case['id']} complete; {row['latency_seconds']:.1f}s; error={bool(row['error'])}",flush=True)
+    _write_assessment_outputs(output,rows,options,expected,quality)
+    return rows
+
+
+def _write_assessment_outputs(output,rows,options,expected,quality):
+    """Checkpoint the current run so interruption cannot leave an earlier result displayed."""
     (output/'results.json').write_text(json.dumps(rows,indent=2,allow_nan=False),encoding='utf-8')
     import pandas as pd
     pd.DataFrame([{k:v for k,v in r.items() if not isinstance(v,(dict,list))} for r in rows]).to_csv(output/'results.csv',index=False)
@@ -170,4 +178,3 @@ def run_assessment(service,output,options,assessor,limit=1,quality=False):
             summaries.append({'options':config.model_dump(),**quality_summary(group,
                 [c['id'] for c in expected if c['kind']=='question'],[c['id'] for c in expected if c['kind']=='unsupported'])})
         (output/'quality-summary.json').write_text(json.dumps(summaries,indent=2,allow_nan=False),encoding='utf-8')
-    return rows

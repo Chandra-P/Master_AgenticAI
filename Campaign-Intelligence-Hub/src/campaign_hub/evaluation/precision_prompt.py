@@ -2,6 +2,8 @@
 from typing import Literal
 from pydantic import Field
 
+PRECISION_OUTPUT_TOKENS={'ollama':256,'groq':1024}
+
 
 def create_precision_prompt(model,provider,verdict_sink=None):
     from ragas.metrics._context_precision import ContextPrecisionPrompt,QAC,Verification
@@ -10,7 +12,8 @@ def create_precision_prompt(model,provider,verdict_sink=None):
         reason: str=Field(max_length=160)
         verdict: Literal[0,1]
 
-    limited=model.model_copy(update={'num_predict':256} if provider=='ollama' else {'max_tokens':256})
+    budget=PRECISION_OUTPUT_TOKENS[provider]
+    limited=model.model_copy(update={'num_predict':budget} if provider=='ollama' else {'max_tokens':budget})
     chain=limited.with_structured_output(StrictVerification,
         method='json_schema' if provider=='ollama' else 'json_mode')
 

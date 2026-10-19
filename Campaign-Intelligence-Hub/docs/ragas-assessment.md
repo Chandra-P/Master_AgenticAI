@@ -4,7 +4,7 @@ For passage-fraction precision, reference-based factual correctness and the comp
 
 The optional evaluator uses **actual RAGAS 0.3.9**, through its LangChain model wrapper. It is separate from the document-ID overlap metrics in the retrieval experiment. A RAGAS score is a model judgment, not proof that an answer is correct.
 
-Context precision now uses a compact application prompt and schema-constrained binary verdicts with a 256-token output budget. Every ranked passage is still judged individually, and RAGAS computes the unchanged average-precision formula. The prompt version/hash and output budget are recorded. This customized judge prompt is not the same prompt used by the peer financial-document kits.
+Context precision uses a compact application prompt and schema-constrained binary verdicts. The output allowance is 256 tokens for Ollama and 1024 for Groq; the smaller hosted allowance produced invalid JSON on a richer passage. Every ranked passage is still judged individually, and RAGAS computes the unchanged average-precision formula. The prompt version/hash and output budget are recorded. This customized judge prompt is not the same prompt used by the peer financial-document kits.
 
 | Metric | What is assessed |
 |---|---|

@@ -1,0 +1,90 @@
+{
+  "answer_claims": {
+    "claims": [
+      "Direct mail generated 138 activations within 60 days of the mail/drop date.",
+      "Display generated 92 activations within 30 days of exposure.",
+      "Total attributed spend was USD 20908.",
+      "Channel-specific spend and exposure counts are provided in the Channel Results section.",
+      "Financial return is unavailable, so channel ROI cannot be calculated.",
+      "In 2026-Q2, verified activations were 230, exceeding the target of 180.",
+      "In 2026-Q2, acquisition cost was USD 90.90 per activation, lower than the target of USD 133.33.",
+      "In 2026-Q2, spend was USD 20908, lower than the target of USD 24000.",
+      "In 2026-Q2, opening account balance was USD 598850, higher than the target of USD 540000."
+    ],
+    "verdicts": {
+      "statements": [
+        {
+          "statement": "Direct mail generated 138 activations within 60 days of the mail/drop date.",
+          "reason": "The context provides the number of activations from direct mail (138) but does not specify any time frame.",
+          "verdict": 0
+        },
+        {
+          "statement": "Display generated 92 activations within 30 days of exposure.",
+          "reason": "The context provides the number of activations from display (92) but does not mention any time frame.",
+          "verdict": 0
+        },
+        {
+          "statement": "Total attributed spend was USD 20908.",
+          "reason": "The context contains no information about spend amounts.",
+          "verdict": 0
+        },
+        {
+          "statement": "Channel-specific spend and exposure counts are provided in the Channel Results section.",
+          "reason": "The context does not reference any Channel Results section or spend details.",
+          "verdict": 0
+        },
+        {
+          "statement": "Financial return is unavailable, so channel ROI cannot be calculated.",
+          "reason": "The context does not discuss financial return or ROI calculations.",
+          "verdict": 0
+        },
+        {
+          "statement": "In 2026-Q2, verified activations were 230, exceeding the target of 180.",
+          "reason": "The context states there were 230 activations, but it does not mention verification status or any target values.",
+          "verdict": 0
+        },
+        {
+          "statement": "In 2026-Q2, acquisition cost was USD 90.90 per activation, lower than the target of USD 133.33.",
+          "reason": "No acquisition cost information is present in the context.",
+          "verdict": 0
+        },
+        {
+          "statement": "In 2026-Q2, spend was USD 20908, lower than the target of USD 24000.",
+          "reason": "The context does not provide any spend figures or target comparisons.",
+          "verdict": 0
+        },
+        {
+          "statement": "In 2026-Q2, opening account balance was USD 598850, higher than the target of USD 540000.",
+          "reason": "The context contains no data about account balances or targets.",
+          "verdict": 0
+        }
+      ]
+    }
+  },
+  "reference_claims": {
+    "claims": [
+      "There were 230 activations.",
+      "138 activations were from direct mail.",
+      "92 activations were from display."
+    ],
+    "verdicts": {
+      "statements": [
+        {
+          "statement": "There were 230 activations.",
+          "reason": "The table lists Verified activations actual as 230, indicating there were 230 activations.",
+          "verdict": 1
+        },
+        {
+          "statement": "138 activations were from direct mail.",
+          "reason": "The context explicitly states \"Direct mail: 138 activations within 60 days of mail/drop date\".",
+          "verdict": 1
+        },
+        {
+          "statement": "92 activations were from display.",
+          "reason": "The context explicitly states \"display: 92 within 30 days of exposure\".",
+          "verdict": 1
+        }
+      ]
+    }
+  }
+}

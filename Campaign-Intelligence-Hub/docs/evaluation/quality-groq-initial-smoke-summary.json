@@ -1,0 +1,40 @@
+[
+  {
+    "options": {
+      "chunking": "section",
+      "retrieval": "hybrid",
+      "reranking": false,
+      "candidate_k": 20,
+      "final_k": 5,
+      "focus_context": true
+    },
+    "target": 0.9,
+    "status": "incomplete",
+    "metrics": {
+      "passage_relevance_precision": {
+        "mean": 1.0,
+        "measured": 1,
+        "expected": 17
+      },
+      "ragas_context_recall": {
+        "mean": 1.0,
+        "measured": 1,
+        "expected": 17
+      },
+      "ragas_faithfulness": {
+        "mean": 0.0,
+        "measured": 1,
+        "expected": 17
+      },
+      "ragas_factual_correctness": {
+        "mean": 1.0,
+        "measured": 1,
+        "expected": 17
+      }
+    },
+    "answer_coverage": 0.058823529411764705,
+    "unsupported_abstention_accuracy": 0.0,
+    "judge_calibration_passed": true,
+    "note": "Developmental model assessment on a narrow synthetic set; not independent certification or production accuracy."
+  }
+]
