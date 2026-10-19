@@ -52,13 +52,18 @@ class RagasAssessor:
             model=model.model_copy(update={'max_tokens':2048,
                 'model_kwargs':{**model.model_kwargs,'response_format':{'type':'json_object'}}})
         wrapper=LangchainLLMWrapper(model,run_config=RunConfig(timeout=180,max_retries=1,max_workers=1))
-        self.metrics=dict(zip(METRICS,[Faithfulness(llm=wrapper),LLMContextPrecisionWithReference(llm=wrapper),LLMContextRecall(llm=wrapper)]))
+        from campaign_hub.evaluation.precision_prompt import create_precision_prompt
+        precision_prompt=create_precision_prompt(model,settings.generation_provider)
+        self.metrics=dict(zip(METRICS,[Faithfulness(llm=wrapper),
+            LLMContextPrecisionWithReference(llm=wrapper,context_precision_prompt=precision_prompt),LLMContextRecall(llm=wrapper)]))
         self.sample_factory=SingleTurnSample
         self._runner=asyncio.Runner()
         self.identity={'framework':'ragas','version':version('ragas'),'assessment_version':1,
             'judge_provider':settings.generation_provider,'judge_model':settings.generation_model,
             'judge_context_tokens':8192 if settings.generation_provider=='ollama' else None,
             'judge_output_tokens':2048,'judge_json_mode':True,'metric_timeout_seconds':180,'metrics':list(METRICS)}
+        self.identity.update(precision_prompt_version=2,precision_output_tokens=256,
+            precision_prompt_sha256=hashlib.sha256(precision_prompt.to_string().encode()).hexdigest())
 
     def assess(self,sample):
         return self._runner.run(score_sample(sample,self.metrics,self.sample_factory))

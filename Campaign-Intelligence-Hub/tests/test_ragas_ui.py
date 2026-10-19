@@ -24,6 +24,7 @@ def test_ragas_saved_scores_are_labeled_and_unavailable_scores_are_not_charted(t
         assert 'RAGAS context precision' in headings and 'RAGAS faithfulness' not in headings
         assert any('unavailable' in i.value.lower() for i in app.info)
         assert 'judge' in app.dataframe[0].value['judge_profile'][0]
+        assert 'precision prompt v1' in app.dataframe[0].value['judge_profile'][0]
         assert any('Earlier judge configuration' in c.value for c in app.caption)
         row['identity']['corpus']='old';path.write_text(json.dumps([row]))
         app.run()

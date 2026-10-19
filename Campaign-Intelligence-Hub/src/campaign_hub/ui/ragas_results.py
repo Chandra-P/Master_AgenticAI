@@ -28,7 +28,9 @@ def show_ragas(service):
         for r in rows:
             identity=r['identity']
             records.append({**{k:v for k,v in r.items() if k not in ('identity','sample','chunk_ids','document_ids')},
-                'judge_profile':identity['judge_provider']+' / '+identity['judge_model'],
+                'judge_profile':identity['judge_provider']+' / '+identity['judge_model']
+                    +' / precision prompt v'+str(identity.get('precision_prompt_version',1))
+                    +' / JSON '+str(identity.get('judge_json_mode','unrecorded')),
                 'generation_profile':identity['generation_provider']+' / '+identity['generation_model']})
         df=pd.DataFrame(records)
     except (OSError,ValueError,KeyError,TypeError):

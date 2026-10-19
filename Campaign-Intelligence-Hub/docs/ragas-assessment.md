@@ -2,6 +2,8 @@
 
 The optional evaluator uses **actual RAGAS 0.3.9**, through its LangChain model wrapper. It is separate from the document-ID overlap metrics in the retrieval experiment. A RAGAS score is a model judgment, not proof that an answer is correct.
 
+Context precision now uses a compact application prompt and schema-constrained binary verdicts with a 256-token output budget. Every ranked passage is still judged individually, and RAGAS computes the unchanged average-precision formula. The prompt version/hash and output budget are recorded. This customized judge prompt is not the same prompt used by the peer financial-document kits.
+
 | Metric | What is assessed |
 |---|---|
 | `ragas_faithfulness` | Fraction of answer claims judged supported by the retrieved passages |
@@ -45,7 +47,10 @@ Our source-derived synthetic gold and conservative verbatim answer validation ma
 
 ## Verification on 2026-10-18
 
+The precision fix passed the full **101-test** regression suite, including strict binary verdict validation and real RAGAS ranked-scoring behavior.
+
 - **100 tests passed**, including actual RAGAS calculations from known judge verdicts, exact sample capture, score/error handling, repeated-event-loop use, JSON-mode configuration and dashboard rendering. The installed optional stack passed `pip check`.
 - Two real local Llama 3.2 CPU cases completed before the JSON-mode fix. For q04, context recall was **1.0**, faithfulness was unavailable because the application abstained, and context precision failed parsing. For q05, faithfulness was **0.75**, context recall **1.0**, and context precision timed out. Total per-case times were 197.0 and 424.4 seconds. The [raw smoke artifact](evaluation/ragas-smoke-results.json) preserves all scores, unavailable judgments and the original JSON-mode setting.
-- The current JSON-mode adapter passed configuration/framework tests; a complete live benchmark with this setting remains pending. A two-case smoke run is not a full model-quality benchmark, and saved pre-fix results must not be treated as the current adapter's performance.
+- Precision prompt v2 was then verified on the exact saved q05 answer and all five original ranked passages, with no answer regeneration. Context precision completed at approximately **1.0** in **55.9 seconds** of verification wall time, under a 90-second metric timeout. This row reassesses precision only; faithfulness and recall are deliberately unavailable for that execution. The original failures remain in the artifact. Prompt versions and JSON settings are distinct chart groups.
+- A complete independently judged benchmark remains pending. These small smoke/fix checks are not a full model-quality benchmark; neither the original pre-fix results nor one successful precision result establish the current app's overall accuracy.
 - The generator and judge used the same local model. These results are neither independent validation nor a measurement of the hosted Groq model. The original 324-row retrieval experiment remains separate and has no generated-answer faithfulness scores.

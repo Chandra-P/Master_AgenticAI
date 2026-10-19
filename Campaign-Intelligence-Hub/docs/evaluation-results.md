@@ -2,7 +2,11 @@
 
 ## RAGAS integration verification: 2026-10-18
 
-**100 automated tests passed** with the optional RAGAS stack installed; `pip check` found no broken requirements. Actual RAGAS metric calculations were tested against known positive/negative judge verdicts. Two real CPU smoke cases completed before the JSON-mode correction: q04 abstained (faithfulness unavailable), q05 scored 0.75 faithfulness, and both scored 1.0 context recall. Context precision was unavailable in both cases due to parsing failure/timeout. These are same-model local Llama measurements, not independent validation or hosted Groq results. The current JSON-mode configuration is covered by tests but still needs a complete live benchmark. See [RAGAS assessment details](ragas-assessment.md) and the [unmodified measured scores](evaluation/ragas-smoke-results.json).
+The context-precision failure was subsequently fixed with a compact, strict-schema prompt while retaining RAGAS's metric calculation and all retrieved passages. A **precision-only** reassessment of the identical saved q05 sample completed at approximately **1.0**, in **55.9 seconds** with a 90-second metric budget. Original failures and the new remeasurement are both preserved in the raw artifact; other metrics were not recomputed or copied into the new execution. Prompt versions are separate dashboard groups. This verifies the execution fix on one case, not full answer quality.
+
+After this fix, the complete regression suite passed **101 tests**, including binary verdict validation, all-passage ranked scoring and prompt-version display. Focused read-only review found no remaining Critical/Important issues in the change.
+
+The earlier integration passed **100 automated tests** with the optional RAGAS stack installed; `pip check` found no broken requirements. Actual RAGAS metric calculations were tested against known positive/negative judge verdicts. Two real CPU smoke cases completed before the JSON-mode correction: q04 abstained (faithfulness unavailable), q05 scored 0.75 faithfulness, and both scored 1.0 context recall. Context precision was unavailable in both original cases due to parsing failure/timeout. These are same-model local Llama measurements, not independent validation or hosted Groq results. A complete live benchmark remains pending. See [RAGAS assessment details](ragas-assessment.md) and the [unmodified measured scores](evaluation/ragas-smoke-results.json).
 
 ## Current three-method verification: 2026-10-18
 
