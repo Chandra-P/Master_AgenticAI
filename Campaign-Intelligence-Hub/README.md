@@ -8,6 +8,7 @@ A Week 2 RAG course project for campaign insights analysts. The main output is a
 
 ### Review deliverables
 
+- [Word project document](docs/Campaign_Intelligence_Hub_Project_Document.docx): reference-style solution kit covering architecture, component deep dives, measured results, exact prompts, campaign reporting and implementation boundaries.
 - [Technical Solution Kit](docs/technical_solution_kit.html): architecture, component deep dives, exact runtime prompts, decisions, measured comparisons, setup and explicit implementation boundaries.
 - [Executive Campaign Performance Dashboard](docs/campaign_performance_dashboard.html): interactive Chart.js comparisons, KPI target/variance/status cards, audience composition, attribution timeline, adjacent findings/actions, recommendations, seven-part presentation storyline and source evidence.
 
