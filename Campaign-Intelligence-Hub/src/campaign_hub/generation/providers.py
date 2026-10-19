@@ -4,6 +4,21 @@ import os
 import json
 
 
+def hosted_error_message(error):
+    status=getattr(error,'status_code',None)
+    reasons={401:'The server API key was rejected. The owner must replace it in hosting secrets.',
+        403:'The server key lacks permission for the selected model or project.',
+        404:'The configured model is unavailable to this server account.',
+        429:'The hosted model quota or rate limit was reached. Please retry later.',
+        400:'The hosted model rejected the request or could not produce the required JSON response.'}
+    if status in reasons:
+        return f'Hosted generation failed (HTTP {status}). '+reasons[status]
+    from pydantic import ValidationError
+    if isinstance(error,ValidationError):
+        return 'Hosted generation failed: the model response did not match the required evidence schema. Please retry.'
+    return 'Hosted generation failed. The server owner should check the configured model, API access and free-tier rate limits. Please retry later.'
+
+
 class OllamaGenerator:
     def __init__(self, settings):
         self.settings = settings
@@ -37,7 +52,7 @@ class GroqGenerator:
             return result if isinstance(result,schema) else schema.model_validate(result)
         except Exception as error:
             # Keep request payloads and credentials out of the public UI.
-            raise RuntimeError('Hosted generation failed. The server owner should check the configured model, API access and free-tier rate limits. Please retry later.') from error
+            raise RuntimeError(hosted_error_message(error)) from error
 
 
 def create_generator(settings):
