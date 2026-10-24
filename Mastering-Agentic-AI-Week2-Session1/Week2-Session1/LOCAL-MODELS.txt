@@ -26,9 +26,10 @@ Notebook 1: local models with Pinecone
    remotely and remains subject to your Pinecone plan. After indexing, allow
    time for Pinecone's eventual consistency before querying.
 
-Scope: Notebooks 2 and 3 and company_kb_viewer.py retain their original OpenAI
-setup and PINECONE_INDEX_NAME. They cannot search the local embeddings with an
-OpenAI query model. Run Notebook 1 for this local model workflow.
+Scope: All three notebooks use Ollama and PINECONE_LOCAL_INDEX_NAME with the
+shopeasy-local-rag namespace. Run Notebook 1 first to index the corpus, then
+Notebooks 2 and 3. Notebook 2 uses local JSON-schema classification and requires
+no TypeSafe key. company_kb_viewer.py retains its original OpenAI setup.
 
 Offline verification:
   uv run python test_rag_notebook.py
@@ -42,5 +43,7 @@ Verified alternative model configuration (set in your private .env):
 Cell-by-cell verification:
   uv run python check_notebook.py
   uv run python check_notebook.py --live
+  uv run python check_notebook.py --notebook 2_metadata_filtering.ipynb --live
+  uv run python check_notebook.py --notebook 3_hybrid_rag.ipynb --live
   The first command checks local data preparation. --live also uploads the
   chunks to the configured Pinecone index and runs retrieval and generation.

@@ -16,6 +16,33 @@ def cell(index):
 
 
 class NotebookTests(unittest.TestCase):
+    def test_ticket_schema_rejects_values_absent_from_metadata(self):
+        from typing import Optional, Literal
+        from pydantic import BaseModel, Field, ValidationError
+        notebook = json.loads((ROOT / "2_metadata_filtering.ipynb").read_text(encoding="utf-8"))
+        tree = ast.parse("".join(notebook["cells"][19]["source"]))
+        definition = next(node for node in tree.body if isinstance(node, ast.ClassDef))
+        scope = dict(Optional=Optional, Literal=Literal, BaseModel=BaseModel, Field=Field)
+        exec(compile(ast.Module(body=[definition], type_ignores=[]), "TicketFilter", "exec"), scope)
+        schema = scope["TicketFilter"]
+        for values in ({"product_area": "Mobile App"}, {"product_area": "payments", "customer_tier": "Basic Support"}):
+            with self.subTest(values=values), self.assertRaises(ValidationError):
+                schema(**values)
+        self.assertEqual(schema(product_area="payments", doc_type="bug_report").product_area, "payments")
+
+    def test_all_notebooks_use_local_models_without_external_classifier(self):
+        forbidden = {"ChatOpenAI", "OpenAIEmbeddings", "TypeSafeClassifier"}
+        for path in ROOT.glob("[123]_*.ipynb"):
+            notebook = json.loads(path.read_text(encoding="utf-8"))
+            for number, item in enumerate(notebook["cells"], start=1):
+                if item["cell_type"] != "code":
+                    continue
+                tree = ast.parse("".join(item["source"]))
+                calls = {node.func.id for node in ast.walk(tree)
+                         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
+                with self.subTest(notebook=path.name, cell=number):
+                    self.assertFalse(calls & forbidden, calls & forbidden)
+
     def test_code_compiles(self):
         for index, item in enumerate(NOTEBOOK["cells"]):
             if item["cell_type"] == "code":

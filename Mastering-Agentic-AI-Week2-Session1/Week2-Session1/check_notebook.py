@@ -1,4 +1,4 @@
-"""Run Notebook 1 code cells in order against the configured live services."""
+"""Run notebook code cells in order against the configured live services."""
 import contextlib
 import argparse
 import io
@@ -9,14 +9,15 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--notebook", choices=["1_rag_pipeline.ipynb", "2_metadata_filtering.ipynb", "3_hybrid_rag.ipynb"], default="1_rag_pipeline.ipynb")
     parser.add_argument("--live", action="store_true", help="Also run hosted Pinecone writes and queries and local generation")
     args = parser.parse_args()
     root = Path(__file__).resolve().parent
     os.chdir(root)
-    notebook = json.loads((root / "1_rag_pipeline.ipynb").read_text(encoding="utf-8"))
+    notebook = json.loads((root / args.notebook).read_text(encoding="utf-8"))
     scope = {"__name__": "__main__"}
     for number, cell in enumerate(notebook["cells"], start=1):
-        if number == 19 and not args.live:
+        if cell["cell_type"] == "code" and "Pinecone(api_key=" in "".join(cell["source"]) and not args.live:
             print("Local data cells passed. Use --live to include Pinecone uploads and generation.")
             return
         if cell["cell_type"] != "code":
@@ -25,9 +26,11 @@ def main():
         with contextlib.redirect_stdout(io.StringIO()):
             exec(compile("".join(cell["source"]), f"cell {number}", "exec"), scope)
         print(f"PASS cell {number}", flush=True)
-    if not scope["retrieved_docs"]:
+    retrieved = scope.get("retrieved_docs", scope.get("fused_docs"))
+    if not retrieved:
         raise RuntimeError("Retrieval returned no documents after indexing.")
-    if not scope["response"].content:
+    answer = scope["response"].content if "response" in scope else scope.get("answer")
+    if not answer:
         raise RuntimeError("Generation returned an empty answer.")
     print("All code cells passed; retrieval and generation returned results.")
 
