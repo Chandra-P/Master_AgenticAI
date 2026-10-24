@@ -1,0 +1,14 @@
+{
+  "source": "62604-annual-2024.pdf",
+  "source_url": "https://www.becu.org/-/media/Files/PDF/2024-Annual-Report.pdf?rev=1112add237a04168aff041f30a6d2b2c&sc_lang=en&hash=5A62ABDF7EDAB4DD462E575D914D02C7",
+  "institution": "BOEING EMPLOYEES",
+  "charter": "62604",
+  "report_year": 2024,
+  "pdf_page": 104,
+  "source_sha256": "896fbe526445f86c13e43e4d0d2b3ac4cde7e312a5c69e9e0370ba17f32e1c61",
+  "image": "C:\\Users\\supvi\\Documents\\Codex\\2026-10-18\\to-download-5-300-reports-of\\work\\ocr\\2024-104.png",
+  "text": "Cumulative Adjustment for Accounting Change:                                                                                  $16,310\nFair Value Election for Mortgage Servicing Rights                                                                      ‘\n\nNet Income                                                                                                                            206,540\nChange in Net Unrealized Loss on AFS Debt Securities                                                         100,184\nChange in Unrecognized Pension Amounts                                                                     (34,757)\nChange in Net Unrealized Loss on Cash Flow Hedges                                                            (3,031)\nBalance at December 31, 2024                                                                                                $2,577,969\n",
+  "confidence": 93,
+  "engine": "tesseract.js 7.0.0",
+  "reviewed": false
+}

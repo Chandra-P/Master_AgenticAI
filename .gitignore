@@ -11,3 +11,15 @@ __pycache__/
 .env
 .streamlit/secrets.toml
 .repository-backups/
+
+# Private environment variants (publish only templates)
+.env.*
+!.env.example
+!.env.demo
+!.env.sample
+!.env.template
+
+# Local runtimes, package caches, and dependencies
+.python/
+.uv-cache/
+node_modules/

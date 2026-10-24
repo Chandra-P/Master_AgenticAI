@@ -1,0 +1,14 @@
+{
+  "source": "62604-annual-2024.pdf",
+  "source_url": "https://www.becu.org/-/media/Files/PDF/2024-Annual-Report.pdf?rev=1112add237a04168aff041f30a6d2b2c&sc_lang=en&hash=5A62ABDF7EDAB4DD462E575D914D02C7",
+  "institution": "BOEING EMPLOYEES",
+  "charter": "62604",
+  "report_year": 2024,
+  "pdf_page": 103,
+  "source_sha256": "896fbe526445f86c13e43e4d0d2b3ac4cde7e312a5c69e9e0370ba17f32e1c61",
+  "image": "C:\\Users\\supvi\\Documents\\Codex\\2026-10-18\\to-download-5-300-reports-of\\work\\ocr\\2024-103.png",
+  "text": "LIABILITIES & COOPERATIVE EQUITY\n\nLiabilities\n\nMember Share Accounts                                                                               $25,113,488              $24,791,310\nDividends and Interest Payable                                                                              12,555                        15,573\nFederal Home Loan Bank Advances and Other Debt                                1,329,426              2,486,997\nOther Liabilities                                                                                         319,249                  285,286\nTOTAL LIABILITIES                                                             $26,774,718          $27,579,166\nCooperative Equity\n\nUndivided Earnings                                                                       $3,465,497             $3,242,647\nAccumulated Other Comprehensive Loss                                              (887,528)               (949,924)\nTotal Cooperative Equity                                                                             $2,577,969               $2,292,723\nTOTAL LIABILITIES & COOPERATIVE EQUITY                                          $29,352,687             $29,871,889\nCOOPERATIVE EQUITY (in thousands)\n\nBalance at January 1, 2023                                                                                                                $1,910,923\nNet Income                                                                                                     $211,302\nChange in Net Unrealized Loss on AFS Debt Securities                                                         165,437\nChange in Unrecognized Pension Amounts                                                                       8,434\nChange in Net Unrealized Loss On Cash Flow Hedges                                                           (3.373)\nBalance at December 31, 2023                                                                                          $2,292,723\n",
+  "confidence": 94,
+  "engine": "tesseract.js 7.0.0",
+  "reviewed": false
+}

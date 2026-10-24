@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+.pytest_cache/
+data/chroma/
+site/node_modules/
+site/dist/
+site/.wrangler/
+site/.sites-runtime/
+
+data/supplemental/ocr-work/

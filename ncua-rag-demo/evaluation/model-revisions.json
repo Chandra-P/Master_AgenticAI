@@ -1,0 +1,7 @@
+{
+  "sentence-transformers/all-MiniLM-L6-v2": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "cross-encoder/ms-marco-MiniLM-L-6-v2": "233902d25c440f23af6f7d6e94d2946bac0bee0a",
+  "generation_provider": "Groq",
+  "generation_model": "openai/gpt-oss-20b",
+  "generation_revision": "Provider-managed model ID; no immutable revision exposed by this integration"
+}

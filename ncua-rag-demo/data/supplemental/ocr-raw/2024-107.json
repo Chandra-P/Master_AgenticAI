@@ -1,0 +1,14 @@
+{
+  "source": "62604-annual-2024.pdf",
+  "source_url": "https://www.becu.org/-/media/Files/PDF/2024-Annual-Report.pdf?rev=1112add237a04168aff041f30a6d2b2c&sc_lang=en&hash=5A62ABDF7EDAB4DD462E575D914D02C7",
+  "institution": "BOEING EMPLOYEES",
+  "charter": "62604",
+  "report_year": 2024,
+  "pdf_page": 107,
+  "source_sha256": "896fbe526445f86c13e43e4d0d2b3ac4cde7e312a5c69e9e0370ba17f32e1c61",
+  "image": "C:\\Users\\supvi\\Documents\\Codex\\2026-10-18\\to-download-5-300-reports-of\\work\\ocr\\2024-107.png",
+  "text": "Greenhouse Gas Emissions\nEMISSIONS (tCO2e)\n\nEMISSION CATEGORY                              2024                                2023                        % CHANGE\nOn-Site Energy Generation                     157.98                              11.30                        1,298.09%\nCompany Vehicles                                          78.73                                     92.68                                 -15.05%\nRefrigerant Leakage                                            7.98                                        17.60                                  ~54.66%\nPurchased Energy                           2,625.54                       2,760.38                         -4.88%\nBusiness Travel - Air                               825.94                             765.24                               7.93%\nBusiness Travel - Ground                        454.28                             367.73                             23.53%\nHotel Stays                                              212.65                                211.75                                0.43%\nPurchased Goods & Services                   399.51                                     -              New Starting 2024\nWorker Commute                                           1970.00                                     1417.73                                       38.95%\nTotal Emissions (tCO2e)                         6,732.51                               5,644.42                                  19.29%\n\nTotal Emissions increased YoY partially due to increased business travel since\n\n2020 COVID-19 pandemic and increasing number of BECU employees.\n",
+  "confidence": 93,
+  "engine": "tesseract.js 7.0.0",
+  "reviewed": false
+}

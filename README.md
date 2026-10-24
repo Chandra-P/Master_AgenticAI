@@ -10,15 +10,26 @@ A collection of AI-assisted learning projects, LangChain examples, and local AI 
 | Week 1: LangChain Fundamentals | Notebook covering prompts, chat models, streaming, chains, structured output, tools, and agents. Includes local Ollama examples and commented OpenAI examples. | [Notebook](Mastering-Agentic-AI-Week1/Langchain%20Basics/Langchain_Fundamentals.ipynb) |
 | Terminal Web Chatbot | Local Ollama assistant with web search, source links, conversation memory, and geometry tools. | [terminal_chatbot.py](Mastering-Agentic-AI-Week1/Langchain%20Basics/terminal_chatbot.py) |
 | Campaign Intelligence Hub | Week 2 RAG application using LangChain, local Ollama, ChromaDB, hybrid retrieval, and LangGraph. Generates cited direct mail/display campaign reports and compares performance with compatible historical campaigns. | [Project guide](Campaign-Intelligence-Hub/README.md) |
-| Dhumsharath | React, Vite, and TypeScript Telugu movie dumb-charades game, with teams, timed rounds, hints, and scoreboards. | [Separate repository](https://github.com/Chandra-P/Dhumsharath) |
+| Dhumsharath | React, Vite, and TypeScript Telugu movie dumb-charades game, with teams, timed rounds, hints, and scoreboards. | [Project guide](Dhumsharath/replit.md) |
+| Week 2: RAG Pipelines | Local Ollama notebooks for basic RAG, metadata filtering, and hybrid retrieval with Pinecone. | [Local setup](Mastering-Agentic-AI-Week2-Session1/Week2-Session1/LOCAL-MODELS.txt) |
+| Credit Union Evidence Lab | Financial document RAG demo with public NCUA reports, retrieval evaluation, and a web interface. | [Project guide](ncua-rag-demo/README.md) |
 
-Dhumsharath remains a separate repository; cloning Master_AgenticAI does not include it.
+All six workspace projects are included as ordinary folders. Original upstream repositories remain available; import attribution is retained in the relevant project folders.
 
 ## Repository structure
 
 ```text
 Master_AgenticAI/
 ├── README.md
+├── Dhumsharath/
+│   ├── artifacts/
+│   └── replit.md
+├── ncua-rag-demo/
+│   ├── pipeline/
+│   ├── site/
+│   └── README.md
+├── Mastering-Agentic-AI-Week2-Session1/
+│   └── Week2-Session1/
 ├── Campaign-Intelligence-Hub/
 │   ├── app.py
 │   ├── README.md
@@ -101,8 +112,19 @@ Web search requires internet access. The chatbot prints `Searching the web:` whe
 
 ## Dhumsharath
 
-Source: [Chandra-P/Dhumsharath](https://github.com/Chandra-P/Dhumsharath). The application lives in `artifacts/dhumsharath/`; workspace details are in that repository's `replit.md`.
+Source: [Chandra-P/Dhumsharath](https://github.com/Chandra-P/Dhumsharath). The application is included at `Dhumsharath/artifacts/dhumsharath/`; see the [workspace guide](Dhumsharath/replit.md).
 
-## Branch visibility
+## Clone all projects
 
-The Week 1 folder was added on `kidspark-final`. Select that branch on GitHub to see these additions until they are merged into `main`.
+The consolidated collection is on `main`; ongoing development is also retained on `TheGenAcademy`.
+
+Install [Git LFS](https://git-lfs.com/) before cloning to download the public NCUA annual-report PDFs:
+
+```powershell
+git lfs install
+git clone https://github.com/Chandra-P/Master_AgenticAI.git
+cd Master_AgenticAI
+git lfs pull
+```
+
+API keys and private `.env` files are excluded. Copy each project's environment template and configure credentials locally. Projects retain their own dependencies and run commands; they do not share one Python or Node environment.
