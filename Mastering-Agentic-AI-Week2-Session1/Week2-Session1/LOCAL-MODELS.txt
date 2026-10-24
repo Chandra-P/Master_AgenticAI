@@ -1,0 +1,46 @@
+Notebook 1: local models with Pinecone
+
+1. Install Ollama for Windows: https://ollama.com/download/windows
+   Open Ollama, then open a new terminal and run:
+     ollama pull nomic-embed-text
+     ollama pull qwen3.5:2b
+   Downloads require several GB of disk space. Inference uses your computer.
+
+2. From this Week2-Session1 folder, install dependencies:
+     uv sync
+   Select the resulting .venv Python interpreter as the notebook kernel.
+
+3. In the Pinecone console, create a separate index:
+     Name: shopeasy-local-rag
+     Type: dense / bring your own vectors
+     Dimension: 768
+     Metric: cosine
+   Do not reuse an index containing OpenAI embeddings, even if dimensions match.
+
+4. Copy .env.demo to .env if .env does not exist. Fill in PINECONE_API_KEY.
+   Set PINECONE_LOCAL_INDEX_NAME to your new index name.
+   OPENAI_API_KEY is not needed for Notebook 1.
+
+5. Restart the kernel and run 1_rag_pipeline.ipynb from the top.
+   The embedding and answer models run locally; Pinecone still stores vectors
+   remotely and remains subject to your Pinecone plan. After indexing, allow
+   time for Pinecone's eventual consistency before querying.
+
+Scope: Notebooks 2 and 3 and company_kb_viewer.py retain their original OpenAI
+setup and PINECONE_INDEX_NAME. They cannot search the local embeddings with an
+OpenAI query model. Run Notebook 1 for this local model workflow.
+
+Offline verification:
+  uv run python test_rag_notebook.py
+
+Verified alternative model configuration (set in your private .env):
+  OLLAMA_EMBED_MODEL=embeddinggemma:latest
+  OLLAMA_CHAT_MODEL=llama3.2:3b
+  embeddinggemma produces 768-dimensional vectors. Use a separate index or
+  namespace when switching embedding models, even if dimensions match.
+
+Cell-by-cell verification:
+  uv run python check_notebook.py
+  uv run python check_notebook.py --live
+  The first command checks local data preparation. --live also uploads the
+  chunks to the configured Pinecone index and runs retrieval and generation.
