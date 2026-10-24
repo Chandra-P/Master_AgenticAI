@@ -1,0 +1,7 @@
+-r requirements.txt
+# Tested optional evaluator stack; normal hosted UI does not import RAGAS.
+ragas==0.3.9
+instructor==1.3.2
+langchain-openai==1.1.9
+# 0.4.2 removed a legacy adapter that this RAGAS release imports.
+langchain-community==0.4.1

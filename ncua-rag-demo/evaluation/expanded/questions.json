@@ -1,0 +1,973 @@
+{
+  "cases": [
+    {
+      "id": "Q01",
+      "question": "What were Navy Federal total assets in December 2025?",
+      "filters": {
+        "charter": "5536",
+        "year_2025": true
+      },
+      "relevant": [
+        "5536-summary-2025.html|TOTAL ASSETS"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "5536-summary-2025.html|TOTAL ASSETS",
+          "kind": "row",
+          "source": "5536-summary-2025.html",
+          "row": "TOTAL ASSETS"
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "question": "How did Navy Federal total loans change from 2023 through 2025?",
+      "filters": {
+        "charter": "5536",
+        "year_2025": true
+      },
+      "relevant": [
+        "5536-summary-2025.html|TOTAL LOANS"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "5536-summary-2025.html|TOTAL LOANS",
+          "kind": "row",
+          "source": "5536-summary-2025.html",
+          "row": "TOTAL LOANS"
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "question": "What was Navy Federal delinquent loans divided by assets in 2025?",
+      "filters": {
+        "charter": "5536",
+        "year_2025": true
+      },
+      "relevant": [
+        "5536-historical-2025.html|Delinquent Loans / Assets"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "5536-historical-2025.html|Delinquent Loans / Assets",
+          "kind": "row",
+          "source": "5536-historical-2025.html",
+          "row": "Delinquent Loans / Assets"
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "question": "What was Pentagon total equity in 2025?",
+      "filters": {
+        "charter": "227",
+        "year_2025": true
+      },
+      "relevant": [
+        "227-summary-2025.html|TOTAL EQUITY"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "227-summary-2025.html|TOTAL EQUITY",
+          "kind": "row",
+          "source": "227-summary-2025.html",
+          "row": "TOTAL EQUITY"
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "question": "What was Boeing Employees total shares and deposits in 2025?",
+      "filters": {
+        "charter": "62604",
+        "year_2025": true
+      },
+      "relevant": [
+        "62604-summary-2025.html|TOTAL SHARES & DEPOSITS"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "62604-summary-2025.html|TOTAL SHARES & DEPOSITS",
+          "kind": "row",
+          "source": "62604-summary-2025.html",
+          "row": "TOTAL SHARES & DEPOSITS"
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "question": "How did Alliant total assets change between 2023 and 2025?",
+      "filters": {
+        "charter": "67955",
+        "year_2025": true
+      },
+      "relevant": [
+        "67955-summary-2025.html|TOTAL ASSETS"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "67955-summary-2025.html|TOTAL ASSETS",
+          "kind": "row",
+          "source": "67955-summary-2025.html",
+          "row": "TOTAL ASSETS"
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "question": "What was First Technology total loans in 2025?",
+      "filters": {
+        "charter": "19976",
+        "year_2025": true
+      },
+      "relevant": [
+        "19976-summary-2025.html|TOTAL LOANS"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "19976-summary-2025.html|TOTAL LOANS",
+          "kind": "row",
+          "source": "19976-summary-2025.html",
+          "row": "TOTAL LOANS"
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "question": "What were Spokane Firefighters total assets in 2025?",
+      "filters": {
+        "charter": "68205",
+        "year_2025": true
+      },
+      "relevant": [
+        "68205-summary-2025.html|TOTAL ASSETS"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "68205-summary-2025.html|TOTAL ASSETS",
+          "kind": "row",
+          "source": "68205-summary-2025.html",
+          "row": "TOTAL ASSETS"
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "question": "What were State Employees total investments in 2025?",
+      "filters": {
+        "charter": "66310",
+        "year_2025": true
+      },
+      "relevant": [
+        "66310-summary-2025.html|TOTAL INVESTMENTS"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "66310-summary-2025.html|TOTAL INVESTMENTS",
+          "kind": "row",
+          "source": "66310-summary-2025.html",
+          "row": "TOTAL INVESTMENTS"
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "question": "How did America First total loans change from 2023 to 2025?",
+      "filters": {
+        "charter": "24694",
+        "year_2025": true
+      },
+      "relevant": [
+        "24694-summary-2025.html|TOTAL LOANS"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "24694-summary-2025.html|TOTAL LOANS",
+          "kind": "row",
+          "source": "24694-summary-2025.html",
+          "row": "TOTAL LOANS"
+        }
+      ]
+    },
+    {
+      "id": "Q11",
+      "question": "What was Mountain America delinquent loans divided by assets in 2025?",
+      "filters": {
+        "charter": "24692",
+        "year_2025": true
+      },
+      "relevant": [
+        "24692-historical-2025.html|Delinquent Loans / Assets"
+      ],
+      "expected": "source_evidence",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "24692-historical-2025.html|Delinquent Loans / Assets",
+          "kind": "row",
+          "source": "24692-historical-2025.html",
+          "row": "Delinquent Loans / Assets"
+        }
+      ]
+    },
+    {
+      "id": "Q12",
+      "question": "Compare Navy Federal and Pentagon total assets in 2025.",
+      "filters": {
+        "year_2025": true
+      },
+      "relevant": [
+        "5536-summary-2025.html|TOTAL ASSETS",
+        "227-summary-2025.html|TOTAL ASSETS"
+      ],
+      "expected": "cross_document",
+      "domain": "ncua",
+      "gold_units": [
+        {
+          "key": "5536-summary-2025.html|TOTAL ASSETS",
+          "kind": "row",
+          "source": "5536-summary-2025.html",
+          "row": "TOTAL ASSETS"
+        },
+        {
+          "key": "227-summary-2025.html|TOTAL ASSETS",
+          "kind": "row",
+          "source": "227-summary-2025.html",
+          "row": "TOTAL ASSETS"
+        }
+      ]
+    },
+    {
+      "id": "Q13",
+      "question": "What were Navy Federal total assets in 2030?",
+      "filters": {},
+      "relevant": [],
+      "expected": "abstain",
+      "domain": "ncua",
+      "gold_units": []
+    },
+    {
+      "id": "Q14",
+      "question": "What is the CEO home address?",
+      "filters": {},
+      "relevant": [],
+      "expected": "abstain",
+      "domain": "ncua",
+      "gold_units": []
+    },
+    {
+      "id": "Q15",
+      "question": "What are total assets for charter 99999 in 2025?",
+      "filters": {
+        "charter": "99999"
+      },
+      "relevant": [],
+      "expected": "abstain",
+      "domain": "ncua",
+      "gold_units": []
+    },
+    {
+      "id": "A01",
+      "domain": "annual",
+      "question": "What exact year-end membership count appears in Navy Federal's 2021 annual report financial summary?",
+      "filters": {
+        "charter": "5536",
+        "year_2021": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2021.pdf|page-3|11,133,370",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2021.pdf",
+          "page": 3,
+          "anchor": "11,133,370",
+          "accepted_pages": [
+            3
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A02",
+      "domain": "annual",
+      "question": "What exact year-end membership count appears in Navy Federal's 2022 annual report financial summary?",
+      "filters": {
+        "charter": "5536",
+        "year_2022": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2022.pdf|page-3|12,322,979",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2022.pdf",
+          "page": 3,
+          "anchor": "12,322,979",
+          "accepted_pages": [
+            3
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A03",
+      "domain": "annual",
+      "question": "What exact year-end membership count appears in Navy Federal's 2023 annual report financial summary?",
+      "filters": {
+        "charter": "5536",
+        "year_2023": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2023.pdf|page-3|13,342,112",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2023.pdf",
+          "page": 3,
+          "anchor": "13,342,112",
+          "accepted_pages": [
+            3
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A04",
+      "domain": "annual",
+      "question": "What exact year-end membership count appears in Navy Federal's 2024 annual report financial summary?",
+      "filters": {
+        "charter": "5536",
+        "year_2024": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2024.pdf|page-3|14,266,170",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2024.pdf",
+          "page": 3,
+          "anchor": "14,266,170",
+          "accepted_pages": [
+            3
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A05",
+      "domain": "annual",
+      "question": "What exact year-end membership count appears in Navy Federal's 2025 annual report financial summary?",
+      "filters": {
+        "charter": "5536",
+        "year_2025": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2025.pdf|page-5|15,139,001",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2025.pdf",
+          "page": 5,
+          "anchor": "15,139,001",
+          "accepted_pages": [
+            5
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A06",
+      "domain": "annual",
+      "question": "How many Navy Federal members used digital channels in 2021, and what share of membership did they represent according to its annual report?",
+      "filters": {
+        "charter": "5536",
+        "year_2021": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2021.pdf|page-7|8.4 million",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2021.pdf",
+          "page": 7,
+          "anchor": "8.4 million",
+          "accepted_pages": [
+            7
+          ]
+        },
+        {
+          "key": "5536-annual-2021.pdf|page-7|75%",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2021.pdf",
+          "page": 7,
+          "anchor": "75%",
+          "accepted_pages": [
+            7
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A07",
+      "domain": "annual",
+      "question": "How many new members did Navy Federal welcome in 2022 and what membership growth percentage did its annual report report?",
+      "filters": {
+        "charter": "5536",
+        "year_2022": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2022.pdf|page-5|1.2 million",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2022.pdf",
+          "page": 5,
+          "anchor": "1.2 million",
+          "accepted_pages": [
+            5,
+            2
+          ]
+        },
+        {
+          "key": "5536-annual-2022.pdf|page-5|10.7%",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2022.pdf",
+          "page": 5,
+          "anchor": "10.7%",
+          "accepted_pages": [
+            5
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A08",
+      "domain": "annual",
+      "question": "In its 2023 annual report, how many Navy Federal members used digital banking, how many times did they use it, and what share of membership was represented?",
+      "filters": {
+        "charter": "5536",
+        "year_2023": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2023.pdf|page-7|10 million",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2023.pdf",
+          "page": 7,
+          "anchor": "10 million",
+          "accepted_pages": [
+            7
+          ]
+        },
+        {
+          "key": "5536-annual-2023.pdf|page-7|2 billion",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2023.pdf",
+          "page": 7,
+          "anchor": "2 billion",
+          "accepted_pages": [
+            7
+          ]
+        },
+        {
+          "key": "5536-annual-2023.pdf|page-7|78%",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2023.pdf",
+          "page": 7,
+          "anchor": "78%",
+          "accepted_pages": [
+            7
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A09",
+      "domain": "annual",
+      "question": "According to its 2024 annual report, how many new branches did Navy Federal open for members and how large did its branch network become?",
+      "filters": {
+        "charter": "5536",
+        "year_2024": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2024.pdf|page-6|12 new branches",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2024.pdf",
+          "page": 6,
+          "anchor": "12 new branches",
+          "accepted_pages": [
+            6
+          ]
+        },
+        {
+          "key": "5536-annual-2024.pdf|page-6|366 locations",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2024.pdf",
+          "page": 6,
+          "anchor": "366 locations",
+          "accepted_pages": [
+            6
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A10",
+      "domain": "annual",
+      "question": "What membership expansion percentage and membership milestone did Navy Federal describe in its 2025 annual report?",
+      "filters": {
+        "charter": "5536",
+        "year_2025": true
+      },
+      "gold_units": [
+        {
+          "key": "5536-annual-2025.pdf|page-4|6.1%",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2025.pdf",
+          "page": 4,
+          "anchor": "6.1%",
+          "accepted_pages": [
+            4
+          ]
+        },
+        {
+          "key": "5536-annual-2025.pdf|page-4|15 million",
+          "kind": "pdf_anchor",
+          "source": "5536-annual-2025.pdf",
+          "page": 4,
+          "anchor": "15 million",
+          "accepted_pages": [
+            4,
+            3
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A11",
+      "domain": "annual",
+      "question": "What membership growth percentage and approximate total membership did BECU report in its 2021 annual report?",
+      "filters": {
+        "charter": "62604",
+        "year_2021": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2021.pdf|page-9|4.5%",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2021.pdf",
+          "page": 9,
+          "anchor": "4.5%",
+          "accepted_pages": [
+            9,
+            3
+          ]
+        },
+        {
+          "key": "62604-annual-2021.pdf|page-9|1.3 million",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2021.pdf",
+          "page": 9,
+          "anchor": "1.3 million",
+          "accepted_pages": [
+            9,
+            3
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A12",
+      "domain": "annual",
+      "question": "How many members joined BECU online in 2021 and what growth percentage did its annual report give for that channel?",
+      "filters": {
+        "charter": "62604",
+        "year_2021": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2021.pdf|page-9|17,600",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2021.pdf",
+          "page": 9,
+          "anchor": "17,600",
+          "accepted_pages": [
+            9,
+            3
+          ]
+        },
+        {
+          "key": "62604-annual-2021.pdf|page-9|21.2%",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2021.pdf",
+          "page": 9,
+          "anchor": "21.2%",
+          "accepted_pages": [
+            9
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A13",
+      "domain": "annual",
+      "question": "In BECU's 2021 annual report, how many members benefited from its Reprice Program and how much did they save?",
+      "filters": {
+        "charter": "62604",
+        "year_2021": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2021.pdf|page-16|48,000",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2021.pdf",
+          "page": 16,
+          "anchor": "48,000",
+          "accepted_pages": [
+            16
+          ]
+        },
+        {
+          "key": "62604-annual-2021.pdf|page-16|2.2 million",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2021.pdf",
+          "page": 16,
+          "anchor": "2.2 million",
+          "accepted_pages": [
+            16
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A14",
+      "domain": "annual",
+      "question": "What approximate total membership and membership growth percentage did BECU report in its 2022 annual report?",
+      "filters": {
+        "charter": "62604",
+        "year_2022": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2022.pdf|page-11|1.4 million",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2022.pdf",
+          "page": 11,
+          "anchor": "1.4 million",
+          "accepted_pages": [
+            11,
+            3
+          ]
+        },
+        {
+          "key": "62604-annual-2022.pdf|page-11|3.6%",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2022.pdf",
+          "page": 11,
+          "anchor": "3.6%",
+          "accepted_pages": [
+            11,
+            3
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A15",
+      "domain": "annual",
+      "question": "How many new BECU members, digital-channel joiners and new business members did its 2022 annual report describe?",
+      "filters": {
+        "charter": "62604",
+        "year_2022": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2022.pdf|page-11|108,200",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2022.pdf",
+          "page": 11,
+          "anchor": "108,200",
+          "accepted_pages": [
+            11
+          ]
+        },
+        {
+          "key": "62604-annual-2022.pdf|page-11|16,000",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2022.pdf",
+          "page": 11,
+          "anchor": "16,000",
+          "accepted_pages": [
+            11
+          ]
+        },
+        {
+          "key": "62604-annual-2022.pdf|page-11|10,700",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2022.pdf",
+          "page": 11,
+          "anchor": "10,700",
+          "accepted_pages": [
+            11
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A16",
+      "domain": "annual",
+      "question": "How much value did BECU return to its members in 2022, what was the average benefit and how much did it grow according to the annual report?",
+      "filters": {
+        "charter": "62604",
+        "year_2022": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2022.pdf|page-20|362.3 million",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2022.pdf",
+          "page": 20,
+          "anchor": "362.3 million",
+          "accepted_pages": [
+            20
+          ]
+        },
+        {
+          "key": "62604-annual-2022.pdf|page-20|265",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2022.pdf",
+          "page": 20,
+          "anchor": "265",
+          "accepted_pages": [
+            20
+          ]
+        },
+        {
+          "key": "62604-annual-2022.pdf|page-20|8%",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2022.pdf",
+          "page": 20,
+          "anchor": "8%",
+          "accepted_pages": [
+            20
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A17",
+      "domain": "annual",
+      "question": "What total membership and new-member count did BECU report at the end of 2025 in its annual report?",
+      "filters": {
+        "charter": "62604",
+        "year_2025": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2025.pdf|page-5|1,558,284",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 5,
+          "anchor": "1,558,284",
+          "accepted_pages": [
+            5,
+            38
+          ]
+        },
+        {
+          "key": "62604-annual-2025.pdf|page-5|112,029",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 5,
+          "anchor": "112,029",
+          "accepted_pages": [
+            5
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A18",
+      "domain": "annual",
+      "question": "How many members received Financial Health Checks and how many people attended financial classes according to BECU's 2025 annual report?",
+      "filters": {
+        "charter": "62604",
+        "year_2025": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2025.pdf|page-7|1,258",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 7,
+          "anchor": "1,258",
+          "accepted_pages": [
+            7
+          ]
+        },
+        {
+          "key": "62604-annual-2025.pdf|page-7|5,000",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 7,
+          "anchor": "5,000",
+          "accepted_pages": [
+            7
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A19",
+      "domain": "annual",
+      "question": "In BECU's 2025 annual report, how many members used Envelopes, how many goals did they set, and how much did those goals total?",
+      "filters": {
+        "charter": "62604",
+        "year_2025": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2025.pdf|page-7|31,882",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 7,
+          "anchor": "31,882",
+          "accepted_pages": [
+            7
+          ]
+        },
+        {
+          "key": "62604-annual-2025.pdf|page-7|79,239",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 7,
+          "anchor": "79,239",
+          "accepted_pages": [
+            7
+          ]
+        },
+        {
+          "key": "62604-annual-2025.pdf|page-7|76 million",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 7,
+          "anchor": "76 million",
+          "accepted_pages": [
+            7
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A20",
+      "domain": "annual",
+      "question": "What total value and average individual benefit did BECU return to its members according to its 2025 annual report?",
+      "filters": {
+        "charter": "62604",
+        "year_2025": true
+      },
+      "gold_units": [
+        {
+          "key": "62604-annual-2025.pdf|page-5|425.7 million",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 5,
+          "anchor": "425.7 million",
+          "accepted_pages": [
+            5,
+            38
+          ],
+          "anchor_variants": [
+            "425.7 million",
+            "425.7M"
+          ]
+        },
+        {
+          "key": "62604-annual-2025.pdf|page-5|276",
+          "kind": "pdf_anchor",
+          "source": "62604-annual-2025.pdf",
+          "page": 5,
+          "anchor": "276",
+          "accepted_pages": [
+            5,
+            38
+          ]
+        }
+      ],
+      "expected": "source_evidence"
+    },
+    {
+      "id": "A21",
+      "domain": "annual",
+      "question": "How many members did BECU have in 2023 according to its annual report?",
+      "filters": {
+        "charter": "62604",
+        "year_2023": true
+      },
+      "gold_units": [],
+      "expected": "abstain",
+      "reason": "PDF has no extractable text; OCR is not implemented."
+    },
+    {
+      "id": "A22",
+      "domain": "annual",
+      "question": "How many members did BECU have in 2024 according to its annual report?",
+      "filters": {
+        "charter": "62604",
+        "year_2024": true
+      },
+      "gold_units": [],
+      "expected": "abstain",
+      "reason": "Extracted PDF text is mostly captions and contains no membership count."
+    },
+    {
+      "id": "A23",
+      "domain": "annual",
+      "question": "How many members did Alliant have in its 2025 annual report?",
+      "filters": {
+        "charter": "67955",
+        "year_2025": true
+      },
+      "gold_units": [],
+      "expected": "abstain",
+      "reason": "No Alliant annual report in corpus."
+    }
+  ],
+  "label_method": "Original 15 row-labeled NCUA questions plus 20 fact-labeled annual-report questions and 3 annual coverage negatives. Annual anchors and equivalent pages verified against physical PDF text before the final retrieval run. No tuning or result-based query selection. PDF facts can share a passage; all supported units count toward recall. Version 2 corrects equivalent-page labels and numeric boundaries before any scores were inspected.",
+  "scope": "Retrieval, not generated-answer accuracy. Annual subset deliberately targets membership and member services, not all annual-report content."
+}

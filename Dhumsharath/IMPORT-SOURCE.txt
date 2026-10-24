@@ -1,0 +1,5 @@
+Imported from https://github.com/Chandra-P/Dhumsharath
+Source commit: ea3cb76f64ee400a0bcd6526afa87c4e94cbc672
+Imported on: 2026-10-24
+Source files are preserved as an ordinary project folder in Master_AgenticAI.
+Original local Git metadata is retained in the ignored .repository-backups directory.

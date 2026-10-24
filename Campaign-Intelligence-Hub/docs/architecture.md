@@ -1,0 +1,36 @@
+# Architecture
+
+The diagram below describes the analytical RAG stages. Most stages currently execute inside one combined LangGraph report node; six separate graph nodes are explicit future work, as recorded in the [implementation audit](implementation-status.md).
+
+Final client generation runs metadata-filtered Chroma retrieval with the selected chunking, dense/hybrid and reranking settings. Validated retrieved chunks select parent documents; parent expansion retains complete linked source tables. The workflow validates identities/targets/units and channel/geographic reconciliation, then builds a frozen factual packet. Chart datasets and adjacent findings derive from that packet, and a standalone HTML presentation embeds SVG charts, styles and source evidence. Every export revalidates source hashes, retrieval attribution and canonical narrative/citations. This publication workflow does not accept arbitrary LLM-generated prose. The landing map remains a fast source-table snapshot and refreshes without model calls. The earlier analytical LangGraph workflow below remains available for RAG experiments and the technical report.
+
+```mermaid
+flowchart TD
+    C[110 synthetic Markdown sources] --> I[Validated ingestion]
+    I --> F[Fixed 500 tokens / 50 overlap]
+    I --> S[Section-based chunking]
+    I --> T[Sentence embeddings and cosine breakpoints]
+    F --> E[LangChain embedding providers]
+    S --> E
+    T --> E
+    E --> D[LangChain Chroma / persistent collections]
+    U[Campaign report request] --> L[LangGraph coverage plan]
+    L --> R[Per-section retrieval]
+    D --> R
+    B[BM25 source index] --> R
+    R --> RR[Optional cross-encoder reranking]
+    RR --> V[Campaign and period evidence checks]
+    V --> G[Source-grounded sections and local generation]
+    G --> K[Python KPI arithmetic and citation validation]
+    K --> O[Eleven-section report with inline citations]
+    V --> H[Compatible earlier channel cohorts]
+    H --> P[Python peer median / rank / percentile]
+    P --> O
+    O --> UI[Streamlit preview / Markdown download]
+```
+
+Chroma stores chunk text, vectors, and source metadata. It does not generate answers. LangChain's embedding interface supports local Ollama and hosted CPU sentence transformers; ChatPromptTemplate with ChatOllama or ChatGroq provides structured generation. Embedding-based semantic segmentation also calls the configured embedder before final-chunk indexing. Collection identities isolate all three chunkers and their parameters. LangChain Chroma performs vector search. BM25 complements vector search for exact identifiers and terminology. Report sections use independent retrieval queries rather than sharing only five chunks for a whole report.
+
+Direct mail uses 60 days from mail/drop date; display uses 30 days from exposure. Historical comparisons use retrieved channel outcome tables and require compatible product/channel/measurement rules, an earlier reporting period, and mature attribution windows. The UI and report show peer-level evidence, medians, ranks, and direction-aware performance percentiles.
+
+Generated reports remain outside the ingestion manifest. This prevents output text becoming circular evidence. Source access is limited to manifest paths. Historical evidence is explicitly labeled and cannot supply the selected campaign's KPI actuals.

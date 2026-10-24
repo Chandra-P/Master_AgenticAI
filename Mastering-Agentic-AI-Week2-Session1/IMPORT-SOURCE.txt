@@ -1,0 +1,5 @@
+Imported from https://github.com/The-Gen-Academy/Mastering-Agentic-AI-Week2-Session1
+Fork: https://github.com/Chandra-P/Mastering-Agentic-AI-Week2-Session1
+Source commit: 7523b1853847fa2d8855d6c3e4cdcfdf3867d28a
+Imported on: 2026-10-22
+Original files, license, and attribution are preserved. Git history is excluded.

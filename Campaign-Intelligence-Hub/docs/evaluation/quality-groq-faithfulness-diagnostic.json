@@ -1,0 +1,35 @@
+{
+  "statements": {
+    "statements": [
+      "The campaign objective is to acquire 249 verified product activations during the second quarter of 2026 for CD Promotions.",
+      "The target number of verified product activations is 249.",
+      "The target timeframe is the second quarter of 2026.",
+      "The target product category is CD Promotions."
+    ]
+  },
+  "verdicts": {
+    "statements": [
+      {
+        "statement": "The campaign objective is to acquire 249 verified product activations during the second quarter of 2026 for CD Promotions.",
+        "reason": "The context explicitly states this objective.",
+        "verdict": 1
+      },
+      {
+        "statement": "The target number of verified product activations is 249.",
+        "reason": "The context specifies the number 249.",
+        "verdict": 1
+      },
+      {
+        "statement": "The target timeframe is the second quarter of 2026.",
+        "reason": "The context mentions the period 2026-Q2, i.e., the second quarter of 2026.",
+        "verdict": 1
+      },
+      {
+        "statement": "The target product category is CD Promotions.",
+        "reason": "The context indicates the activations are for CD Promotions, implying that is the product category.",
+        "verdict": 1
+      }
+    ]
+  },
+  "score": 1.0
+}

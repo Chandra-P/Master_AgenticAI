@@ -1,0 +1,171 @@
+{
+  "engine": "tesseract.js 7.0.0",
+  "render_dpi": 216,
+  "raw_pages": 19,
+  "reviewed_table_pages": 9,
+  "scope": "Selected 2023/2024 financial tables only; other raw OCR is excluded from retrieval.",
+  "pages": [
+    {
+      "source": "62604-annual-2023.pdf",
+      "page": 69,
+      "corrections": [
+        {
+          "ocr": "1,588,742",
+          "verified": "1,388,742"
+        },
+        {
+          "ocr": "49%",
+          "verified": "4.9%"
+        },
+        {
+          "ocr": "$29.98",
+          "verified": "$29.9B"
+        },
+        {
+          "ocr": "$24.88",
+          "verified": "$24.8B"
+        },
+        {
+          "ocr": "$25.98",
+          "verified": "$25.9B"
+        },
+        {
+          "ocr": "$1.98",
+          "verified": "$1.9B"
+        },
+        {
+          "ocr": "1.2%",
+          "verified": "-1.2%"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "source": "62604-annual-2023.pdf",
+      "page": 70,
+      "corrections": [
+        {
+          "ocr": "$6.68",
+          "verified": "$6.6B"
+        },
+        {
+          "ocr": "$1.88",
+          "verified": "$1.8B"
+        },
+        {
+          "ocr": "$9.38",
+          "verified": "$9.3B"
+        },
+        {
+          "ocr": "110.867",
+          "verified": "110,867"
+        },
+        {
+          "ocr": "=100",
+          "verified": "-100"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "source": "62604-annual-2023.pdf",
+      "page": 71,
+      "corrections": [],
+      "reviewed": true
+    },
+    {
+      "source": "62604-annual-2023.pdf",
+      "page": 72,
+      "corrections": [],
+      "reviewed": true
+    },
+    {
+      "source": "62604-annual-2024.pdf",
+      "page": 100,
+      "corrections": [
+        {
+          "ocr": "$29.98",
+          "verified": "$29.9B"
+        },
+        {
+          "ocr": "$2.38",
+          "verified": "$2.3B"
+        },
+        {
+          "ocr": "32%",
+          "verified": "3.2%"
+        },
+        {
+          "ocr": "29%",
+          "verified": "2.9%"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "source": "62604-annual-2024.pdf",
+      "page": 101,
+      "corrections": [
+        {
+          "ocr": "$6.48",
+          "verified": "$6.4B"
+        },
+        {
+          "ocr": "$6.68",
+          "verified": "$6.6B"
+        },
+        {
+          "ocr": "$2.08",
+          "verified": "$2.0B"
+        },
+        {
+          "ocr": "$1.68",
+          "verified": "$1.6B"
+        },
+        {
+          "ocr": "$10.98",
+          "verified": "$10.9B"
+        },
+        {
+          "ocr": "$10.18",
+          "verified": "$10.1B"
+        },
+        {
+          "ocr": "~100",
+          "verified": "-100"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "source": "62604-annual-2024.pdf",
+      "page": 102,
+      "corrections": [
+        {
+          "ocr": "142.472",
+          "verified": "142,472"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "source": "62604-annual-2024.pdf",
+      "page": 103,
+      "corrections": [
+        {
+          "ocr": "(3.373)",
+          "verified": "(3,373)"
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "source": "62604-annual-2024.pdf",
+      "page": 104,
+      "corrections": [],
+      "reviewed": true
+    }
+  ],
+  "normalization": "Reviewed table rows repeat section, year columns and units. Equity rollforward rows carry period context. Page 104 multiline mortgage servicing rights adjustment label joined with its $16,310 value.",
+  "searchable_row_passages": 119
+}

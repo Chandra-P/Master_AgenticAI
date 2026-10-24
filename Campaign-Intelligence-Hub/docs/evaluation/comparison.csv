@@ -1,0 +1,9 @@
+chunking,retrieval,reranking,mrr,context_precision,context_recall,answer_completeness,latency_seconds,citation_accuracy
+fixed,dense,False,0.4877,0.2907,0.9773,1.0,0.223,0.0851
+fixed,dense,True,0.5,0.2833,0.9659,1.0,4.2568,0.084
+fixed,hybrid,False,0.5,0.3056,1.0,1.0,0.39,0.0874
+fixed,hybrid,True,0.5,0.2833,0.9659,1.0,1.6558,0.084
+semantic,dense,False,0.4352,0.363,0.8977,0.9697,0.4406,0.0862
+semantic,dense,True,0.4815,0.3432,0.9773,0.9091,3.2753,0.0851
+semantic,hybrid,False,0.463,0.3457,1.0,1.0,0.3975,0.0874
+semantic,hybrid,True,0.4815,0.3506,0.9886,0.9091,2.7696,0.0862

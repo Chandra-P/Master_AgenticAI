@@ -1,0 +1,169 @@
+[
+  {
+    "id": "Q01",
+    "question": "What were Navy Federal total assets in December 2025?",
+    "filters": {
+      "charter": "5536",
+      "year_2025": true
+    },
+    "relevant": [
+      "5536-summary-2025.html|TOTAL ASSETS"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q02",
+    "question": "How did Navy Federal total loans change from 2023 through 2025?",
+    "filters": {
+      "charter": "5536",
+      "year_2025": true
+    },
+    "relevant": [
+      "5536-summary-2025.html|TOTAL LOANS"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q03",
+    "question": "What was Navy Federal delinquent loans divided by assets in 2025?",
+    "filters": {
+      "charter": "5536",
+      "year_2025": true
+    },
+    "relevant": [
+      "5536-historical-2025.html|Delinquent Loans / Assets"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q04",
+    "question": "What was Pentagon total equity in 2025?",
+    "filters": {
+      "charter": "227",
+      "year_2025": true
+    },
+    "relevant": [
+      "227-summary-2025.html|TOTAL EQUITY"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q05",
+    "question": "What was Boeing Employees total shares and deposits in 2025?",
+    "filters": {
+      "charter": "62604",
+      "year_2025": true
+    },
+    "relevant": [
+      "62604-summary-2025.html|TOTAL SHARES & DEPOSITS"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q06",
+    "question": "How did Alliant total assets change between 2023 and 2025?",
+    "filters": {
+      "charter": "67955",
+      "year_2025": true
+    },
+    "relevant": [
+      "67955-summary-2025.html|TOTAL ASSETS"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q07",
+    "question": "What was First Technology total loans in 2025?",
+    "filters": {
+      "charter": "19976",
+      "year_2025": true
+    },
+    "relevant": [
+      "19976-summary-2025.html|TOTAL LOANS"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q08",
+    "question": "What were Spokane Firefighters total assets in 2025?",
+    "filters": {
+      "charter": "68205",
+      "year_2025": true
+    },
+    "relevant": [
+      "68205-summary-2025.html|TOTAL ASSETS"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q09",
+    "question": "What were State Employees total investments in 2025?",
+    "filters": {
+      "charter": "66310",
+      "year_2025": true
+    },
+    "relevant": [
+      "66310-summary-2025.html|TOTAL INVESTMENTS"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q10",
+    "question": "How did America First total loans change from 2023 to 2025?",
+    "filters": {
+      "charter": "24694",
+      "year_2025": true
+    },
+    "relevant": [
+      "24694-summary-2025.html|TOTAL LOANS"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q11",
+    "question": "What was Mountain America delinquent loans divided by assets in 2025?",
+    "filters": {
+      "charter": "24692",
+      "year_2025": true
+    },
+    "relevant": [
+      "24692-historical-2025.html|Delinquent Loans / Assets"
+    ],
+    "expected": "source_evidence"
+  },
+  {
+    "id": "Q12",
+    "question": "Compare Navy Federal and Pentagon total assets in 2025.",
+    "filters": {
+      "year_2025": true
+    },
+    "relevant": [
+      "5536-summary-2025.html|TOTAL ASSETS",
+      "227-summary-2025.html|TOTAL ASSETS"
+    ],
+    "expected": "cross_document"
+  },
+  {
+    "id": "Q13",
+    "question": "What were Navy Federal total assets in 2030?",
+    "filters": {},
+    "relevant": [],
+    "expected": "abstain"
+  },
+  {
+    "id": "Q14",
+    "question": "What is the CEO home address?",
+    "filters": {},
+    "relevant": [],
+    "expected": "abstain"
+  },
+  {
+    "id": "Q15",
+    "question": "What are total assets for charter 99999 in 2025?",
+    "filters": {
+      "charter": "99999"
+    },
+    "relevant": [],
+    "expected": "abstain"
+  }
+]

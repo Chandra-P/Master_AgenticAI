@@ -1,0 +1,54 @@
+{
+  "diagnostic_only": true,
+  "identity": {
+    "framework": "ragas",
+    "version": "0.3.9",
+    "assessment_version": 1,
+    "judge_provider": "groq",
+    "judge_model": "openai/gpt-oss-120b",
+    "judge_context_tokens": null,
+    "judge_output_tokens": 2048,
+    "judge_json_mode": true,
+    "metric_timeout_seconds": 240,
+    "metrics": [
+      "ragas_faithfulness",
+      "ragas_context_precision",
+      "ragas_context_recall",
+      "ragas_factual_correctness"
+    ],
+    "judge_provider_max_retries": 5,
+    "quality_assessment": true,
+    "precision_prompt_version": 3,
+    "precision_output_tokens": 1024,
+    "precision_prompt_sha256": "3fed3e505ccb5f938543a8909a1f9a5f2fbe0a0591546a59a295a71aef9d13ef"
+  },
+  "sample": {
+    "user_input": "What were the results and channel findings for TX-CHK-001?",
+    "response": "Direct mail: 138 activations within 60 days of mail/drop date; display: 92 within 30 days of exposure. Total attributed spend: USD 20908. Channel-specific spend and exposure counts are in Channel Results. Financial return is unavailable, so channel ROI cannot be calculated. [TX-CHK-001-performance_report:section:channel-insights:0:c52540c3]\n\n| Metric | Target | Actual | Unit | Direction | Period |\n|---|---:|---:|---|---|---|\n| Verified activations | 180 | 230 | count | higher | 2026-Q2 |\n| Acquisition cost | 133.33 | 90.90 | USD/activation | lower | 2026-Q2 |\n| Spend | 24000 | 20908 | USD | lower | 2026-Q2 |\n| Opening account balance | 540000.00 | 598850.00 | USD | higher | 2026-Q2 | [TX-CHK-001-performance_report:section:kpi-results:0:0c90076f]",
+    "retrieved_contexts": [
+      "Direct mail: 138 activations within 60 days of mail/drop date; display: 92 within 30 days of exposure. Total attributed spend: USD 20908. Channel-specific spend and exposure counts are in Channel Results. Financial return is unavailable, so channel ROI cannot be calculated.",
+      "| Metric | Target | Actual | Unit | Direction | Period |\n|---|---:|---:|---|---|---|\n| Verified activations | 180 | 230 | count | higher | 2026-Q2 |\n| Acquisition cost | 133.33 | 90.90 | USD/activation | lower | 2026-Q2 |\n| Spend | 24000 | 20908 | USD | lower | 2026-Q2 |\n| Opening account balance | 540000.00 | 598850.00 | USD | higher | 2026-Q2 |"
+    ],
+    "reference": "230 activations; 138 from direct mail and 92 from display."
+  },
+  "result": {
+    "ragas_faithfulness": 1.0,
+    "ragas_context_precision": 0.99999999995,
+    "ragas_context_recall": 1.0,
+    "ragas_factual_correctness": 0.0,
+    "metric_errors": {},
+    "passage_verdicts": [
+      {
+        "context": "Direct mail: 138 activations within 60 days of mail/drop date; display: 92 within 30 days of exposure. Total attributed spend: USD 20908. Channel-specific spend and exposure counts are in Channel Results. Financial return is unavailable, so channel ROI cannot be calculated.",
+        "verdict": 1,
+        "reason": "The passage gives the activation counts (138 direct mail, 92 display) that sum to 230, matching the answer."
+      },
+      {
+        "context": "| Metric | Target | Actual | Unit | Direction | Period |\n|---|---:|---:|---|---|---|\n| Verified activations | 180 | 230 | count | higher | 2026-Q2 |\n| Acquisition cost | 133.33 | 90.90 | USD/activation | lower | 2026-Q2 |\n| Spend | 24000 | 20908 | USD | lower | 2026-Q2 |\n| Opening account balance | 540000.00 | 598850.00 | USD | higher | 2026-Q2 |",
+        "verdict": 1,
+        "reason": "The table shows 230 verified activations, matching the answer's total, though it lacks the channel breakdown."
+      }
+    ],
+    "passage_relevance_precision": 1.0
+  }
+}

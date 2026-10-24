@@ -1,0 +1,5 @@
+Imported from https://github.com/Chandra-P/Mastering-Agentic-AI-Week1
+Source commit checked: 980a19ae8ec152875491e9a2902478bb7e001ae1
+Verified on: 2026-10-22
+Existing import commit: c1405ac (Include Week 1 LangChain project under Master_AgenticAI)
+Original repository files and attribution are preserved. Git history is excluded.
