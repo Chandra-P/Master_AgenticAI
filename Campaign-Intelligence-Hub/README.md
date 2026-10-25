@@ -72,9 +72,63 @@ If activation is blocked, replace `python` with `.\.venv\Scripts\python.exe`. On
 
 ## Generate a report
 
-Select **Generate Report**, choose a **Client**, then choose one of that client's campaigns. KPI cards, map and same-client historical standing update automatically. Use the channel and map-measure controls to inspect accounts or opening balances. Click **Generate client-facing report** to retrieve evidence and see the HTML presentation preview. Choose **Download HTML presentation**, then open the file in a browser. Client and campaign selectors also appear on Historical Comparison and Ask Questions. The client UI exposes only these three workflows; Retrieval Explorer and Evaluation Dashboard remain development modules outside app navigation.
+Select **Generate Report**, choose a **Client**, then choose one of that client's campaigns. KPI cards, map and same-client historical standing update automatically. Use the channel and map-measure controls to inspect accounts or opening balances. Click **Generate client-facing report** to retrieve evidence and see the HTML presentation preview. Choose **Download HTML presentation**, then open the file in a browser. Client and campaign selectors also appear on Historical Comparison and Ask Questions. Analyst View adds metadata classification and evidence inspection; the older Retrieval Explorer and Evaluation Dashboard remain development modules outside app navigation.
 
 The HTML presentation includes client/campaign identity, Executive Summary, Goals, chart-led Progress Toward Goals, Channels, Same-client History, Geography, Learnings, Recommendations, Next Steps, Measurement Notes and Source Citations. Each comparison chart has an adjacent insight and numbered source links. The file is self-contained and needs no CDN or network connection to view. Reconciliation failures, altered narrative, missing required retrieval evidence or immature attribution block exports. Proposed tests are labeled; owner/date/priority remain unassigned when absent from sources. These checks do not guarantee 100% correctness. The source corpus and client names are synthetic.
+
+## Metadata classification and analyst view
+
+Choose **Analyst View** to inspect retrieval without generating an answer. Enter a
+question and optionally combine campaign ID, client, campaign type, region, year,
+reporting period and document type. Values within one field use OR; different
+fields use AND. The same effective filter scopes dense and BM25 retrieval.
+Only values present in the corpus are accepted; a requested period not in the
+corpus is rejected rather than silently replaced.
+
+**Automatically classify metadata** defaults to local Ollama (`llama3.2:3b`).
+Model choices are constrained to labels or supported aliases mentioned in the
+question, and each inferred constraint must quote supporting words from it.
+General questions without metadata terms use no inferred filters and need no
+classification call. Use manual controls for unsupported paraphrases and shared
+`ALL`/`GLOBAL` values. These guards check provenance, not full semantic entailment;
+inspect the displayed filters before relying on the results.
+The result shows manual selections, selected campaign scope, inferred filters,
+question-routing filters, effective filters and ranked evidence. Expand evidence
+to inspect source text, metadata and available ranking scores. Scores are not
+confidence probabilities. Conflicting manual/inferred constraints stop the search;
+empty results never trigger an unfiltered retry. Disable classification for
+manual-only retrieval. Input edits hide stale results; only **Find evidence**
+starts inference and retrieval.
+
+**Ask Questions** uses the same controls while keeping its selected campaign
+binding and retaining source-validated answers. Report calculations and historical
+comparison eligibility are unchanged. The older comparison explorer and evaluation
+dashboard remain development modules outside app navigation.
+
+### Optional OpenAI alternative
+
+Ollama remains the default for classification and local answer generation.
+Select **openai** explicitly in **Classification provider** or the sidebar's
+**Answer provider**. The default OpenAI model is `gpt-4.1-mini`; a configured
+model must support structured outputs. Embeddings and Chroma indexes retain
+their configured provider; choosing OpenAI answers does not re-embed the corpus.
+
+Configure `OPENAI_API_KEY` in your process environment or the ignored
+`Campaign-Intelligence-Hub/.streamlit/secrets.toml`, never in source files or a
+widget. A placeholder-only example is in `.streamlit/secrets.example.toml`.
+OpenAI classification sends your question and the allowed metadata values;
+OpenAI answers also send retrieved passages. These calls use your API account.
+There is no automatic fallback between local and hosted providers.
+
+Optional server settings: `CIH_CLASSIFICATION_PROVIDER` (`ollama` by default)
+and `CIH_CLASSIFICATION_MODEL` (`llama3.2:3b` by default, or `gpt-4.1-mini` for
+an explicitly configured OpenAI classifier). `CIH_GENERATION_PROVIDER` and
+`CIH_GENERATION_MODEL` independently control the answer provider.
+The app reads process environment and private Streamlit secrets; it does not
+automatically load a project `.env` file.
+
+OpenAI request handling follows the official
+[Structured Outputs documentation](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat).
 
 Open the [example HTML presentation](docs/campaign_performance_dashboard.html). HTML is now the default client output in the UI and CLI; PDF/PowerPoint are no longer generated by that workflow. The obsolete PDF/PowerPoint exporters and their dependencies have been removed.
 
@@ -119,7 +173,7 @@ Actual **RAGAS faithfulness, passage context precision and reference-claim conte
 
 The opt-in [90% quality target workflow](docs/quality-target.md) adds reference-based factual correctness, actual per-passage verdicts, complete-case coverage and judge calibration checks. `--focus-context` tests question-specific evidence sections without changing live defaults. The first local judge failed negative controls, so its high raw relevance scores are explicitly untrusted; the target remains unmet. Use a separately configured judge that passes controls before interpreting a quality score.
 
-Default model settings use local Ollama. `CIH_GENERATION_PROVIDER` and `CIH_EMBEDDING_PROVIDER` select the hosted Groq/CPU profile; see the cloud quickstart for server secrets. `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` configure the selected models. Model/chunker changes use isolated compatible indexes. No OpenAI adapter is enabled.
+Default model settings use local Ollama. `CIH_GENERATION_PROVIDER` and `CIH_EMBEDDING_PROVIDER` can select the hosted Groq/CPU profile; OpenAI answer generation is also optional. See the cloud quickstart for server secrets. `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` configure the selected models. Model/chunker changes use isolated compatible indexes.
 
 ## Project layout
 

@@ -5,6 +5,7 @@ from importlib.metadata import version
 import chromadb
 from langchain_chroma import Chroma
 from campaign_hub.models import Chunk, SearchHit
+from campaign_hub.retrieval.filters import chroma_where
 
 
 def default_chunking_config(strategy='section'):
@@ -71,13 +72,13 @@ class ChromaStore:
         if not self.collection.count():
             return []
         filters = filters or {}
-        where = {'$and':[{key:value} for key,value in filters.items()]} if len(filters)>1 else filters
+        where = chroma_where(filters)
         result=self.vectorstore.similarity_search_with_score(query,k=min(k,self.collection.count()),filter=where or None)
         return [SearchHit(chunk=Chunk(chunk_id=doc.id,text=doc.page_content,metadata=doc.metadata),score=1-distance,dense_score=1-distance)
                 for doc,distance in result]
 
     def chunks(self, filters=None):
         filters = filters or {}
-        where = {'$and':[{k:v} for k,v in filters.items()]} if len(filters)>1 else filters
+        where = chroma_where(filters)
         data = self.collection.get(where=where or None)
         return [Chunk(chunk_id=i,text=t,metadata=m) for i,t,m in zip(data['ids'],data['documents'],data['metadatas'])]

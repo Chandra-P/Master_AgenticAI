@@ -25,7 +25,7 @@ def test_client_selection_limits_campaigns(tmp_path,monkeypatch):
     import campaign_hub.ui.resources as resources
     generate_corpus(tmp_path/'data')
     service=CampaignService(Settings(root=tmp_path))
-    monkeypatch.setattr(resources,'service_for',lambda model:service)
+    monkeypatch.setattr(resources,'service_for',lambda model,provider=None:service)
     app=AppTest.from_file(str(ROOT/'app.py'),default_timeout=30).run()
     client=service.campaigns['TX-CHK-001']['client_name']
     app.selectbox(key='report-client').set_value(client).run()

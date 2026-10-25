@@ -8,7 +8,7 @@ from campaign_hub.models import RetrievalOptions
 @st.cache_resource(max_entries=4)
 def _cached_service(model,manifest_hash,provider_identity,code_hash):
     from campaign_hub.reporting.service import CampaignService
-    service=CampaignService(replace(Settings(),generation_model=model))
+    service=CampaignService(replace(Settings(),generation_model=model,generation_provider=provider_identity[2]))
     if service.settings.auto_index:
         from campaign_hub.hosting.bootstrap import prepare_indexes
         with st.spinner('Preparing the hosted knowledge base. The first startup can take a few minutes…'):
@@ -16,10 +16,13 @@ def _cached_service(model,manifest_hash,provider_identity,code_hash):
     return service
 
 
-def service_for(model):
+def service_for(model,provider=None):
     settings=Settings()
+    if provider is not None:
+        settings=replace(settings,generation_provider=provider)
     manifest_hash=hashlib.sha256((settings.data/'manifest.json').read_bytes()).hexdigest()
-    identity=(settings.embedding_provider,settings.embedding_model,settings.generation_provider,settings.auto_index)
+    identity=(settings.embedding_provider,settings.embedding_model,settings.generation_provider,settings.auto_index,
+              settings.ollama_url,settings.classification_provider,settings.classification_model)
     # A cached instance retains its original Python class/methods after a hot
     # deployment. Include source content so new code gets a new service too.
     code=hashlib.sha256()

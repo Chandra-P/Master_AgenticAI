@@ -35,6 +35,43 @@ class OllamaGenerator:
             raise RuntimeError(f'Local generation failed. Check Ollama and model {self.settings.generation_model}: {error}') from error
 
 
+class OpenAIGenerator:
+    """Optional server-owned OpenAI adapter, using the existing httpx dependency."""
+    def __init__(self, settings):
+        if not os.getenv('OPENAI_API_KEY', '').strip():
+            raise RuntimeError('Configure OPENAI_API_KEY in the server environment or private Streamlit secrets.')
+        self.settings = settings
+
+    def generate_json(self, system, prompt, schema):
+        import httpx
+        # OpenAI strict schemas require every property and forbid extra object keys.
+        def strict(node):
+            if isinstance(node, dict):
+                node.pop('default', None)
+                if node.get('type') == 'object':
+                    node['additionalProperties'] = False
+                    node['required'] = list(node.get('properties', {}))
+                for value in list(node.values()): strict(value)
+            elif isinstance(node, list):
+                for value in node: strict(value)
+            return node
+        try:
+            response = httpx.post('https://api.openai.com/v1/chat/completions',
+                headers={'Authorization': 'Bearer '+os.environ['OPENAI_API_KEY']},
+                json={'model': self.settings.generation_model,
+                      'messages': [{'role': 'system', 'content': system}, {'role': 'user', 'content': prompt}],
+                      'response_format': {'type': 'json_schema', 'json_schema': {
+                          'name': schema.__name__, 'strict': True, 'schema': strict(schema.model_json_schema())}}},
+                timeout=120)
+            response.raise_for_status()
+            choice = response.json()['choices'][0]
+            if choice['finish_reason'] != 'stop' or choice['message'].get('refusal'):
+                raise ValueError('Incomplete or refused structured response')
+            return schema.model_validate_json(choice['message']['content'])
+        except Exception:
+            raise RuntimeError('OpenAI generation failed. Check the server key, model access, quota and structured-output support.') from None
+
+
 class GroqGenerator:
     def __init__(self,settings,max_retries=1):
         if not os.getenv('GROQ_API_KEY'):
@@ -57,5 +94,6 @@ class GroqGenerator:
 
 def create_generator(settings,*,max_retries=1):
     if settings.generation_provider=='ollama':return OllamaGenerator(settings)
+    if settings.generation_provider=='openai':return OpenAIGenerator(settings)
     if settings.generation_provider=='groq':return GroqGenerator(settings,max_retries=max_retries)
     raise ValueError('Unknown generation provider: '+settings.generation_provider)
