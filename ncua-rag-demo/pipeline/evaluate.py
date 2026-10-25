@@ -72,9 +72,9 @@ def evaluate(root:Path,embedder=None)->dict:
             summary.update(abstention_accuracy=statistics.mean(r['abstained'] for r in negatives),p95_retrieval_seconds=timings[math.ceil(.95*len(timings))-1])
             result={'strategy':strategy,'rerank':rerank,'summary':summary,'queries':rows};results.append(result)
             print(strategy,'rerank',rerank,summary,flush=True)
-    report={'results':results,'embedding_model':'sentence-transformers/all-MiniLM-L6-v2','reranker':'cross-encoder/ms-marco-MiniLM-L-6-v2',
+    report={'results':results,'embedding_model':getattr(embedder,'identity','external'),'reranker':'cross-encoder/ms-marco-MiniLM-L-6-v2',
             'generation_metrics':{'faithfulness':None,'answer_relevance':None,'reason':'Retrieval-only experiment; see generation-results.json for separate live responses.'},
-            'timing_scope':'Local warm retrieval only; excludes remote network and Groq generation.',
+            'timing_scope':'Local warm retrieval only; excludes remote network and answer generation.',
             'labels':'Expected table rows manually selected from the downloaded original NCUA reports before scoring.'}
     (dest/'results.json').write_text(json.dumps(report,indent=2),encoding='utf8')
     lines=['# Chunking and reranking comparison','','Measured on the same 15 questions and source corpus. Twelve evidence questions and three expected abstentions.','',

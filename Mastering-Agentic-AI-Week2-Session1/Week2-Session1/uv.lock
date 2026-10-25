@@ -2956,7 +2956,6 @@ dependencies = [
     { name = "langchain-community" },
     { name = "langchain-core" },
     { name = "langchain-ollama" },
-    { name = "langchain-openai" },
     { name = "langchain-pinecone" },
     { name = "langchain-text-splitters" },
     { name = "lxml" },
@@ -2974,14 +2973,13 @@ requires-dist = [
     { name = "langchain-community", specifier = ">=0.4.2" },
     { name = "langchain-core", specifier = ">=1.4.0" },
     { name = "langchain-ollama", specifier = ">=0.3.0" },
-    { name = "langchain-openai", specifier = ">=1.2.2" },
     { name = "langchain-pinecone", specifier = ">=0.2.13" },
     { name = "langchain-text-splitters", specifier = ">=1.1.2" },
     { name = "lxml", specifier = ">=6.1.1" },
     { name = "pinecone", specifier = ">=7.3.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "rank-bm25", specifier = ">=0.2.2" },
-    { name = "streamlit", specifier = ">=1.45.0" },
+    { name = "streamlit", specifier = ">=1.57,<2" },
 ]
 
 [[package]]

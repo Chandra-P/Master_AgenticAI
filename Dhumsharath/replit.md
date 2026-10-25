@@ -26,6 +26,32 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
 
+## Local setup
+
+Use Node.js 24 and Corepack with the pinned pnpm 12.15.0. From the workspace root:
+
+```text
+corepack pnpm install
+corepack pnpm run build
+corepack pnpm --filter @workspace/dhumsharath run dev
+```
+
+The app runs at `http://localhost:5173/`. To run the API in a separate terminal:
+
+```text
+corepack pnpm --filter @workspace/api-server run dev
+```
+
+The development API defaults to port `3001`; the mockup sandbox defaults to `5174`.
+Explicit `PORT` and `BASE_PATH` environment variables override frontend defaults;
+the default frontend base path is `/`.
+
+Authenticated gameplay requires an existing Clerk application. Set its
+`VITE_CLERK_PUBLISHABLE_KEY` in `artifacts/dhumsharath/.env.local` before starting
+the frontend, and configure Clerk for the local origin. Players must sign in
+before playing. Keep backend Clerk secrets in the API environment when using
+authenticated API routes. This project requires no OpenAI API keys or AI runtime.
+
 ## Artifacts
 
 ### Indian Dumb Charades (Dhumsharath)

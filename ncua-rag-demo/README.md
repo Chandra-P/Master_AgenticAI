@@ -1,6 +1,6 @@
 # Credit Union Evidence Lab
 
-A document-only financial RAG demo built with LangChain, LangGraph, ChromaDB, local MiniLM embeddings and reranking, and Groq answer generation. The small public UI offers questions, institution/year filters, original source tables, and measured retrieval experiments.
+A document-only financial RAG demo built with LangChain, LangGraph, ChromaDB, local Ollama embeddings and answer generation, and optional MiniLM reranking.
 
 ## Corpus
 
@@ -25,15 +25,15 @@ python run.py evaluate
 python run.py export
 ```
 
-The reports are already included. `python run.py download` downloads missing reports and resumes the manifest; report requests are sequential and limited to 30 per UTC day by this demo. It does not submit email requests. Model weights download from Hugging Face on first use.
+The reports are already included. `python run.py download` downloads missing reports and resumes the manifest; report requests are sequential and limited to 30 per UTC day by this demo. It does not submit email requests. Pull the local Ollama models before indexing; the optional reranker downloads its weights from Hugging Face on first use.
 
-Create an ignored `.env` in the project root from `.env.example`, setting `GROQ_API_KEY`, `GROQ_MODEL`, and a random `RAG_BACKEND_TOKEN`. Never put secrets in public files. The configured Groq model is `openai/gpt-oss-20b`, served by Groq; no OpenAI API key is required. Model availability depends on the account, and the ID remains configurable.
+Create an ignored `.env` from `.env.example`. Start Ollama and run `ollama pull llama3.2:3b` and `ollama pull embeddinggemma:latest`. No hosted API keys are required. Configure `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, and `OLLAMA_EMBED_MODEL` as needed. Run `python run.py index` before serving: embedding model changes create separate collections and require reindexing. Set a random shared `RAG_BACKEND_TOKEN` when connecting a remote proxy.
 
 ```powershell
 python run.py serve
 ```
 
-The Python API listens on `127.0.0.1:8765`. The server uses local persistent Chroma collections; no Chroma Cloud account is required for this backend. It never exposes Chroma management operations publicly. Groq generation requires the backend token, an API key, and the evidence gate. Without Groq credentials it shows retrieval-only results.
+The Python API binds to `127.0.0.1:8765`. Chroma persistence and Ollama inference run locally. A backend token is optional for loopback development and should be set for remote proxy access. Reranking is disabled by default; set `RAG_ENABLE_RERANKER=1` to enable the optional Hugging Face cross-encoder (requires its model files).
 
 In `site/`, install the dependencies and start the UI using the included starter scripts:
 
@@ -44,14 +44,16 @@ npm run dev
 
 Set the site's ignored `.env.local` to `RAG_BACKEND_URL=http://127.0.0.1:8765` and the same backend token. The public deployment uses hosted runtime configuration instead. Backend URL/token values are not browser inputs and are not shipped to visitors.
 
+The answer proxy allows up to 600 seconds for local inference. Set the server-side `RAG_BACKEND_TIMEOUT_MS` to an integer from 1,000 to 900,000 milliseconds to adjust this limit.
+
 ## Architecture
 
 1. `pipeline/acquire.py` validates institution identity and preserves original NCUA reports plus a resumable manifest.
 2. `pipeline/extract.py` converts table rows to LangChain Documents, retaining financial labels, period columns, units, source tables, and row numbers.
-3. `pipeline/chunk.py` compares tokenizer-bounded fixed chunks (200 tokens, 30 overlap) with embedding-similarity semantic groups (200-token ceiling, similarity boundary 0.55).
+3. `pipeline/chunk.py` compares fixed chunks (200 whitespace words, 30 overlap with Ollama; tokenizer-bounded when a tokenizer is supplied) with embedding-similarity semantic groups (the same size ceiling, similarity boundary 0.55).
 4. `pipeline/index.py` uses the LangChain Chroma integration and persistent ChromaDB collections for each strategy. Stable chunk IDs, model identity, and corpus hashes support refreshes and remove stale vectors.
 5. `pipeline/retrieve.py` combines Chroma dense results and BM25 using reciprocal rank fusion, retrieves 20 candidates, and optionally reranks to five with a cross-encoder.
-6. `pipeline/graph.py` uses LangGraph to retrieve, check institution/metric/period coverage, abstain or report partial evidence, then call LangChain ChatGroq. Unknown citations and unsupported numeric claims fail closed. These checks do not substitute for evaluating full answer faithfulness.
+6. `pipeline/graph.py` uses LangGraph to retrieve, check institution/metric/period coverage, abstain or report partial evidence, then call a LangChain runnable backed by local Ollama. Unknown citations and unsupported numeric claims fail closed. These checks do not substitute for evaluating full answer faithfulness.
 7. The Sites UI proxies requests to the Python API, displays cited source passages, and publishes the source library and experiment results.
 
 ## Evaluation
@@ -64,7 +66,7 @@ Targets: at least 0.80 evidence recall@5, at least 0.90 generated-answer faithfu
 
 The Sites UI is publicly accessible after a successful deployment. The current demo connects to a local Python backend using an outbound Cloudflare Quick Tunnel; live search and answers therefore require this computer, the Python service, and the tunnel to remain running. The source library and saved experiment results remain hosted independently. This is a demonstration connection, not an always-on production backend.
 
-For a durable deployment, run this Python backend on an always-on host with a persistent disk for ChromaDB, or configure a hosted Chroma server and keep Python inference on an application host. Change the server-side `RAG_BACKEND_URL`; no UI rewrite is required. Keep the token secret and preserve request limits. The current shared demo limits requests and Groq generations per server lifetime; it does not promise a production billing cap.
+For a durable deployment, run this Python backend on an always-on host with a persistent disk for ChromaDB, or configure a hosted Chroma server and keep Python inference on an application host. Change the server-side `RAG_BACKEND_URL`; no UI rewrite is required. Keep the token secret and preserve request limits. The current shared demo limits requests and local generations per server lifetime; it does not promise a production billing cap.
 
 ## Verification
 
@@ -112,3 +114,5 @@ Indexes contain 2,275 fixed and 1,936 semantic chunks. All 48 tests pass, includ
 Evaluation version 3 retains the same 38 question texts and filters. Before retrieval, A21/A22 changed from missing-evidence negatives to verified evidence questions, giving 34 evidence cases and four negatives. Versioned labels and results are under evaluation/expanded/post-ocr/; previous runs remain intact. This is a regression experiment on a small convenience set, not evidence of universal chunker superiority.
 
 OCR evaluation results: using identical version-3 labels for pre-OCR saved passages and new retrieval, reranked Recall@5 increased 0.926 to 0.985 for fixed and 0.917 to 0.975 for semantic. Both recover A21/A22 exact BECU membership evidence; four negative cases return no evidence. Fixed remains slightly ahead. See evaluation/expanded/post-ocr/before-after.md. Raw timings were interrupted by long execution pauses and are excluded from performance conclusions. Public report: /becu-ocr-evaluation.txt.
+
+Historical evaluation artifacts retain their original MiniLM models, corpus, and scores. They do not measure the new Ollama configuration; rerun evaluation before claiming its quality. Local source changes do not update an existing deployed site.

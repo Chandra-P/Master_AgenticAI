@@ -23,14 +23,18 @@ def serve(root:Path,port:int=8765):
     from dotenv import load_dotenv
     load_dotenv(Path(root)/'.env',override=False)
     from .index import Store,LocalEmbeddings,RERANKER_REVISION
-    from .graph import build_graph,groq_model
-    from sentence_transformers import CrossEncoder
+    from .graph import build_graph,local_model
     root=Path(root).resolve();manifest=json.loads((root/'data/manifest.json').read_text())
-    embedder=LocalEmbeddings();reranker=CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2',revision=RERANKER_REVISION,local_files_only=os.getenv('HF_HUB_OFFLINE')=='1')
-    llm=groq_model();graphs={s:build_graph(Store(root/'data/chroma',s,embedder),llm,reranker) for s in ('fixed','semantic')}
+    embedder=LocalEmbeddings();reranker=None
+    if os.getenv('RAG_ENABLE_RERANKER')=='1':
+        from sentence_transformers import CrossEncoder
+        reranker=CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2',revision=RERANKER_REVISION,local_files_only=os.getenv('HF_HUB_OFFLINE')=='1')
+    llm=local_model();stores={s:Store(root/'data/chroma',s,embedder) for s in ('fixed','semantic')}
+    if any(not store.collection.count() for store in stores.values()):
+        raise RuntimeError('No index for configured Ollama embedding model. Run python run.py index; old model vectors cannot be reused.')
+    graphs={s:build_graph(store,llm,reranker) for s,store in stores.items()}
     lock=threading.Lock();traffic=defaultdict(deque);global_traffic=deque();total_generation=0
     token=os.getenv('RAG_BACKEND_TOKEN','')
-    if llm and not token:raise RuntimeError('A server token is required before enabling public Groq generation')
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass
         def send_json(self,value,status=200):
@@ -41,7 +45,11 @@ def serve(root:Path,port:int=8765):
         def do_GET(self):
             if not self.authorized():return self.send_json({'error':'Unauthorized'},401)
             if self.path!='/api/status':return self.send_json({'error':'Not found'},404)
-            self.send_json({'ready':True,'generation':bool(llm),'vector_store':'ChromaDB','framework':'LangChain + LangGraph',
+            self.send_json({'ready':True,'generation':bool(llm),'generation_provider':'Ollama',
+                            'generation_model':os.getenv('OLLAMA_MODEL','llama3.2:3b'),
+                            'embedding_model':embedder.identity,
+                            'reranker':'cross-encoder/ms-marco-MiniLM-L-6-v2' if reranker is not None else None,
+                            'vector_store':'ChromaDB','framework':'LangChain + LangGraph',
                             'institutions':len({r['charter'] for r in manifest['reports'] if r['status']=='downloaded'}),'reports':sum(r['status']=='downloaded' for r in manifest['reports'])})
         def do_POST(self):
             nonlocal total_generation
@@ -52,7 +60,7 @@ def serve(root:Path,port:int=8765):
                 if not 0<length<=8000:raise ValueError('Invalid request size')
                 payload=json.loads(self.rfile.read(length));request=validate_request(payload)
             except (ValueError,TypeError,json.JSONDecodeError):return self.send_json({'error':'Invalid question or filters'},400)
-            # Shared demo budget and single inference lock protect the local CPU and Groq quota.
+            # Shared demo budget and single inference lock protect the local CPU and local inference capacity.
             now=time.monotonic();identity=self.headers.get('X-Visitor-Id','anonymous')[:100]
             while global_traffic and now-global_traffic[0]>60:global_traffic.popleft()
             if len(global_traffic)>=12:return self.send_json({'error':'The shared demo request limit has been reached. Try again in a minute.'},429)
@@ -81,5 +89,5 @@ if __name__=='__main__':
         raw=getpass.getpass('Runtime configuration JSON (hidden): ')
         settings=json.loads(raw)
         for k,v in settings.items():
-            if k in {'RAG_BACKEND_TOKEN','GROQ_API_KEY','GROQ_MODEL'}:os.environ[k]=str(v)
+            if k in {'RAG_BACKEND_TOKEN','OLLAMA_BASE_URL','OLLAMA_MODEL','OLLAMA_EMBED_MODEL','RAG_ENABLE_RERANKER'}:os.environ[k]=str(v)
     serve(args.root,args.port)

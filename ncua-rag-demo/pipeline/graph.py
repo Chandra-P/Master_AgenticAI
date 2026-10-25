@@ -1,4 +1,4 @@
-"""LangGraph: retrieve -> evidence gate -> Groq or explicit abstention."""
+"""LangGraph: retrieve -> evidence gate -> local Ollama or explicit abstention."""
 import os,re
 from typing import TypedDict,Any
 from langgraph.graph import StateGraph,START,END
@@ -41,7 +41,11 @@ def validate_answer(answer:str,evidence:list[dict])->str:
     from decimal import Decimal
     def numbers(s):
         return {Decimal(n.replace(',','')) for n in re.findall(r'(?<![A-Za-z])[-+]?\d[\d,]*(?:\.\d+)?',s)}
-    for sentence in re.split(r'(?<=[.!?])\s+|\n+',answer):
+    # Bind citations printed after punctuation to the preceding sentence only.
+    # Keep the displayed answer intact and preserve separate checks for later claims.
+    claims=re.sub(r'([.!?])[ \t]+((?:\[E\d+\][ \t]*)+)',
+                  lambda m:' '+m.group(2).strip()+m.group(1)+' ',answer)
+    for sentence in re.split(r'(?<=[.!?])\s+|\n+',claims):
         refs=re.findall(r'\[(E\d+)\]',sentence)
         claim=re.sub(r'\[E\d+\]','',sentence)
         nums=numbers(claim)
@@ -98,10 +102,20 @@ def coverage_report(question:str,filters:dict,evidence:list[dict],corpus:list)->
                     if not any((e.get('format')=='pdf' and str(e.get('report_year'))==y) or re.search(r'(?:Dec|Mar|Jun|Sep)[- ]'+y+r':',e.get('text','')) for e in candidates):missing.append(f'{c}: {metric}, {y}')
     return {'complete':not missing,'missing':missing,'required_institutions':sorted(required),'metric':metric,'years':sorted(years)}
 
-def groq_model():
-    if not os.getenv('GROQ_API_KEY'):return None
-    from langchain_groq import ChatGroq
-    return ChatGroq(model=os.getenv('GROQ_MODEL','openai/gpt-oss-20b'),temperature=0,max_tokens=1400,timeout=35,max_retries=1,reasoning_effort='low')
+def local_model():
+    """LangChain runnable backed by Ollama, without cloud credentials."""
+    import requests
+    from langchain_core.runnables import RunnableLambda
+    from langchain_core.messages import AIMessage
+    base_url=os.getenv('OLLAMA_BASE_URL','http://localhost:11434').rstrip('/')
+    model=os.getenv('OLLAMA_MODEL','llama3.2:3b')
+    def invoke(prompt):
+        roles={'human':'user','ai':'assistant','system':'system'}
+        messages=[{'role':roles.get(m.type,m.type),'content':m.content} for m in prompt.to_messages()]
+        response=requests.post(base_url+'/api/chat',json={'model':model,'messages':messages,'stream':False,'options':{'temperature':0,'num_predict':1400}},timeout=180)
+        response.raise_for_status()
+        return AIMessage(content=response.json()['message']['content'])
+    return RunnableLambda(invoke)
 
 def build_graph(store,llm=None,reranker=None):
     from .retrieve import retrieve
@@ -115,7 +129,7 @@ def build_graph(store,llm=None,reranker=None):
         if not state.get('coverage',{}).get('complete',True):return 'partial'
         return 'generate' if llm else 'retrieval'
     def empty(state):return {'status':'insufficient_evidence','answer':'I could not find sufficient evidence in the downloaded reports for this question.'}
-    def retrieval(state):return {'status':'retrieval_only','answer':'Relevant source passages are shown below. Groq answer generation is not configured; these passages are retrieval results, not a generated answer.'}
+    def retrieval(state):return {'status':'retrieval_only','answer':'Relevant source passages are shown below. Local answer generation is not configured; these passages are retrieval results, not a generated answer.'}
     def partial(state):return {'status':'partial_evidence','answer':'The retrieved passages do not cover every required institution, metric and period. A complete comparison or ranking cannot be established from this evidence. Missing: '+'; '.join(state['coverage']['missing'])+'.'}
     def generate(state):
         context='\n\n'.join(f"[{e['id']}] {e['text']}\nSource: {e['source']}; publisher type: {e.get('source_type','NCUA regulatory report')}; institution: {e['institution']}; PDF page: {e.get('pdf_page','not applicable')}; table: {e.get('table','not applicable')}; row: {e.get('row')}" for e in state['evidence'])

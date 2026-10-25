@@ -5,6 +5,8 @@ import argparse
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('command',choices=['download','index','evaluate','export','serve']);a=p.parse_args()
     root=Path(__file__).resolve().parent
+    from dotenv import load_dotenv
+    load_dotenv(root/'.env',override=False)
     if a.command=='download':
         from pipeline.acquire import download_reports,CANDIDATES
         download_reports(CANDIDATES,root/'data')

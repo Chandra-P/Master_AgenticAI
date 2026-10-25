@@ -5,7 +5,11 @@ Dependencies: pip install langchain langchain-ollama ddgs
 
 import math
 import json
+import os
 from datetime import date
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 from ddgs import DDGS
 
@@ -13,6 +17,8 @@ from langchain.agents import create_agent
 from langchain.tools import tool
 from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import InMemorySaver
+
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 
 @tool
@@ -45,7 +51,8 @@ def search_web(query: str) -> str:
 
 def build_agent():
     return create_agent(
-        model=ChatOllama(model="llama3.2:3b", temperature=0),
+        model=ChatOllama(model=os.getenv("OLLAMA_CHAT_MODEL", "llama3.2:3b"),
+                         base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"), temperature=0),
         tools=[search_web, circle_area, rectangle_area],
         system_prompt=(
             "You are a helpful general assistant with a web-search tool. "

@@ -4,7 +4,7 @@ import "./lab.css";
 
 export const metadata: Metadata = {
   title: "Credit Union Evidence Lab",
-  description: "Explore NCUA reports with cited evidence, LangChain, ChromaDB and Groq.",
+  description: "Explore NCUA reports with cited evidence, LangChain, ChromaDB and Ollama.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

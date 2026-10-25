@@ -1,8 +1,6 @@
 # ShopEasy — Customer Support RAG Tutorial
 
-**Local model setup:** Notebook 1 now uses Ollama embeddings and chat, with
-Pinecone for vector storage. Follow [LOCAL-MODELS.txt](LOCAL-MODELS.txt).
-Notebooks 2 and 3 and the app still use the original OpenAI setup described below.
+**Local model setup:** All three notebooks and the support app use Ollama embeddings and chat, with Pinecone for vector storage. No OpenAI key is required. Follow [LOCAL-MODELS.txt](LOCAL-MODELS.txt).
 
 A hands-on walkthrough of Retrieval-Augmented Generation (RAG) for a real-world
 use case: a **customer-support assistant for ShopEasy**, a multi-category
@@ -45,7 +43,7 @@ human-readable `title`.
 ## The notebooks
 
 Run them **in order** — Notebook 1 indexes the data into Pinecone, and Notebooks
-2 and 3 reuse that same index (namespace `shopeasy-basic-rag`) without
+2 and 3 reuse that same index (namespace `shopeasy-local-rag`) without
 re-indexing.
 
 ### 1. [`1_rag_pipeline.ipynb`](1_rag_pipeline.ipynb) — Basic RAG pipeline
@@ -54,7 +52,7 @@ Builds the end-to-end pipeline from scratch:
 
 - **Load** the knowledge base and wrap each entry in a LangChain `Document`.
 - **Chunk** with `RecursiveCharacterTextSplitter` (500 chars, 100 overlap).
-- **Index** into Pinecone using OpenAI `text-embedding-3-small` embeddings at 512 dims.
+- **Index** into Pinecone using local Ollama `embeddinggemma:latest` embeddings at 768 dimensions.
 - **Retrieve** the top-k chunks for a customer ticket via semantic similarity search.
 - **Generate** an answer with `gpt-4.1-mini`, including citations from doc metadata.
 
@@ -113,7 +111,7 @@ The notebook closes with a survey of other fusion/reranking strategies
   - 🔀 **Hybrid (vector + BM25)** — fuses semantic and keyword search via RRF.
 
 All three strategies reuse the **existing Pinecone index** populated by the
-notebooks (namespace `shopeasy-basic-rag`) — nothing is re-indexed.
+notebooks (namespace `shopeasy-local-rag`) — nothing is re-indexed.
 
 ---
 
@@ -122,7 +120,8 @@ notebooks (namespace `shopeasy-basic-rag`) — nothing is re-indexed.
 ### Prerequisites
 
 - **Python 3.12+**
-- An **OpenAI** API key (embeddings + chat) and a **Pinecone** account/index.
+- **Ollama** running locally with `embeddinggemma:latest` and `llama3.2:3b` installed.
+- A **Pinecone** account/index for vector storage.
 - [`uv`](https://docs.astral.sh/uv/) (recommended) for dependency management.
 
 ### 1. Install dependencies
@@ -144,13 +143,15 @@ pip install -e .
 Create a `.env` file in the project root:
 
 ```
-OPENAI_API_KEY=sk-...
 PINECONE_API_KEY=...
-PINECONE_INDEX_NAME=your-index-name
+PINECONE_LOCAL_INDEX_NAME=shopeasy-local-rag
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_EMBED_MODEL=embeddinggemma:latest
+OLLAMA_CHAT_MODEL=llama3.2:3b
 ```
 
-> Create a Pinecone index configured for **512-dimensional** vectors with
-> **cosine** similarity (matching `text-embedding-3-small` at 512 dims as used by
+> Create a Pinecone index configured for **768-dimensional** vectors with
+> **cosine** similarity (matching `embeddinggemma:latest` at 768 dimensions as used by
 > the notebooks). `.env` is loaded automatically by both the notebooks and the app.
 
 ---
@@ -159,11 +160,11 @@ PINECONE_INDEX_NAME=your-index-name
 
 ### Notebooks
 
-Run them in order — **Notebook 1 first**, since it creates and populates the
-Pinecone index that Notebooks 2 and 3 (and the app) depend on.
+Create the configured Pinecone index first, then run **Notebook 1** to populate
+it. Notebooks 2 and 3 and the app reuse that populated index.
 
 ```bash
-uv run jupyter lab        # or: jupyter notebook
+# Open the notebook in VS Code and select this project's .venv kernel.
 ```
 
 Then open `1_rag_pipeline.ipynb` → `2_metadata_filtering.ipynb` →
@@ -178,8 +179,8 @@ uv run streamlit run company_kb_viewer.py
 ```
 
 Streamlit opens the app in your browser. The **Knowledge Base** tab works with no
-API keys; the **Support Assistant** tab needs `OPENAI_API_KEY`,
-`PINECONE_API_KEY`, and `PINECONE_INDEX_NAME`.
+API keys; the **Support Assistant** tab needs `PINECONE_API_KEY`,
+`PINECONE_LOCAL_INDEX_NAME`, and the configured Ollama models running locally.
 
 ---
 
@@ -189,8 +190,8 @@ API keys; the **Support Assistant** tab needs `OPENAI_API_KEY`,
 shopeasy_knowledge_base.json
         │
         ▼
-1_rag_pipeline.ipynb  ──(indexes 512-dim vectors)──►  Pinecone
-        │                                          namespace: shopeasy-basic-rag
+1_rag_pipeline.ipynb  ──(indexes 768-dim vectors)──►  Pinecone
+        │                                          namespace: shopeasy-local-rag
         │                                                 ▲   ▲   ▲
         ▼                                                 │   │   │
 2_metadata_filtering.ipynb ───────────reuses index────────┘   │   │

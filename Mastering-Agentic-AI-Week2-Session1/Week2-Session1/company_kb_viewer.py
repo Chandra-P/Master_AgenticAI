@@ -6,14 +6,14 @@ Two tabs:
   * Support Assistant — a RAG chat agent that answers customer questions, letting
     the agent pick which retrieval strategy to use (basic semantic, metadata
     filtering, or hybrid). All strategies reuse the existing Pinecone index
-    (namespace ``shopeasy-basic-rag``) populated by the notebooks — nothing is
+    (namespace ``shopeasy-local-rag``) populated by the notebooks — nothing is
     re-indexed here.
 
 Run with:
     streamlit run company_kb_viewer.py
 
-The Support Assistant needs OPENAI_API_KEY, PINECONE_API_KEY, and
-PINECONE_INDEX_NAME in the environment (a local .env is loaded automatically).
+The Support Assistant uses local Ollama models and needs PINECONE_API_KEY and
+PINECONE_LOCAL_INDEX_NAME (the project .env is loaded automatically).
 """
 
 import json
@@ -25,19 +25,19 @@ import streamlit as st
 try:
     from dotenv import load_dotenv
 
-    load_dotenv()
+    load_dotenv(Path(__file__).resolve().parent / ".env")
 except ImportError:  # dotenv is optional; env vars may already be set
     pass
 
 KB_PATH = Path(__file__).parent / "shopeasy_knowledge_base.json"
 
 # ---- RAG strategy definitions (Support Assistant tab) -------------------
-# Each strategy reuses the EXISTING Pinecone vectors in the "shopeasy-basic-rag"
+# Each strategy reuses the EXISTING Pinecone vectors in the "shopeasy-local-rag"
 # namespace — we only change how we retrieve, never re-index.
-NAMESPACE = "shopeasy-basic-rag"
-EMBED_MODEL = "text-embedding-3-small"
-EMBED_DIMS = 512  # must match how the notebooks indexed the vectors
-CHAT_MODEL = "gpt-4.1-mini"
+NAMESPACE = "shopeasy-local-rag"
+EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "embeddinggemma:latest")
+CHAT_MODEL = os.getenv("OLLAMA_CHAT_MODEL", "llama3.2:3b")
+OLLAMA_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
 RAG_STRATEGIES = {
     "basic": {
@@ -282,19 +282,19 @@ def priority_badge(priority):
 # cached with @st.cache_resource so we connect to Pinecone and build BM25 once.
 # ============================================================================
 
-REQUIRED_ENV = ["OPENAI_API_KEY", "PINECONE_API_KEY", "PINECONE_INDEX_NAME"]
+REQUIRED_ENV = ["PINECONE_API_KEY", "PINECONE_LOCAL_INDEX_NAME"]
 
 
 def missing_env():
     """Return the list of required env vars that aren't set."""
-    return [v for v in REQUIRED_ENV if not os.environ.get(v)]
+    return [v for v in REQUIRED_ENV if not os.environ.get(v, "").strip()]
 
 
 @st.cache_resource
 def get_embeddings():
-    from langchain_openai import OpenAIEmbeddings
+    from langchain_ollama import OllamaEmbeddings
 
-    return OpenAIEmbeddings(model=EMBED_MODEL, dimensions=EMBED_DIMS)
+    return OllamaEmbeddings(model=EMBED_MODEL, base_url=OLLAMA_URL)
 
 
 @st.cache_resource
@@ -304,17 +304,23 @@ def get_vector_store():
     from pinecone import Pinecone
 
     pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
-    index = pc.Index(os.environ["PINECONE_INDEX_NAME"])
+    name = os.environ["PINECONE_LOCAL_INDEX_NAME"]
+    embeddings = get_embeddings()
+    dimension = len(embeddings.embed_query("Embedding dimension check"))
+    description = pc.describe_index(name)
+    if description.dimension != dimension:
+        raise ValueError(f"Index {name!r} has {description.dimension} dimensions; the local model requires {dimension}. Run Notebook 1 with a matching local index.")
+    index = pc.Index(name)
     return PineconeVectorStore(
-        index=index, embedding=get_embeddings(), namespace=NAMESPACE
+        index=index, embedding=embeddings, namespace=NAMESPACE
     )
 
 
 @st.cache_resource
 def get_llm():
-    from langchain_openai import ChatOpenAI
+    from langchain_ollama import ChatOllama
 
-    return ChatOpenAI(model=CHAT_MODEL)
+    return ChatOllama(model=CHAT_MODEL, base_url=OLLAMA_URL, temperature=0)
 
 
 @st.cache_resource
@@ -353,32 +359,31 @@ def get_ensemble_retriever():
 @st.cache_resource
 def get_ticket_classifier():
     """LLM with structured output that infers a metadata filter from a ticket."""
-    from typing import Optional
+    from typing import Optional, Literal
 
     from langchain_core.prompts import PromptTemplate
-    from langchain_openai import ChatOpenAI
     from pydantic import BaseModel, Field
 
     class TicketFilter(BaseModel):
         """Structured metadata filter inferred from a customer support ticket."""
 
-        product_area: str = Field(
+        product_area: Literal["payments", "returns", "shipping", "orders", "account"] = Field(
             description="One of: payments, returns, shipping, orders, account"
         )
-        doc_type: Optional[str] = Field(
+        doc_type: Optional[Literal["runbook", "past_ticket", "product_doc", "bug_report", "faq"]] = Field(
             default=None,
             description="Optionally one of: runbook, past_ticket, product_doc, "
             "bug_report, faq. Set only if the ticket clearly targets a doc type "
             "(e.g. asking about a known bug -> bug_report).",
         )
-        customer_tier: Optional[str] = Field(
+        customer_tier: Optional[Literal["plus", "regular"]] = Field(
             default=None,
             description="Optionally one of: plus, regular. Set only if the "
             "customer's tier is explicitly mentioned.",
         )
 
-    structured_llm = ChatOpenAI(model=CHAT_MODEL, temperature=0).with_structured_output(
-        TicketFilter
+    structured_llm = get_llm().with_structured_output(
+        TicketFilter, method="json_schema"
     )
     prompt = PromptTemplate.from_template(
         "You classify ShopEasy customer support tickets so we can filter the "
@@ -484,7 +489,7 @@ def render_support_assistant():
         )
     with top[1]:
         st.write("")  # spacer to align the button with the radio
-        if st.button("🗑️ Clear chat", use_container_width=True):
+        if st.button("🗑️ Clear chat", width="stretch"):
             st.session_state.chat_messages = []
             st.rerun()
     st.caption(RAG_STRATEGIES[strategy]["help"])
@@ -553,7 +558,7 @@ def render_kb_browser(docs):
     # ---- Sidebar filters ------------------------------------------------
     with st.sidebar:
         st.markdown("### Filters")
-        if st.button("Reset filters", use_container_width=True):
+        if st.button("Reset filters", width="stretch"):
             for field, _ in FILTER_FIELDS:
                 st.session_state.pop(f"filter_{field}", None)
             st.rerun()
@@ -604,7 +609,7 @@ def render_kb_browser(docs):
             sub = snippet(d["content"], d["title"])
             if sub:
                 label += f"\n\n{sub}"
-            if st.button(label, key=f"card_{d['id']}", use_container_width=True):
+            if st.button(label, key=f"card_{d['id']}", width="stretch"):
                 st.session_state.selected_id = d["id"]
 
     with detail_col:

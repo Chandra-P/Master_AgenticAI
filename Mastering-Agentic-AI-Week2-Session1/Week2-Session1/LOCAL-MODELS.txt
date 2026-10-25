@@ -1,9 +1,9 @@
-Notebook 1: local models with Pinecone
+Week 2 notebooks and support viewer: local models with Pinecone
 
 1. Install Ollama for Windows: https://ollama.com/download/windows
    Open Ollama, then open a new terminal and run:
-     ollama pull nomic-embed-text
-     ollama pull qwen3.5:2b
+     ollama pull embeddinggemma:latest
+     ollama pull llama3.2:3b
    Downloads require several GB of disk space. Inference uses your computer.
 
 2. From this Week2-Session1 folder, install dependencies:
@@ -19,7 +19,7 @@ Notebook 1: local models with Pinecone
 
 4. Copy .env.demo to .env if .env does not exist. Fill in PINECONE_API_KEY.
    Set PINECONE_LOCAL_INDEX_NAME to your new index name.
-   OPENAI_API_KEY is not needed for Notebook 1.
+   OPENAI_API_KEY is not needed for any notebook or the support viewer.
 
 5. Restart the kernel and run 1_rag_pipeline.ipynb from the top.
    The embedding and answer models run locally; Pinecone still stores vectors
@@ -29,12 +29,12 @@ Notebook 1: local models with Pinecone
 Scope: All three notebooks use Ollama and PINECONE_LOCAL_INDEX_NAME with the
 shopeasy-local-rag namespace. Run Notebook 1 first to index the corpus, then
 Notebooks 2 and 3. Notebook 2 uses local JSON-schema classification and requires
-no TypeSafe key. company_kb_viewer.py retains its original OpenAI setup.
+no TypeSafe key. company_kb_viewer.py uses the same local Ollama models and local Pinecone namespace.
 
 Offline verification:
   uv run python test_rag_notebook.py
 
-Verified alternative model configuration (set in your private .env):
+Default model configuration (set in your private .env to override):
   OLLAMA_EMBED_MODEL=embeddinggemma:latest
   OLLAMA_CHAT_MODEL=llama3.2:3b
   embeddinggemma produces 768-dimensional vectors. Use a separate index or

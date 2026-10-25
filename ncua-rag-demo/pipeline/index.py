@@ -1,4 +1,4 @@
-"""LangChain Chroma persistence and MiniLM embeddings."""
+"""LangChain Chroma persistence and local Ollama embeddings."""
 from __future__ import annotations
 from pathlib import Path
 from hashlib import sha256
@@ -11,14 +11,27 @@ EMBEDDING_REVISION='1110a243fdf4706b3f48f1d95db1a4f5529b4d41'
 RERANKER_REVISION='233902d25c440f23af6f7d6e94d2946bac0bee0a'
 
 class LocalEmbeddings(Embeddings):
-    def __init__(self,model='sentence-transformers/all-MiniLM-L6-v2'):
-        from sentence_transformers import SentenceTransformer
-        self.model=SentenceTransformer(model,revision=EMBEDDING_REVISION if model=='sentence-transformers/all-MiniLM-L6-v2' else None,local_files_only=os.getenv('HF_HUB_OFFLINE')=='1')
-        self.model.max_seq_length=256
-        self.identity=model
-        self.tokenizer=self.model.tokenizer
+    """Local Ollama embeddings; model identity isolates incompatible collections."""
+    def __init__(self,model=None):
+        self.model=model or os.getenv('OLLAMA_EMBED_MODEL','embeddinggemma:latest')
+        self.base_url=os.getenv('OLLAMA_BASE_URL','http://localhost:11434').rstrip('/')
+        self.identity='ollama:'+self.model
+        self.tokenizer=None
     def embed_documents(self,texts):
-        return self.model.encode(texts,normalize_embeddings=True,batch_size=32,show_progress_bar=False).tolist()
+        if not texts:return []
+        import requests, math
+        result=[];dimension=None
+        for offset in range(0,len(texts),32):
+            batch=texts[offset:offset+32]
+            response=requests.post(self.base_url+'/api/embed',json={'model':self.model,'input':batch,'truncate':False},timeout=180)
+            response.raise_for_status()
+            vectors=response.json().get('embeddings',[])
+            if not vectors or not vectors[0]:raise ValueError('Ollama returned invalid embeddings')
+            if dimension is None:dimension=len(vectors[0])
+            if len(vectors)!=len(batch) or any(len(v)!=dimension or not all(isinstance(n,(int,float)) and math.isfinite(n) for n in v) for v in vectors):
+                raise ValueError('Ollama returned invalid embeddings')
+            result.extend(vectors)
+        return result
     def embed_query(self,text):return self.embed_documents([text])[0]
 
 def where_filter(filters:dict)->dict|None:

@@ -15,3 +15,13 @@ test('missing backend returns clear setup state without pretending to retrieve',
   assert.equal(r.status,503);assert.equal(r.data.ready,false);
   assert.equal(r.data.generation,false);
 });
+
+test('local inference gets a longer bounded timeout than status requests',async(t)=>{
+  const delays=[];
+  t.mock.method(AbortSignal,'timeout',ms=>{delays.push(ms);return new AbortController().signal;});
+  t.mock.method(globalThis,'fetch',async()=>new Response(JSON.stringify({ready:true}),{status:200}));
+  const env={RAG_BACKEND_URL:'http://127.0.0.1:8765'};
+  assert.equal((await proxyRequest('ask',{question:'assets'},env)).status,200);
+  await proxyRequest('status',null,env);
+  assert.deepEqual(delays,[600000,10000]);
+});

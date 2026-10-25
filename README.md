@@ -90,7 +90,7 @@ python -m venv .venv
 python -m pip install python-dotenv langchain langchain-core langchain-ollama ddgs ipykernel
 ```
 
-On macOS/Linux, activate with `source .venv/bin/activate`. The install command includes the Ollama and web-search dependencies; the original project dependency file and lockfile still describe the earlier OpenAI setup.
+On macOS/Linux, activate with `source .venv/bin/activate`. The project dependency file and lockfile include Ollama and web search. You can also install the complete environment with `uv sync` from the project folder.
 
 ### Notebook
 

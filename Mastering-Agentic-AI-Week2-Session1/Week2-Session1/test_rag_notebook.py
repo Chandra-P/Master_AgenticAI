@@ -75,8 +75,8 @@ class NotebookTests(unittest.TestCase):
             exec(cell(18), scope)
             scope.update(ChatOllama=Mock(), PromptTemplate=SimpleNamespace(from_template=Mock()))
             exec(cell(23), scope)
-        self.assertEqual(scope["OllamaEmbeddings"].call_args.kwargs["model"], "nomic-embed-text")
-        self.assertEqual(scope["ChatOllama"].call_args.kwargs["model"], "qwen3.5:2b")
+        self.assertEqual(scope["OllamaEmbeddings"].call_args.kwargs["model"], "embeddinggemma:latest")
+        self.assertEqual(scope["ChatOllama"].call_args.kwargs["model"], "llama3.2:3b")
         pc.describe_index.return_value = SimpleNamespace(dimension=512)
         with patch.dict(os.environ, {"PINECONE_API_KEY": "test", "PINECONE_LOCAL_INDEX_NAME": "old"}, clear=True):
             with self.assertRaisesRegex(ValueError, "768"):
