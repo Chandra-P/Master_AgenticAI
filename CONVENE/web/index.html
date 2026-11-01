@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#143d46">
+  <meta name="description" content="Find a San Antonio venue and professional decorations for your celebration. Compare sourced options and keep your whole-party budget in view.">
+  <title>CONVENE · A party worth bringing everyone together for</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23143d46'/%3E%3Cpath d='M28 13a11 11 0 1 0 0 14' fill='none' stroke='%23f9edd4' stroke-width='5'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/web/styles.css">
+  <script type="module" src="/web/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#browse">Skip to options</a>
+  <header class="site-header"><a class="brand" href="/" aria-label="Convene home"><span class="brand-symbol">c<span>✦</span></span>convene<span class="brand-dot">.</span></a>
+    <nav aria-label="Main navigation"><a href="#browse" class="nav-active">Explore options</a><button id="saved-nav">Saved <span id="saved-count">0</span></button><button id="how-it-works">How it works ↗</button></nav>
+    <button id="plan-nav" class="nav-plan">Your party <span>↗</span></button>
+  </header>
+  <main class="page">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy"><div class="eyebrow"><span class="little-star">✧</span> LITTLE DETAILS. BIG MEMORIES.</div>
+        <h1 id="hero-title">A little Stitch.<br>A whole lot of <em>celebration.</em></h1>
+        <p>Find the space. Bring the magic.<br>Make room for everyone she loves.</p>
+        <a class="button button-dark hero-cta" href="#agent-panel">Let my agent plan <span>↗</span></a>
+        <div class="hero-note"><span class="check-circle">✓</span> Real local options. Clear costs. Your kind of party.</div>
+      </div>
+      <div class="hero-art"><div class="hero-photo"><img src="/assets/bewitchin-styling.jpg" alt="A professionally styled party from Bewitchin Balloons, shown as portfolio inspiration"><span class="photo-credit">Portfolio inspiration · Bewitchin Balloons</span></div>
+        <div class="theme-sticker"><span>THE BIRTHDAY BRIEF</span><strong>Turning 10.<br>Going all out.</strong><div><i></i><i></i><i></i><small>Stitch-inspired palette</small></div></div>
+        <span class="art-spark spark-one">✳</span><span class="art-spark spark-two">✦</span>
+      </div>
+    </section>
+    <section class="party-strip" aria-label="Your party details"><div class="party-strip-title"><span class="icon-tile">✧</span><div><small>YOUR CELEBRATION</small><strong id="party-title">Her big 10</strong></div></div>
+      <div class="brief-cell"><small>LOCATION</small><strong>San Antonio, TX</strong></div>
+      <div class="brief-cell"><small>THE DATE</small><strong id="brief-date">Sun, Dec 6, 2026</strong></div>
+      <div class="brief-cell"><small>THE GUEST LIST</small><strong id="brief-guests">120 people <span>· 30 children</span></strong></div>
+      <div class="brief-cell"><small>WHOLE-PARTY BUDGET</small><strong id="brief-budget">$2,000</strong></div>
+      <button class="edit-brief" id="edit-brief" aria-label="Edit your party details">✎</button>
+    </section>
+    <section class="planning-note"><span class="note-icon">✦</span><div><strong>Big guest list. Thoughtful choices.</strong><p>For 120 people, start with a flexible space and one beautiful decor focal point. Keep room in your budget for food, cake, games and required fees.</p></div><span class="note-tag">A little planning goes a long way</span></section>
+    <section class="agent-panel" id="agent-panel" aria-labelledby="agent-title"><div class="agent-intro"><div><span class="eyebrow">YOUR PLANNING AGENT</span><h2 id="agent-title">Let’s work out what actually fits.</h2><p>I’ll check the brief, research sources, compare venue + decorator combinations and flag the gaps.</p></div><span class="agent-symbol" aria-hidden="true">✦</span></div>
+      <div class="agent-actions"><label for="agent-mode">Planning mode<select id="agent-mode"><option value="catalog">Legacy catalog demo · no API calls</option><option value="live" disabled>Web research disabled by default</option></select></label><button id="run-agent" class="button button-dark">Run demo comparison ↗</button><p>This is the legacy demo. Use the <a href="http://127.0.0.1:8001/">approved PostgreSQL planner</a> for current approved vendors. No bookings or messages.</p></div>
+      <p id="agent-status" class="agent-status" role="status">Ready for your 120-person celebration.</p><ol id="agent-activity" class="agent-activity" aria-label="Actual agent activity" hidden></ol><div id="agent-results" aria-live="polite"></div>
+    </section>
+    <div class="workspace" id="browse">
+      <section class="options-area" aria-labelledby="options-title"><div class="section-top"><div class="eyebrow">LET’S BRING IT TOGETHER</div><h2 id="options-title">Good spaces. Happy faces.</h2><p id="options-subtitle">A few local places to start your celebration.</p></div>
+        <div class="category-tabs" role="tablist" aria-label="Browse category"><button class="category active" role="tab" aria-selected="true" id="venues-tab" data-category="venues">⌂ <span>Venues</span><b id="venue-count">3</b></button><button class="category" role="tab" aria-selected="false" id="decorators-tab" data-category="decorators">✧ <span>Professional decor</span><b id="decorator-count">2</b></button></div>
+        <div class="toolbar"><label class="search-field"><span>⌕</span><input id="search" type="search" placeholder="Search name or amenities" aria-label="Search options"></label><button id="saved-filter" class="filter-button" aria-pressed="false">♡ <span>Saved</span></button><label class="sort-label"><span class="sr-only">Sort options</span><select id="sort"><option value="recommended">Recommended</option><option value="price">Lowest starting price</option><option value="capacity">Most capacity</option></select></label></div>
+        <div class="results-caption"><span id="results-count" role="status">Loading local options…</span><span>Source-checked Oct 31, 2026 <span class="dot">•</span> Dates to confirm</span></div>
+        <div class="option-grid" id="cards" aria-live="polite"></div>
+        <div class="catalog-note" id="catalog-note">Published capacities are maximums, not confirmed party layouts. Check room for tables and children’s games before choosing.</div>
+        <section class="discovery-box"><div class="discovery-symbol">✧</div><div><h3>Have another venue in mind?</h3><p>Read its public website, or discover more San Antonio spaces.</p></div><button id="open-research" class="button button-outline">Research a venue <span>↗</span></button></section>
+      </section>
+      <aside class="plan-sidebar" id="your-plan" aria-label="Your party shortlist"><div class="plan-heading"><span class="eyebrow">A LITTLE PLAN FOR A BIG DAY</span><h2>Your party, taking shape.</h2><span class="local-badge">Saved on this device</span></div><div class="selected-options" id="selected-options"></div>
+        <div class="budget-block"><div class="budget-top"><span>Whole-party budget</span><strong id="total-budget">$2,000</strong></div><div class="budget-meter" aria-hidden="true"><span id="budget-fill"></span></div><div class="budget-line"><span>Venue + professional decor</span><strong id="selected-total">—</strong></div><small id="subtotal-label">Choose your options to see their starting costs.</small>
+        <label class="reserve-label" for="reserve">Set aside for everything else <span title="An adjustable planning allowance, not a supplier quote">ⓘ</span></label><div class="money-input"><span>$</span><input id="reserve" type="number" value="1000" min="0" max="100000" step="50" aria-describedby="reserve-help"></div><small id="reserve-help">Food, cake, games, security and extra fees. Your adjustable allowance.</small>
+        <div class="remaining-row"><span>Unallocated after set-aside</span><strong id="headroom">—</strong></div><p class="budget-status" id="budget-status" role="status">Your choices will appear here.</p></div>
+        <button class="button button-dark full-width" id="prepare-quote">Prepare quote requests <span>↗</span></button><button class="download-link" id="download-plan">↓ Download shortlist</button><p class="sidebar-footnote">A shortlist, not a booking. All-in prices, Stitch designs and December 6 availability need provider confirmation.</p>
+      </aside>
+    </div>
+    <section class="theme-banner"><div class="palette-circles"><i></i><i></i><i></i></div><div><span class="eyebrow">ONE THEME. YOUR OWN LITTLE TWIST.</span><h2>Blue skies. Big smiles. Stitch vibes.</h2><p>Ask your decorator for a blue-and-lilac palette, a photo backdrop and a cake-table focal point.<br>Portfolio photos show past work; the custom Stitch design still needs a quote.</p></div><button id="explore-decor" class="button button-outline">Explore professional decor ↗</button></section>
+  </main>
+  <footer><a class="brand" href="/">convene.</a><p>Bring your people together.</p><span>San Antonio, Texas · Real sources, human decisions.</span></footer>
+  <dialog id="details-dialog" aria-labelledby="details-title"><button class="dialog-close" data-close aria-label="Close details">×</button><div id="details-body"></div></dialog>
+  <dialog id="brief-dialog" aria-labelledby="brief-dialog-title"><button class="dialog-close" data-close aria-label="Close party details">×</button><h2 id="brief-dialog-title">Make it your kind of party.</h2><p>San Antonio · Stitch theme · Professional decorations</p><form id="brief-form"><label>Party name<input name="title" maxlength="80" required></label><label>Date<input name="date" type="date" required></label><div class="form-row"><label>Children<input name="children" type="number" min="1" max="10000" required></label><label>Family members<input name="family" type="number" min="0" max="10000" required></label></div><label>Whole-party budget ($)<input name="budget" type="number" min="1" max="1000000" required></label><button class="button button-dark" type="submit">Update my party ↗</button></form></dialog>
+  <dialog id="quote-dialog" aria-labelledby="quote-title"><button class="dialog-close" data-close aria-label="Close quote draft">×</button><span class="eyebrow">YOUR NEXT STEP</span><h2 id="quote-title">Let’s get the real numbers.</h2><p>A draft you can copy and send yourself. No messages have been sent.</p><textarea id="quote-text" rows="14" aria-label="Quote request draft"></textarea><button id="copy-quote" class="button button-dark">Copy quote request</button><div id="quote-sources"></div></dialog>
+  <dialog id="research-dialog" aria-labelledby="research-title"><button class="dialog-close" data-close aria-label="Close research">×</button><span class="eyebrow">LOOK A LITTLE FURTHER</span><h2 id="research-title">Find another San Antonio space.</h2><p>Search uses Keenable. Reading and extracting venue details uses OpenAI and may incur API costs. Nothing runs until you select Research.</p><form id="research-form"><label>Public venue URLs, one per line (up to 5)<textarea id="research-urls" rows="3" placeholder="https://venue-website.com/event-spaces"></textarea></label><label class="checkbox-label"><input type="checkbox" id="research-discover"> Also discover venues with Keenable</label><button class="button button-dark" type="submit" id="research-button">Research venues ↗</button></form><div id="research-results" aria-live="polite"></div></dialog>
+  <dialog id="how-dialog" aria-labelledby="how-title"><button class="dialog-close" data-close aria-label="Close how it works">×</button><span class="eyebrow">FROM MAYBE TO A LITTLE MORE CERTAIN</span><h2 id="how-title">A thoughtful shortlist. Then real quotes.</h2><ol class="how-steps"><li><strong>Find your space.</strong> Compare published capacity, amenities and base rates.</li><li><strong>Add some magic.</strong> Choose a professional decorator and ask about Stitch.</li><li><strong>Check the whole picture.</strong> Set aside money for food, cake, games and required extras.</li><li><strong>Confirm with people.</strong> Use the quote draft to check availability, all-in prices and rules.</li></ol><p>Listings and photos are sourced from provider websites. No paid affiliations, booking guarantees or invented reviews. Likes and choices are saved only in this browser.</p></dialog>
+  <div id="toast" role="status" class="toast" hidden></div>
+</body>
+</html>
