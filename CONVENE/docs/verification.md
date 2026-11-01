@@ -1,4 +1,15 @@
-﻿# Verification - October 31, 2026
+# Verification - October 31, 2026
+
+## November 1 parent browser walkthrough
+
+Completed a synthetic parent journey in Chrome: intake, budget uncertainty,
+confirmation, approved comparisons, shortlist, unsent draft, reload persistence
+and a correction to 220 guests. Capacity rejection and invalidation worked.
+Found repeated questions, incomplete visible review, loss of tentative date
+wording in the draft and a deflected booking/email-status question.
+See [parent walkthrough](parent-walkthrough-2026-11-01.md) for observations and
+prioritized fixes. Documentation only; no fresh automated suite result claimed.
+No external messages or bookings occurred.
 
 ## November 1 public planner foundation
 
