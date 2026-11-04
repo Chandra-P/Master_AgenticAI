@@ -1,44 +1,46 @@
 # Three chunking methods
 
-The application supports three distinct methods through the same LangChain embedding interface, Chroma retrieval pipeline, report workflow, and evaluation cases. The default remains section-based because it preserves the existing campaign-document structure. There is no assumption that one method wins on every question.
+Historical 122-source corpus measurements. The current corpus contains130 sources; these results are preserved for provenance and do not certify the expanded corpus. See [requirements pack](requirements-corpus.md).
 
-| UI label | CLI value | Boundary rule | Embeddings used to choose boundaries |
+All three methods use the same validated source library, embedding interface and retrieval/evaluation pipeline. Section-based is the default. Chunk count alone does not measure answer quality, and no method is assumed to win across every question.
+
+| Method | CLI value | Natural boundary | Default token bound |
 |---|---|---|---|
-| Fixed-size | `fixed` | 500 cl100k_base tokens, with 50-token overlap on overflow | No |
-| Section-based | `section` | Markdown headings, with bounded windows for long sections | No |
-| Embedding-based semantic | `semantic` | Sentence/unit cosine-distance changes above the document's 65th percentile | Yes |
+| Fixed-size | `fixed` | Windows across cleaned document text | 500 tokens, 50-token overflow overlap |
+| Section-based | `section` | Markdown heading/body groups | 500 tokens, 50-token overflow overlap |
+| Embedding-based semantic | `semantic` | Adjacent sentence/unit cosine-distance changes | 500 tokens, 50-token overflow overlap |
 
-All three methods subsequently embed their final chunks for Chroma search. Semantic chunking additionally embeds the sentence/unit text before deciding boundaries. It uses the configured embedding model; no generation API call is needed to split documents. Segmentation embeddings are batched across the corpus and use the provider's content-addressed cache.
+The preserved 122-document sample produced 166 fixed, 550 section and 707 semantic chunks in the current local setup. Semantic boundaries depend on the configured embedder, so reproduce them with the recorded embedding identity. See [evaluation results](evaluation-results.md) for the corresponding measured run and its limits.
 
-## Semantic algorithm
+## Actual implementation and parameter semantics
 
-1. Validate source metadata and remove YAML/title material through the existing Markdown ingestion contract.
-2. Construct the same cleaned heading/body source text used for source reconciliation. Split paragraphs into sentence spans using punctuation boundaries; retain contiguous Markdown tables as units.
-3. Embed the units using the configured LangChain-compatible embedding provider. Validate vector count, dimensions, finite values and nonzero norms.
-4. Normalize vectors, calculate adjacent cosine distances, and split where distance is strictly greater than the document's 65th-percentile distance. Tied distances do not create arbitrary boundaries. Headings are source context and citation metadata; they do not force semantic boundaries.
-5. Apply 500-token bounds to oversized groups, with 50-token overflow overlap. Every output is an exact character span of cleaned source text. Unicode characters are not decoded from incomplete byte fragments.
-6. Store source/section anchors, character offsets, token counts, threshold, percentile, boundary reason and segmentation-model identity. A multi-section chunk retains all intersecting anchors. Tables within the token budget remain intact; oversized tables must still obey the bound and may split. Final reports expand validated parent documents to recover complete source tables.
+[chunking/pipeline.py](../src/campaign_hub/chunking/pipeline.py) reconstructs cleaned heading/body text after ingestion. Fixed-size chunking passes that text to token windows. Section-based chunking passes each section body separately; short sections remain separate chunks. A document without headings becomes a single group before token bounding.
 
-The percentile is a recorded baseline, not a tuned optimum. Rule-based sentence boundaries are not a linguistic parser. The tokenizer used for the 500-token course comparison differs from model-specific tokenizers; the CPU embedding adapter separately windows and pools text within its model's actual limit.
+[chunking/semantic.py](../src/campaign_hub/chunking/semantic.py) constructs sentence spans using punctuation boundaries and retains each contiguous Markdown table as one unit. It embeds the units, validates count/dimensions/finite nonzero vectors, normalizes them, and computes cosine distance between adjacent units. A boundary occurs when the distance exceeds the document's 65th-percentile threshold by more than the numerical tolerance. Equal distances do not force arbitrary splits. Markdown headings supply context and citation metadata but do not force semantic boundaries.
 
-## Index and measurement isolation
+The API accepts `semantic_percentile` (default 65, range 0â€“100). A higher percentile generally selects fewer distance breaks; it is not a target chunk count or probability of relevance. The current CLI selects a strategy and does not expose a percentile flag. Semantic segmentation requires the configured embedder and does not silently fall back to headings when embeddings fail.
 
-Collection names and manifests include the strategy, chunker version/parameters, tokenizer version, and embedding identity. Old heading-based `semantic` collections are not reused as embedding-based semantic indexes. The former method is now named `section`. Existing collections are retained; a new index is built rather than relabeling old vectors.
+`bounded_spans` defaults to `window=500` and `overlap=50`. It uses the `cl100k_base` tokenizer, selects exact character spans and rechecks each emitted span against the token bound. Overlap is used only when an oversized group needs another window. It is not added between short sections or between natural semantic groups. Tables remain intact when within the bound; oversized tables may split. Source wording and Unicode character boundaries are preserved.
 
-Experiment identities also include the actual per-strategy configuration. Earlier evaluation rows whose `semantic` key meant headings remain historical records and are rejected as current measurements by the dashboard. Current evaluation uses twelve configurations: three chunkers Ã— dense/hybrid Ã— reranking off/on. Faithfulness remains unavailable unless a support judge actually ran; document precision/recall are not RAGAS token-level or model-judged context metrics.
+The course tokenizer is a common comparison unit, not a claim to reproduce the generation or embedding model's tokenizer. The CPU embedding adapter independently windows text within its encoder's token limit and pools/normalizes the vectors. Semantic segmentation embeds units before final-chunk embeddings; all methods embed their final chunks for search.
 
-Multi-section chunks retain overlapping anchors for source inspection. Claim-level section scoring resolves the exact text span to one section; ambiguous, cross-section and unidentified leading partial spans remain unavailable. Document citation overlap and section-resolution coverage are reported separately. Exported whole-chunk references list actual section anchors rather than inventing a `#document` section. See [measured results](evaluation-results.md) for the current experiment and its limits.
+## Compatibility and evaluation
+
+Chunk metadata records source identifiers, section anchors, token counts, hashes and strategy. Semantic chunks additionally retain cleaned-source character offsets, boundary reason, percentile, threshold and segmentation embedder identity. A semantic chunk can intersect several sections, so a whole-chunk citation is not proof of support from a single section.
+
+Collection identities isolate corpus, embedder, strategy and chunker configuration. Historical heading-based `semantic` collections are not current embedding-semantic indexes. Evaluation identities also bind the case set and generation mode. Current comparisons cross three chunkers, dense/hybrid retrieval and reranking off/on: 12 paired configurations. Calibration and report-only fixtures are excluded; the selected active sets contain 30 held-out cases or 25 current development examples (12 in the historical measured development run). Document-level relevance metrics differ from model-judged faithfulness, which stays unavailable without an actual judge run.
 
 ## Reproduce
 
+From an installed project environment with the configured embedding service available:
+
 ```powershell
 python -m campaign_hub index --chunking all
-python -m campaign_hub client-report --campaign TX-CHK-001 --chunking fixed
-python -m campaign_hub client-report --campaign TX-CHK-001 --chunking section
-python -m campaign_hub client-report --campaign TX-CHK-001 --chunking semantic
-python -m campaign_hub evaluate --full --extractive
+python -m campaign_hub ask --chunking section --question "What are the tracking validation procedures?"
+python -m campaign_hub evaluate --full --extractive --include-reranking --split held_out
+python -m campaign_hub evaluate --full --extractive --include-reranking --split development
 ```
 
-For the hosted CPU profile, set `CIH_EMBEDDING_PROVIDER=sentence_transformers` and `CIH_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2` before those commands. Local defaults use Ollama. Hosted startup prepares all three compatible indexes automatically. Changing model or chunker configuration requires the corresponding isolated indexes; there is no silent structural fallback on semantic-model failure.
+Retrieval-only evaluation skips answer generation. Use `--generated` instead of `--extractive` for actual generated-answer measurement and retain its separate identity. See [measured results](evaluation-results.md) rather than treating these commands as proof that a run completed.
 
-The implementation uses [LangChain's embedding contract](https://docs.langchain.com/oss/python/integrations/embeddings) and [cosine similarity between sentence embeddings](https://www.sbert.net/docs/sentence_transformer/usage/semantic_textual_similarity.html). It implements the application splitter directly and does not require the experimental LangChain package.
+The 130-source corpus now indexes 180 fixed, 580 section and 788 semantic chunks. New CL-640 sources demonstrate 1–2 fixed, 2–6 section and 7–12 semantic chunks each. These are observed boundaries, not proof of higher answer quality. See [requirements corpus](requirements-corpus.md).

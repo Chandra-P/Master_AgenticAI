@@ -41,9 +41,12 @@ def test_local_judge_requests_json_for_the_ragas_json_contract():
     pytest.importorskip('ragas')
     from campaign_hub.config import Settings
     from campaign_hub.evaluation.ragas_assessment import RagasAssessor
-    with RagasAssessor(Settings(generation_provider='ollama')) as assessor:
+    assessor=RagasAssessor(Settings(generation_provider='ollama'))
+    try:
         assert assessor.metrics['ragas_faithfulness'].llm.langchain_llm.format=='json'
         assert assessor.identity['judge_json_mode'] is True
+    finally:
+        assessor._runner.close()
 
 
 def test_hosted_judge_has_bounded_rate_limit_retries(monkeypatch):
@@ -51,6 +54,9 @@ def test_hosted_judge_has_bounded_rate_limit_retries(monkeypatch):
     from campaign_hub.config import Settings
     from campaign_hub.evaluation.ragas_assessment import RagasAssessor
     monkeypatch.setenv('GROQ_API_KEY','dummy-test-key')
-    with RagasAssessor(Settings(generation_provider='groq',generation_model='openai/gpt-oss-120b')) as assessor:
+    assessor=RagasAssessor(Settings(generation_provider='groq',generation_model='openai/gpt-oss-120b'))
+    try:
         assert assessor.metrics['ragas_faithfulness'].llm.langchain_llm.max_retries==5
         assert assessor.identity['judge_provider_max_retries']==5
+    finally:
+        assessor._runner.close()

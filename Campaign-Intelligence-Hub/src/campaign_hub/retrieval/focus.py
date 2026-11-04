@@ -13,12 +13,12 @@ def context_plan(question):
         metric=bool(re.search(r'\b(balances?|cost|spend|budget|rates?|revenue|deposits?|activations?|conversions?|kpis?|roi|channels?|display|mail)\b',lower))
         return ('success_plan',['Targets']) if metric else ('brief',['Objectives'])
     if re.search(r'\b(results?|actuals?)\b',lower) and re.search(r'\bchannels?\b',lower):
-        return 'performance_report',['KPI Results','Channel Insights']
+        return 'performance_report',['KPI Results','Channel Insights','Channel Results']
     return None,[]
 
 
 def focus_context(question,hits):
-    from campaign_hub.reporting.service import section_evidence
+    from campaign_hub.rag.grounding import section_evidence
     _,headings=context_plan(question)
     if not headings:return hits
     selected=[];seen=set()

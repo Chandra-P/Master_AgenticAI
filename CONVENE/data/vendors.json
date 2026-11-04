@@ -1,0 +1,8 @@
+[
+  {"id":"syn-sa-venue-1","name":"Synthetic Alamo Event Hall","city":"San Antonio","category":"venue","capacity":100,"base_cost":800,"per_guest":0,"synthetic":true},
+  {"id":"syn-sa-food-1","name":"Synthetic River City Catering","city":"San Antonio","category":"catering","capacity":200,"base_cost":100,"per_guest":22,"synthetic":true},
+  {"id":"syn-venue-1","name":"Synthetic Cedar Hall","city":"Seattle","category":"venue","capacity":100,"base_cost":800,"per_guest":0,"synthetic":true},
+  {"id":"syn-food-1","name":"Synthetic Green Table","city":"Seattle","category":"catering","capacity":200,"base_cost":100,"per_guest":22,"synthetic":true},
+  {"id":"syn-venue-2","name":"Synthetic City Studio","city":"New York","category":"venue","capacity":80,"base_cost":1200,"per_guest":0,"synthetic":true},
+  {"id":"syn-food-2","name":"Synthetic Garden Kitchen","city":"New York","category":"catering","capacity":150,"base_cost":150,"per_guest":28,"synthetic":true}
+]

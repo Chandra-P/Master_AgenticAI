@@ -1,0 +1,71 @@
+{
+  "case_id": "q11",
+  "sample": {
+    "user_input": "What were the results and channel findings for TX-CHK-001?",
+    "response": "TX-CHK-001 delivered 230 verified activations versus a target of 180; spend was USD 20908. [TX-CHK-001-historical_deck:semantic:0:35b4fc07]",
+    "retrieved_contexts": [
+      "{\"id\": \"TX-CHK-001-historical_deck:semantic:0:35b4fc07\", \"text\": \"## Executive Summary\\nTX-CHK-001 delivered 230 verified activations versus a target of 180; spend was USD 20908.\\n\\n## Findings\\nActivation goal was met.\"}",
+      "{\"id\": \"TX-CHK-001-historical_deck:semantic:546:fe77e6d2\", \"text\": \"## Suggested Next Steps\\nAudit enrollment tracking, design a holdout test, and review results after the next reporting cycle.\"}",
+      "{\"id\": \"TX-CHK-001-performance_report:semantic:0:a8cda90a\", \"text\": \"## KPI Results\\n| Metric | Target | Actual | Unit | Direction | Period |\\n|---|---:|---:|---|---|---|\\n| Verified activations | 180 | 230 | count | higher | 2026-Q2 |\\n| Acquisition cost | 133.33 | 90.90 | USD/activation | lower | 2026-Q2 |\\n| Spend | 24000 | 20908 | USD | lower | 2026-Q2 |\\n| Opening account balance | 540000.00 | 598850.00 | USD | higher | 2026-Q2 |\\n\\n## Performance Drivers\\nDirect mail accounted for 138 verified activations and display for 92.\"}",
+      "{\"id\": \"TX-CHK-001-performance_report:semantic:525:d40f77d5\", \"text\": \"## Audience Insights\\nExisting members supplied 138 activations and prospective members 92; no age-level or income-level outcome breakdown was measured.\\n\\n## Channel Insights\\nDirect mail: 138 activations within 60 days of mail/drop date; display: 92 within 30 days of exposure. Total attributed spend: USD 20908. Channel-specific spend and exposure counts are in Channel Results. Financial return is unavailable, so channel ROI cannot be calculated.\"}",
+      "{\"id\": \"TX-CHK-001-performance_report:semantic:974:6ed932e3\", \"text\": \"## Channel Results\\n| Channel | Activations | Exposures | Spend USD | Window days | Anchor | Anchor date | As of | Exposure unit | Mature |\\n|---|---:|---:|---:|---:|---|---|---|---|---|\\n| direct_mail | 138 | 5000 | 13590 | 60 | mail_drop_date | 2026-04-01 | 2026-06-30 | mailed_households | true |\\n| display | 92 | 10000 | 7318 | 30 | exposure_date | 2026-04-15 | 2026-06-30 | exposed_users | true |\\n\\n## Geographic Results\\n| Location | Channel | Accounts | Opening balance cents | Exposures | Latitude | Longitude | As of |\\n|---|---|---:|---:|---:|---:|---:|---|\\n| Austin | direct_mail | 48 | 12000000 | 1750 | 30.267 | -97.743 | 2026-06-30 |\\n| Dallas | direct_mail | 34 | 8755000 | 1250 | 32.777 | -96.797 | 2026-06-30 |\\n| Houston | direct_mail | 24 | 6360000 | 900 | 29.76 | -95.37 | 2026-06-30 |\\n| San Antonio | direct_mail | 19 | 5177500 | 700 | 29.424 | -98.494 | 2026-06-30 |\\n| Fort Worth | direct_mail | 13 | 3640000 | 400 | 32.756 | -97.331 | 2026-06-30 |\\n| Austin | display | 32 | 8000000 | 3500 | 30.267 | -97.743 | 2026-06-30 |\\n| Dallas | display | 23 | 5922500 | 2500 | 32.777 | -96.797 | 2026-06-30 |\\n| Houston | display | 16 | 4240000 | 1800 | 29.76 | -95.37 | 2026-06-30 |\\n| San Antonio | display | 12 | 3270000 | 1400 | 29.424 | -98\"}"
+    ],
+    "reference": "230 activations; 138 from direct mail and 92 from display."
+  },
+  "mode": "f1",
+  "atomicity": "low",
+  "coverage": "low",
+  "note": "Diagnostic rerun on the original saved answer, not a replacement baseline score.",
+  "response_claims": {
+    "claims": [
+      "TX-CHK-001 delivered 230 verified activations.",
+      "The target for verified activations was 180.",
+      "The spend was USD 20908."
+    ],
+    "verification": {
+      "statements": [
+        {
+          "statement": "TX-CHK-001 delivered 230 verified activations.",
+          "reason": "The context mentions 230 activations but does not specify that TX-CHK-001 delivered them or that they were verified.",
+          "verdict": 0
+        },
+        {
+          "statement": "The target for verified activations was 180.",
+          "reason": "The context does not provide any information about a target number for verified activations.",
+          "verdict": 0
+        },
+        {
+          "statement": "The spend was USD 20908.",
+          "reason": "The context does not mention any spend or financial amount.",
+          "verdict": 0
+        }
+      ]
+    }
+  },
+  "reference_claims": {
+    "claims": [
+      "There were 230 activations in total.",
+      "138 activations came from direct mail.",
+      "92 activations came from display."
+    ],
+    "verification": {
+      "statements": [
+        {
+          "statement": "There were 230 activations in total.",
+          "reason": "The context states that TX-CHK-001 delivered 230 verified activations, which directly supports the statement.",
+          "verdict": 1
+        },
+        {
+          "statement": "138 activations came from direct mail.",
+          "reason": "The context does not provide any breakdown of activations by source such as direct mail.",
+          "verdict": 0
+        },
+        {
+          "statement": "92 activations came from display.",
+          "reason": "The context does not provide any breakdown of activations by source such as display.",
+          "verdict": 0
+        }
+      ]
+    }
+  }
+}

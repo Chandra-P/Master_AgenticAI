@@ -1,6 +1,10 @@
 import json
 from pathlib import Path
-from .generator import digest
+from hashlib import sha256
+
+
+def digest(text):
+    return sha256(text.encode('utf-8')).hexdigest()
 
 
 def validate_corpus(root: Path) -> list[str]:

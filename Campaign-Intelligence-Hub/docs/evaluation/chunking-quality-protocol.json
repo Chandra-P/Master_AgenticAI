@@ -1,0 +1,37 @@
+{
+  "created_at": "2026-10-25T19:05:39.200629+00:00",
+  "corpus": "710107e2f96d5a25a227d473709747fe2e606dc18db3c2b3d6a2765f17c160c9",
+  "case_set_hash": "cf84290305d5ac634268ab0f0f0deaef508ec63b00616716fa4036488e2dda1d",
+  "cases_per_configuration": 30,
+  "supported_cases": 23,
+  "unsupported_cases": 7,
+  "chunkers": [
+    "fixed",
+    "section",
+    "semantic"
+  ],
+  "generation_provider": "ollama",
+  "generation_model": "llama3.2:3b",
+  "judge_provider": "openai",
+  "judge_model": "gpt-4.1-mini",
+  "assessment_version": 3,
+  "precision_prompt_version": 4,
+  "calibration_version": 2,
+  "retrieval": "hybrid",
+  "reranking": false,
+  "candidate_k": 20,
+  "final_k": 5,
+  "focus_context": false,
+  "primary_comparison": "Mean model-judged reference-answer F1 across all 23 supported questions. Genuine supported-question refusals count as zero; missing judgments on answered questions make this comparison incomplete.",
+  "other_metrics": [
+    "faithfulness with measured-case coverage",
+    "supported answer coverage",
+    "rank-weighted context precision",
+    "useful-passage fraction",
+    "context recall",
+    "unsupported canonical refusal rate",
+    "end-to-end answer latency excluding judging"
+  ],
+  "baseline": "Retain existing compatible section-based 30-case run; fixed and semantic are new executions. All results use the same current prompt and evaluation contracts. Section precision was previously reassessed on its original saved answers.",
+  "limitations": "One sequential execution per chunker on synthetic, source-derived examples; no statistical significance or controlled warm latency guarantee. Different run times and machine loads may affect timing. Do not change models, prompts, references, top-k or corpus during comparison."
+}

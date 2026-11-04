@@ -1,0 +1,801 @@
+{
+  "corpus_hash": "1fb8bde30540d326041c4614e74f2d863e791edc5b7bcd53f145aa04bc07381f",
+  "documents": 130,
+  "added_documents": 8,
+  "new_development_cases": 13,
+  "old_sources_preserved": 122,
+  "index_counts": {
+    "fixed": 180,
+    "section": 580,
+    "semantic": 788
+  },
+  "source_inspection": [
+    {
+      "document_id": "GLOBAL-requirements-01",
+      "title": "Canary campaign measurement dictionary",
+      "shape": "playbook",
+      "source_tokens": 531,
+      "strategies": {
+        "fixed": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "section": {
+          "chunks": 5,
+          "maximum_tokens": 152,
+          "exact_spans_valid": true
+        },
+        "semantic": {
+          "chunks": 9,
+          "maximum_tokens": 156,
+          "exact_spans_valid": true
+        }
+      }
+    },
+    {
+      "document_id": "GLOBAL-requirements-02",
+      "title": "Canary attribution time and maturity policy",
+      "shape": "cohesive_policy",
+      "source_tokens": 556,
+      "strategies": {
+        "fixed": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "section": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "semantic": {
+          "chunks": 12,
+          "maximum_tokens": 145,
+          "exact_spans_valid": true
+        }
+      }
+    },
+    {
+      "document_id": "GLOBAL-requirements-03",
+      "title": "Canary release policy revision one archive",
+      "shape": "cohesive_policy",
+      "source_tokens": 520,
+      "strategies": {
+        "fixed": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "section": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "semantic": {
+          "chunks": 10,
+          "maximum_tokens": 103,
+          "exact_spans_valid": true
+        }
+      }
+    },
+    {
+      "document_id": "GLOBAL-requirements-04",
+      "title": "Canary release policy revision two",
+      "shape": "playbook",
+      "source_tokens": 527,
+      "strategies": {
+        "fixed": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "section": {
+          "chunks": 6,
+          "maximum_tokens": 100,
+          "exact_spans_valid": true
+        },
+        "semantic": {
+          "chunks": 10,
+          "maximum_tokens": 103,
+          "exact_spans_valid": true
+        }
+      }
+    },
+    {
+      "document_id": "GLOBAL-requirements-05",
+      "title": "Canary launch preparation checklist",
+      "shape": "playbook",
+      "source_tokens": 496,
+      "strategies": {
+        "fixed": {
+          "chunks": 1,
+          "maximum_tokens": 496,
+          "exact_spans_valid": true
+        },
+        "section": {
+          "chunks": 6,
+          "maximum_tokens": 91,
+          "exact_spans_valid": true
+        },
+        "semantic": {
+          "chunks": 10,
+          "maximum_tokens": 136,
+          "exact_spans_valid": true
+        }
+      }
+    },
+    {
+      "document_id": "GLOBAL-requirements-06",
+      "title": "Canary partner receipt troubleshooting protocol",
+      "shape": "troubleshooting",
+      "source_tokens": 495,
+      "strategies": {
+        "fixed": {
+          "chunks": 1,
+          "maximum_tokens": 495,
+          "exact_spans_valid": true
+        },
+        "section": {
+          "chunks": 5,
+          "maximum_tokens": 151,
+          "exact_spans_valid": true
+        },
+        "semantic": {
+          "chunks": 7,
+          "maximum_tokens": 241,
+          "exact_spans_valid": true
+        }
+      }
+    },
+    {
+      "document_id": "GLOBAL-requirements-07",
+      "title": "Canary mixed shift notebook",
+      "shape": "mixed_notes",
+      "source_tokens": 676,
+      "strategies": {
+        "fixed": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "section": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "semantic": {
+          "chunks": 12,
+          "maximum_tokens": 163,
+          "exact_spans_valid": true
+        }
+      }
+    },
+    {
+      "document_id": "GLOBAL-requirements-08",
+      "title": "Canary evidence access and source trust policy",
+      "shape": "cohesive_policy",
+      "source_tokens": 540,
+      "strategies": {
+        "fixed": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "section": {
+          "chunks": 2,
+          "maximum_tokens": 500,
+          "exact_spans_valid": true
+        },
+        "semantic": {
+          "chunks": 11,
+          "maximum_tokens": 90,
+          "exact_spans_valid": true
+        }
+      }
+    }
+  ],
+  "retrieval": [
+    {
+      "case_id": "dev-req-01",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-01"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-07",
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-08"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-02",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-02"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-08"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-03",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-03"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-01"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-04",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-04"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-07"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-05",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-05"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-02",
+        "GLOBAL-learning-01"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-06",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-06"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-06",
+        "GLOBAL-learning-10",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-03"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-07",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-07"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-07",
+        "GLOBAL-requirements-05"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-08",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-08"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-01"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-01",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-02"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-08"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-02",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-06"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-03",
+        "GLOBAL-learning-01"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-03",
+      "strategy": "fixed",
+      "expected_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-08"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-04",
+        "GLOBAL-learning-10"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-unsupported-01",
+      "strategy": "fixed",
+      "expected_sources": [],
+      "retrieved_sources": [
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-05"
+      ],
+      "document_recall": null,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-unsupported-02",
+      "strategy": "fixed",
+      "expected_sources": [],
+      "retrieved_sources": [
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-04"
+      ],
+      "document_recall": null,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-01",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-01"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-07",
+        "GLOBAL-requirements-08"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-02",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-02"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-08"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-03",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-03"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-02"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-04",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-04"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-05"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-05",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-05"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-06"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-06",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-06"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-06",
+        "GLOBAL-learning-10",
+        "GLOBAL-requirements-04"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-07",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-07"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-07"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-08",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-08"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-01",
+        "GLOBAL-learning-10",
+        "GLOBAL-requirements-06",
+        "GLOBAL-learning-01"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-01",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-02"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-08"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-02",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-06"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-04"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-03",
+      "strategy": "section",
+      "expected_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-08"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-06"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-unsupported-01",
+      "strategy": "section",
+      "expected_sources": [],
+      "retrieved_sources": [
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-04"
+      ],
+      "document_recall": null,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-unsupported-02",
+      "strategy": "section",
+      "expected_sources": [],
+      "retrieved_sources": [
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-05"
+      ],
+      "document_recall": null,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-01",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-01"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-07",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-02"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-02",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-02"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-02",
+        "GLOBAL-learning-04",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-04"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-03",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-03"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-07",
+        "GLOBAL-requirements-05"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-04",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-04"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-07"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-05",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-05"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-06"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-06",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-06"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-06",
+        "GLOBAL-learning-10",
+        "GLOBAL-requirements-04"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-07",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-07"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-07",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-05"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-08",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-08"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-06"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-01",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-02"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-01",
+        "GLOBAL-requirements-02",
+        "GLOBAL-learning-04",
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-06"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-02",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-06"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-03",
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-07"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-multi-03",
+      "strategy": "semantic",
+      "expected_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-08"
+      ],
+      "retrieved_sources": [
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-04",
+        "GLOBAL-requirements-06"
+      ],
+      "document_recall": 1.0,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-unsupported-01",
+      "strategy": "semantic",
+      "expected_sources": [],
+      "retrieved_sources": [
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-06",
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-03"
+      ],
+      "document_recall": null,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    },
+    {
+      "case_id": "dev-req-unsupported-02",
+      "strategy": "semantic",
+      "expected_sources": [],
+      "retrieved_sources": [
+        "GLOBAL-requirements-02",
+        "GLOBAL-requirements-05",
+        "GLOBAL-requirements-08",
+        "GLOBAL-requirements-04",
+        "GLOBAL-best_practice-01"
+      ],
+      "document_recall": null,
+      "note": "Retrieval-only development diagnostic; no generated answer or unsupported refusal measured."
+    }
+  ],
+  "quality_note": "New corpus invalidates historical corpus-specific scores. No new answer F1, faithfulness or production-readiness claim.",
+  "previous_source_records_preserved": 122,
+  "previous_question_records_preserved": 45,
+  "non_live_tests_passed": 138,
+  "known_deprecation_warnings": 3,
+  "review_status": "No material consistency findings",
+  "hosted_model_calls_used": false
+}

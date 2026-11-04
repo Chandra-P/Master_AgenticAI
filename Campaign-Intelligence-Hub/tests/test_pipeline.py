@@ -16,17 +16,8 @@ def test_fixed_and_section_chunking(tmp_path):
     assert len({c.chunk_id for c in semantic}) == len(semantic)
 
 
-def test_kpi_direction_zero_and_period():
-    from campaign_hub.reporting.kpis import compare
-    assert compare(100, 120, 'higher')['status'] == 'met'
-    assert compare(100, 120, 'lower')['status'] == 'not met'
-    assert compare(0, 1, 'higher')['percentage_variance'] is None
-    assert compare(100, None, 'higher')['status'] == 'unavailable'
-    assert compare(100, 120, 'higher', compatible=False)['status'] == 'incompatible'
-
-
 def test_claims_cannot_invent_sources_or_numbers():
-    from campaign_hub.reporting.evidence import valid_claim
+    from campaign_hub.rag.grounding import supported_claim as valid_claim
     from campaign_hub.models import Chunk, EvidenceClaim
     evidence = {'x': Chunk(chunk_id='x', text='Actual activations: 120.', metadata={'campaign_id':'A'})}
     assert valid_claim(EvidenceClaim(text='Actual activations: 120.', citations=['x']), evidence)
@@ -51,15 +42,6 @@ def test_metrics_hand_computed():
     assert result['mrr'] == 0.5
     assert result['context_precision'] == 0.5
     assert result['context_recall'] == 1.0
-
-
-def test_report_keeps_all_headings():
-    from campaign_hub.reporting.render import render_report
-    from campaign_hub.models import ReportResult, ReportSection, SECTIONS, FALLBACK
-    r = ReportResult(campaign_id='X', period='2026-Q2', sections=[ReportSection(title=s, gap=FALLBACK) for s in SECTIONS], evidence={}, status='partial', confidence=0)
-    text = render_report(r)
-    assert all('## ' + s in text for s in SECTIONS)
-    assert FALLBACK in text
 
 
 def test_index_identity_and_persistence(tmp_path):

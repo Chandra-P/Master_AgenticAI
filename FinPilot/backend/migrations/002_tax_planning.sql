@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS tax_profiles(user_id TEXT PRIMARY KEY REFERENCES users(id),tax_year INTEGER NOT NULL,payload TEXT NOT NULL,revision INTEGER NOT NULL DEFAULT 1,confirmed INTEGER NOT NULL DEFAULT 0,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS paystub_uploads(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),document_id TEXT NOT NULL REFERENCES documents(id),extraction TEXT NOT NULL,state TEXT NOT NULL DEFAULT 'needs_review',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS paystubs(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),document_id TEXT NOT NULL REFERENCES documents(id),upload_id TEXT REFERENCES paystub_uploads(id),employment_key TEXT NOT NULL,employee_key TEXT NOT NULL,pay_date TEXT NOT NULL,tax_year INTEGER NOT NULL,payload TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'confirmed',supersedes TEXT,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE UNIQUE INDEX IF NOT EXISTS active_paystub_date ON paystubs(user_id,employment_key,pay_date) WHERE status='confirmed';
+CREATE TABLE IF NOT EXISTS tax_audit(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),action TEXT NOT NULL,previous_value TEXT,new_value TEXT,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS tax_runs(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),inputs TEXT NOT NULL,result TEXT NOT NULL,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+INSERT OR IGNORE INTO schema_migrations VALUES(2);

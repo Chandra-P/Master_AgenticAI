@@ -1,36 +1,30 @@
 # Architecture
 
-The diagram below describes the analytical RAG stages. Most stages currently execute inside one combined LangGraph report node; six separate graph nodes are explicit future work, as recorded in the [implementation audit](implementation-status.md).
+Campaign Intelligence Hub is a question-answering RAG framework for a campaign knowledge base. The bundled fictional library demonstrates the ingestion contract; an owner can adapt the source metadata and validation contract for another campaign library. It is not an exact reproduction of the SEC filings tutorial dataset.
 
-Final client generation runs metadata-filtered Chroma retrieval with the selected chunking, dense/hybrid and reranking settings. Validated retrieved chunks select parent documents; parent expansion retains complete linked source tables. The workflow validates identities/targets/units and channel/geographic reconciliation, then builds a frozen factual packet. Chart datasets and adjacent findings derive from that packet, and a standalone HTML presentation embeds SVG charts, styles and source evidence. Every export revalidates source hashes, retrieval attribution and canonical narrative/citations. This publication workflow does not accept arbitrary LLM-generated prose. The landing map remains a fast source-table snapshot and refreshes without model calls. The earlier analytical LangGraph workflow below remains available for RAG experiments and the technical report.
+The immutable sample contains 130 Markdown documents: four linked documents for each of 20 campaigns, 30 shared guides, 12 original longer learning guides, and eight requirements-pack sources. A manifest records document metadata and source hashes. Only validated manifest sources enter the index.
 
 ```mermaid
 flowchart TD
-    C[110 synthetic Markdown sources] --> I[Validated ingestion]
-    I --> F[Fixed 500 tokens / 50 overlap]
-    I --> S[Section-based chunking]
-    I --> T[Sentence embeddings and cosine breakpoints]
-    F --> E[LangChain embedding providers]
-    S --> E
-    T --> E
-    E --> D[LangChain Chroma / persistent collections]
-    U[Campaign report request] --> L[LangGraph coverage plan]
-    L --> R[Per-section retrieval]
-    D --> R
-    B[BM25 source index] --> R
-    R --> RR[Optional cross-encoder reranking]
-    RR --> V[Campaign and period evidence checks]
-    V --> G[Source-grounded sections and local generation]
-    G --> K[Python KPI arithmetic and citation validation]
-    K --> O[Eleven-section report with inline citations]
-    V --> H[Compatible earlier channel cohorts]
-    H --> P[Python peer median / rank / percentile]
-    P --> O
-    O --> UI[Streamlit preview / Markdown download]
+    S[130 manifest sources] --> I[Validated Markdown ingestion]
+    I --> C[Fixed / section / embedding-semantic chunks]
+    C --> E[Configured LangChain embedder]
+    E --> V[Isolated persistent Chroma collections]
+    Q[Question and metadata scope] --> R[retrieve]
+    V --> R
+    B[BM25 index] --> R
+    R --> D{Retrieved evidence?}
+    D -->|yes| G[generate_and_validate]
+    D -->|no| N[refuse]
+    G --> F[finalize]
+    N --> F
+    F --> A[Cited answer or evidence fallback]
 ```
 
-Chroma stores chunk text, vectors, and source metadata. It does not generate answers. LangChain's embedding interface supports local Ollama and hosted CPU sentence transformers; ChatPromptTemplate with ChatOllama or ChatGroq provides structured generation. Embedding-based semantic segmentation also calls the configured embedder before final-chunk indexing. Collection identities isolate all three chunkers and their parameters. LangChain Chroma performs vector search. BM25 complements vector search for exact identifiers and terminology. Report sections use independent retrieval queries rather than sharing only five chunks for a whole report.
+The executable LangGraph is [rag/workflow.py](../src/campaign_hub/rag/workflow.py). Its `retrieve` node applies query analysis and retrieval settings, then branches to `generate_and_validate` when hits exist or `refuse` otherwise. `finalize` returns the analysis, answer, workflow steps, retrieval duration and total latency. Retrieved hits may still be insufficient: generation can return no accepted claims and therefore the same fallback.
 
-Direct mail uses 60 days from mail/drop date; display uses 30 days from exposure. Historical comparisons use retrieved channel outcome tables and require compatible product/channel/measurement rules, an earlier reporting period, and mature attribution windows. The UI and report show peer-level evidence, medians, ranks, and direction-aware performance percentiles.
+Dense search uses Chroma; hybrid search combines dense and BM25 chunk rankings using reciprocal rank fusion. Optional cross-encoder reranking selects from the candidate pool. Explicit metadata constraints bind retrieval; optional classification can add compatible constraints. The UI exposes Ask Questions, Analyst View, Chunking Lab and Evaluation.
 
-Generated reports remain outside the ingestion manifest. This prevents output text becoming circular evidence. Source access is limited to manifest paths. Historical evidence is explicitly labeled and cannot supply the selected campaign's KPI actuals.
+Generation uses a structured LangChain provider interface with Ollama by default and optional OpenAI or Groq. Narrow factual questions first use complete, hash-verified retrieved objective sections or reconciled actual-count tables. Count projections retain raw source rows, headers and source IDs; their rendered text is derived from cells rather than required to be verbatim. Broader model answers require existing retrieved chunk IDs and verbatim text from every cited chunk. An omitted citation can be recovered only from a unique exact match among retrieved sources; incorrect explicit IDs and ambiguous matches remain rejected. This conservative validation prevents unsupported paraphrases from being accepted, but does not establish relevance or independent semantic entailment. Chroma stores evidence and vectors; it does not generate answers.
+
+Index compatibility includes corpus, embedding and chunking identities. Evaluation adds the question-set and generation identities so stale measurements cannot appear as current. See [methodology](methodology.md), [chunking comparison](chunking-comparison.md) and [measured evaluation results](evaluation-results.md).

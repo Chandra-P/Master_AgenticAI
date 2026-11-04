@@ -1,0 +1,177 @@
+{
+  "scope": "Four-case diagnostic smoke, selected known failures and one unsupported control. Same saved semantic evidence; not full benchmark or fresh held-out certification.",
+  "generation_provider": "ollama",
+  "generation_model": "llama3.2:3b",
+  "generation_prompt_sha256": "b15cb7c87034ed288fe51f7f33a32e071a64fa6cbf2b861ca3c05c8d01cc0629",
+  "judge": {
+    "framework": "ragas",
+    "version": "0.3.9",
+    "assessment_version": 3,
+    "context_format": "source-json-v1",
+    "judge_provider": "openai",
+    "judge_model": "gpt-4.1-mini",
+    "judge_context_tokens": null,
+    "judge_output_tokens": 2048,
+    "judge_json_mode": true,
+    "metric_timeout_seconds": 90,
+    "metrics": [
+      "ragas_faithfulness",
+      "ragas_context_precision",
+      "ragas_context_recall",
+      "ragas_factual_correctness"
+    ],
+    "judge_provider_max_retries": 1,
+    "quality_assessment": true,
+    "precision_prompt_version": 4,
+    "precision_output_tokens": 1024,
+    "precision_prompt_sha256": "53e7c600fb817717e0f57bcbfbabf285b00ec500a83c9af598d43f3bb4148ab4",
+    "judge_calibration": {
+      "version": 2,
+      "passed": true,
+      "controls": [
+        {
+          "context": "Acquire 180 verified product activations during 2026-Q2.",
+          "expected": 1,
+          "score": 0.9999999999,
+          "passed": true
+        },
+        {
+          "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+          "expected": 0,
+          "score": 0.0,
+          "passed": true
+        },
+        {
+          "context": "Approved budget: USD 24000.",
+          "expected": 0,
+          "score": 0.0,
+          "passed": true
+        },
+        {
+          "context": "Digitally active local households; existing and prospective members.",
+          "expected": 0,
+          "score": 0.0,
+          "passed": true
+        }
+      ]
+    }
+  },
+  "rows": [
+    {
+      "case_id": "q04",
+      "case_kind": "question",
+      "error": null,
+      "baseline_f1": 0.4,
+      "baseline_abstained": false,
+      "sample": {
+        "user_input": "What were the objectives of campaign FL-CMP-004?",
+        "response": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions. [FL-CMP-004-brief:semantic:0:cbfe4125]",
+        "retrieved_contexts": [
+          "{\"id\": \"FL-CMP-004-brief:semantic:0:cbfe4125\", \"text\": \"## Objectives\\nAcquire 249 verified product activations during 2026-Q2 for CD Promotions.\"}",
+          "{\"id\": \"FL-CMP-004-brief:semantic:90:ca1ebba3\", \"text\": \"## Audience\\nDigitally active local households; includes existing and prospective members.\\n\\n## Offer\\nCampaign-specific eligibility incentive for cd promotions. Eligibility and product suitability must be verified.\\n\\n## Creative Theme\\nLocal confidence and clear product value.\"}",
+          "{\"id\": \"FL-CMP-004-brief:semantic:365:b167d943\", \"text\": \"## Channels\\nDirect mail and display only, with deduplicated CRM activations. Direct mail attribution: 60 days from mail/drop date. Display attribution: 30 days from exposure date.\"}",
+          "{\"id\": \"FL-CMP-004-brief:semantic:546:bb119cd7\", \"text\": \"## Budget\\nApproved budget: USD 29250.\"}"
+        ],
+        "reference": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions."
+      },
+      "abstained": false,
+      "accepted_claims": 1,
+      "draft_claims": 1,
+      "ragas_faithfulness": 1.0,
+      "ragas_factual_correctness": 1.0,
+      "metric_errors": {},
+      "passage_verdicts": [],
+      "passage_relevance_precision": null
+    },
+    {
+      "case_id": "rag-ambiguous-02",
+      "case_kind": "question",
+      "error": null,
+      "baseline_f1": null,
+      "baseline_abstained": true,
+      "sample": {
+        "user_input": "For TX-CHK-001, does the reported balance mean current balances, net new deposits, revenue, or balances at account opening?",
+        "response": "I could not find sufficient evidence in the knowledge base.",
+        "retrieved_contexts": [
+          "{\"id\": \"TX-CHK-001-performance_report:semantic:2319:c4eacca3\", \"text\": \"## Balance Definition\\nSum of posted account balances at opening (USD); not current balances, net new deposits, or revenue.\\n\\n## Measurement Limitations\\nObservational attribution; no randomized control group. Campaign-level acquisition cost is not incremental ROI.\"}",
+          "{\"id\": \"TX-CHK-001-historical_deck:semantic:0:35b4fc07\", \"text\": \"## Executive Summary\\nTX-CHK-001 delivered 230 verified activations versus a target of 180; spend was USD 20908.\\n\\n## Findings\\nActivation goal was met.\"}",
+          "{\"id\": \"TX-CHK-001-brief:semantic:0:121a3c08\", \"text\": \"## Objectives\\nAcquire 180 verified product activations during 2026-Q2 for Checking Account Acquisition.\"}",
+          "{\"id\": \"TX-CHK-001-brief:semantic:105:e65a8ddf\", \"text\": \"## Audience\\nDigitally active local households; includes existing and prospective members.\\n\\n## Offer\\nCampaign-specific eligibility incentive for checking account acquisition. Eligibility and product suitability must be verified.\\n\\n## Creative Theme\\nLocal confidence and clear product value.\"}",
+          "{\"id\": \"TX-CHK-001-success_plan:semantic:508:6c14744f\", \"text\": \"## Targets\\nVerified activations target: 180 count; acquisition cost ceiling: USD 133.33/activation; spend ceiling: USD 24000; opening account balance target: USD 540000.00.\"}"
+        ],
+        "reference": "Sum of posted account balances at opening (USD); not current balances, net new deposits, or revenue."
+      },
+      "abstained": true,
+      "accepted_claims": 0,
+      "draft_claims": 0,
+      "ragas_faithfulness": null,
+      "ragas_factual_correctness": null,
+      "metric_errors": {
+        "ragas_faithfulness": "Abstention or empty response; claim assessment unavailable.",
+        "ragas_factual_correctness": "Abstention or empty response; claim assessment unavailable."
+      },
+      "passage_verdicts": [],
+      "passage_relevance_precision": null
+    },
+    {
+      "case_id": "rag-multi-01",
+      "case_kind": "question",
+      "error": null,
+      "baseline_f1": null,
+      "baseline_abstained": true,
+      "sample": {
+        "user_input": "After an attribution correction changes the source checksum under the same document ID, what must happen to the signed snapshot and to a cached answer presented as current?",
+        "response": "I could not find sufficient evidence in the knowledge base.",
+        "retrieved_contexts": [
+          "{\"id\": \"GLOBAL-learning-12:semantic:728:36b8e5ba\", \"text\": \"## KS-663 mismatch\\nKS-663 rejects a cached retrieval result when its source checksum differs from the current manifest, even if the document identifier is unchanged.\"}",
+          "{\"id\": \"GLOBAL-learning-12:semantic:4754:e8ecf859\", \"text\": \"An author then changes the policy's recovery gate while keeping its document identifier. The current manifest now contains a different checksum.\"}",
+          "{\"id\": \"GLOBAL-learning-04:semantic:1025:139f794b\", \"text\": \"A correction may concern a duplicate, an incorrect anchor date, an invalid campaign association, or an incorrectly applied rule. These are recorded as distinct reasons because a duplicate removal does not imply that a channel's entire measurement window was wrong. If the request lacks enough evidence to establish which event changed, it remains unresolved and the published learning record notes the uncertainty. An urgent presentation deadline does not convert an unverified request into an accepted correction.\\n\\nA late correction receives a new revision linked to the original snapshot; it never overwrites the signed snapshot under policy AC-318.\"}",
+          "{\"id\": \"GLOBAL-learning-04:semantic:5017:27b0dd40\", \"text\": \"A worked custody example begins with a signed snapshot containing an event assigned to the wrong campaign. The source owner supplies the event's original delivery reference and a corrected association. The requester opens a revision against the signed snapshot, records the old and proposed campaign identifiers, and attaches the evidence reference. One campaign loses an accepted event and another gains one, so a library-wide total might remain unchanged. A total-only check would miss the correction. The reviewer verifies the membership change and its effect on both campaign records before approving the revision.\"}",
+          "{\"id\": \"GLOBAL-learning-04:semantic:5730:b32cc4fd\", \"text\": \"The answer and chart can be recomputed under the new revision. The presentation is a frozen record of an earlier decision, so its owner retains the original file and adds a notice linking to the later correction. This preserves what the decision makers actually saw. The notice does not imply misconduct or poor analysis; it simply identifies that new evidence became available. If the original event cannot be reconstructed from the retained source, the record states that reproducibility limitation rather than claiming full auditability from a checksum alone.\"}"
+        ],
+        "reference": "A late correction receives a new revision linked to the original snapshot; it never overwrites the signed snapshot under policy AC-318. KS-663 rejects a cached retrieval result when its source checksum differs from the current manifest, even if the document identifier is unchanged."
+      },
+      "abstained": true,
+      "accepted_claims": 0,
+      "draft_claims": 0,
+      "ragas_faithfulness": null,
+      "ragas_factual_correctness": null,
+      "metric_errors": {
+        "ragas_faithfulness": "Abstention or empty response; claim assessment unavailable.",
+        "ragas_factual_correctness": "Abstention or empty response; claim assessment unavailable."
+      },
+      "passage_verdicts": [],
+      "passage_relevance_precision": null
+    },
+    {
+      "case_id": "rag-unsupported-01",
+      "case_kind": "unsupported",
+      "error": null,
+      "baseline_f1": null,
+      "baseline_abstained": true,
+      "sample": {
+        "user_input": "Which named employees signed CR-217 for the TX-CHK-001 consent recovery incident?",
+        "response": "I could not find sufficient evidence in the knowledge base.",
+        "retrieved_contexts": [
+          "{\"id\": \"TX-CHK-001-historical_deck:semantic:0:35b4fc07\", \"text\": \"## Executive Summary\\nTX-CHK-001 delivered 230 verified activations versus a target of 180; spend was USD 20908.\\n\\n## Findings\\nActivation goal was met.\"}",
+          "{\"id\": \"GLOBAL-learning-01:semantic:927:d1af74d1\", \"text\": \"Classify each discrepancy as missing permission, expired permission, mismatched purpose, duplicate delivery, or unreadable evidence. The categories lead to different repairs: a duplicate can be suppressed, while missing permission requires a new authorized record. Keep both the original status and the resolved status. An analyst reviewing the incident later should be able to determine why a row moved, who moved it, and which supporting record justified that movement.\\n\\n## Recovery gate\\nResume only after two independent reviewers reconcile every quarantined row and sign gate CR-217.\\n\\nIndependence means the second reviewer did not prepare the repair file. A manager's availability does not substitute for this separation.\"}",
+          "{\"id\": \"GLOBAL-learning-01:semantic:4127:3cbfe5f9\", \"text\": \"A future rehearsal should reproduce the failure using invented rows and demonstrate that gate CR-217 stays closed until the evidence is complete.\\n\\n## Worked recovery exercise\\nIn the rehearsal incident, a partner reports twelve rejected rows from a replacement batch. Eight have an expired purpose code, three are duplicate routes for otherwise permitted households, and one points to an evidence record that cannot be opened.\"}",
+          "{\"id\": \"GLOBAL-learning-01:semantic:0:445a38a3\", \"text\": \"## Intake and isolation\\nA consent recovery launch begins when a delivery partner returns a file whose permission status cannot be reproduced from the campaign register. Stop distribution of that file and copy its checksum, receipt time, row count, and partner batch identifier into the incident ledger. Preserve the received artifact as read only. Create a separate investigation copy so later corrections cannot overwrite the evidence that triggered the stop. Notify the delivery coordinator which batch is paused; a vague instruction to stop all activity would also interrupt unrelated campaigns whose permissions remain valid. This scenario concerns fictional customer permissions, not a statement of applicable law.\\n\\n## Reconciliation route\\nCompare the campaign register with the received file using the internal permission key, not a person's displayed name.\"}",
+          "{\"id\": \"GLOBAL-learning-01:semantic:5440:5685caec\", \"text\": \"The reviewer records why no new permission was inferred from the household match. These decisions become part of the CR-217 record and can be inspected without reading the original customer file.\"}"
+        ],
+        "reference": "I could not find sufficient evidence in the knowledge base."
+      },
+      "abstained": true,
+      "accepted_claims": 0,
+      "draft_claims": 0
+    }
+  ],
+  "summary": {
+    "supported_cases": 3,
+    "supported_answered": 1,
+    "unsupported_cases": 1,
+    "unsupported_correctly_refused": 1,
+    "execution_errors": 0,
+    "decision": "Citation recovery is source-safe and useful on one case, but insufficient for the 80% goal. No aggregate benchmark improvement claimed."
+  }
+}

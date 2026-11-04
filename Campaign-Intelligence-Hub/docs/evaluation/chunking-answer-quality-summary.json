@@ -1,0 +1,232 @@
+{
+  "date": "2026-10-25",
+  "protocol": {
+    "created_at": "2026-10-25T19:05:39.200629+00:00",
+    "corpus": "710107e2f96d5a25a227d473709747fe2e606dc18db3c2b3d6a2765f17c160c9",
+    "case_set_hash": "cf84290305d5ac634268ab0f0f0deaef508ec63b00616716fa4036488e2dda1d",
+    "cases_per_configuration": 30,
+    "supported_cases": 23,
+    "unsupported_cases": 7,
+    "chunkers": [
+      "fixed",
+      "section",
+      "semantic"
+    ],
+    "generation_provider": "ollama",
+    "generation_model": "llama3.2:3b",
+    "judge_provider": "openai",
+    "judge_model": "gpt-4.1-mini",
+    "assessment_version": 3,
+    "precision_prompt_version": 4,
+    "calibration_version": 2,
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "focus_context": false,
+    "primary_comparison": "Mean model-judged reference-answer F1 across all 23 supported questions. Genuine supported-question refusals count as zero; missing judgments on answered questions make this comparison incomplete.",
+    "other_metrics": [
+      "faithfulness with measured-case coverage",
+      "supported answer coverage",
+      "rank-weighted context precision",
+      "useful-passage fraction",
+      "context recall",
+      "unsupported canonical refusal rate",
+      "end-to-end answer latency excluding judging"
+    ],
+    "baseline": "Retain existing compatible section-based 30-case run; fixed and semantic are new executions. All results use the same current prompt and evaluation contracts. Section precision was previously reassessed on its original saved answers.",
+    "limitations": "One sequential execution per chunker on synthetic, source-derived examples; no statistical significance or controlled warm latency guarantee. Different run times and machine loads may affect timing. Do not change models, prompts, references, top-k or corpus during comparison."
+  },
+  "profiles_equal_except_chunking": true,
+  "cases_total": 90,
+  "configurations": [
+    {
+      "chunking": "fixed",
+      "cases_completed": 30,
+      "execution_errors": 0,
+      "supported_answered": 16,
+      "supported_expected": 23,
+      "unsupported_correctly_refused": 7,
+      "unsupported_expected": 7,
+      "metrics": {
+        "ragas_faithfulness": {
+          "mean": 0.9895833333333334,
+          "measured": 16
+        },
+        "ragas_context_precision": {
+          "mean": 0.7504830917218438,
+          "measured": 23
+        },
+        "passage_relevance_precision": {
+          "mean": 0.5130434782608696,
+          "measured": 23
+        },
+        "ragas_context_recall": {
+          "mean": 1.0,
+          "measured": 23
+        },
+        "ragas_factual_correctness": {
+          "mean": 0.315625,
+          "measured": 16
+        }
+      },
+      "reference_f1_all_supported": {
+        "mean": 0.21956521739130436,
+        "measured_or_refused": 23,
+        "missing": []
+      },
+      "answer_latency_seconds": {
+        "median": 65.0783886499703,
+        "p95": 99.18318103994825,
+        "maximum": 105.64823419996537
+      },
+      "groups": {
+        "campaign_sources": {
+          "cases": 18,
+          "answered": 14,
+          "reference_f1_all_supported": {
+            "mean": 0.25833333333333336,
+            "measured_or_refused": 18,
+            "missing": []
+          }
+        },
+        "learning_guides": {
+          "cases": 5,
+          "answered": 2,
+          "reference_f1_all_supported": {
+            "mean": 0.08,
+            "measured_or_refused": 5,
+            "missing": []
+          }
+        }
+      }
+    },
+    {
+      "chunking": "section",
+      "cases_completed": 30,
+      "execution_errors": 0,
+      "supported_answered": 18,
+      "supported_expected": 23,
+      "unsupported_correctly_refused": 7,
+      "unsupported_expected": 7,
+      "metrics": {
+        "ragas_faithfulness": {
+          "mean": 1.0,
+          "measured": 18
+        },
+        "ragas_context_precision": {
+          "mean": 0.7610507245834013,
+          "measured": 23
+        },
+        "passage_relevance_precision": {
+          "mean": 0.34782608695652173,
+          "measured": 23
+        },
+        "ragas_context_recall": {
+          "mean": 1.0,
+          "measured": 23
+        },
+        "ragas_factual_correctness": {
+          "mean": 0.3894444444444444,
+          "measured": 18
+        }
+      },
+      "reference_f1_all_supported": {
+        "mean": 0.30478260869565216,
+        "measured_or_refused": 23,
+        "missing": []
+      },
+      "answer_latency_seconds": {
+        "median": 27.056038999988232,
+        "p95": 62.78542906506336,
+        "maximum": 75.64406899991445
+      },
+      "groups": {
+        "campaign_sources": {
+          "cases": 18,
+          "answered": 15,
+          "reference_f1_all_supported": {
+            "mean": 0.3161111111111111,
+            "measured_or_refused": 18,
+            "missing": []
+          }
+        },
+        "learning_guides": {
+          "cases": 5,
+          "answered": 3,
+          "reference_f1_all_supported": {
+            "mean": 0.264,
+            "measured_or_refused": 5,
+            "missing": []
+          }
+        }
+      }
+    },
+    {
+      "chunking": "semantic",
+      "cases_completed": 30,
+      "execution_errors": 0,
+      "supported_answered": 20,
+      "supported_expected": 23,
+      "unsupported_correctly_refused": 7,
+      "unsupported_expected": 7,
+      "metrics": {
+        "ragas_faithfulness": {
+          "mean": 1.0,
+          "measured": 20
+        },
+        "ragas_context_precision": {
+          "mean": 0.774879226998905,
+          "measured": 23
+        },
+        "passage_relevance_precision": {
+          "mean": 0.3804347826086957,
+          "measured": 23
+        },
+        "ragas_context_recall": {
+          "mean": 0.9782608695652174,
+          "measured": 23
+        },
+        "ragas_factual_correctness": {
+          "mean": 0.385,
+          "measured": 20
+        }
+      },
+      "reference_f1_all_supported": {
+        "mean": 0.3347826086956522,
+        "measured_or_refused": 23,
+        "missing": []
+      },
+      "answer_latency_seconds": {
+        "median": 20.29767235001782,
+        "p95": 43.57535152998753,
+        "maximum": 46.44031009997707
+      },
+      "groups": {
+        "campaign_sources": {
+          "cases": 18,
+          "answered": 17,
+          "reference_f1_all_supported": {
+            "mean": 0.3,
+            "measured_or_refused": 18,
+            "missing": []
+          }
+        },
+        "learning_guides": {
+          "cases": 5,
+          "answered": 3,
+          "reference_f1_all_supported": {
+            "mean": 0.46,
+            "measured_or_refused": 5,
+            "missing": []
+          }
+        }
+      }
+    }
+  ],
+  "best_observed_reference_f1_chunkers": [
+    "semantic"
+  ],
+  "best_reference_f1_all_supported": 0.3347826086956522,
+  "caveat": "One execution per chunker on a synthetic set; differences are not statistical significance or a universal ranking. Existing section baseline reused and identified in protocol."
+}

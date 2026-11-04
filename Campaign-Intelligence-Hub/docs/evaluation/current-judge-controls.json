@@ -1,0 +1,83 @@
+{
+  "identity": {
+    "framework": "ragas",
+    "version": "0.3.9",
+    "assessment_version": 2,
+    "judge_provider": "ollama",
+    "judge_model": "llama3.2:3b",
+    "judge_context_tokens": 8192,
+    "judge_output_tokens": 2048,
+    "judge_json_mode": true,
+    "metric_timeout_seconds": 60,
+    "metrics": [
+      "ragas_faithfulness",
+      "ragas_context_precision",
+      "ragas_context_recall"
+    ],
+    "judge_provider_max_retries": 1,
+    "quality_assessment": false,
+    "precision_prompt_version": 3,
+    "precision_output_tokens": 256,
+    "precision_prompt_sha256": "3fed3e505ccb5f938543a8909a1f9a5f2fbe0a0591546a59a295a71aef9d13ef",
+    "judge_calibration": {
+      "version": 1,
+      "passed": false,
+      "controls": [
+        {
+          "context": "Acquire 180 verified product activations during 2026-Q2.",
+          "expected": 1,
+          "score": 0.9999999999,
+          "passed": true
+        },
+        {
+          "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+          "expected": 0,
+          "score": 0.9999999999,
+          "passed": false
+        },
+        {
+          "context": "Approved budget: USD 24000.",
+          "expected": 0,
+          "score": 0.9999999999,
+          "passed": false
+        },
+        {
+          "context": "Digitally active local households; existing and prospective members.",
+          "expected": 0,
+          "score": 0.9999999999,
+          "passed": false
+        }
+      ]
+    }
+  },
+  "calibration": {
+    "version": 1,
+    "passed": false,
+    "controls": [
+      {
+        "context": "Acquire 180 verified product activations during 2026-Q2.",
+        "expected": 1,
+        "score": 0.9999999999,
+        "passed": true
+      },
+      {
+        "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+        "expected": 0,
+        "score": 0.9999999999,
+        "passed": false
+      },
+      {
+        "context": "Approved budget: USD 24000.",
+        "expected": 0,
+        "score": 0.9999999999,
+        "passed": false
+      },
+      {
+        "context": "Digitally active local households; existing and prospective members.",
+        "expected": 0,
+        "score": 0.9999999999,
+        "passed": false
+      }
+    ]
+  }
+}

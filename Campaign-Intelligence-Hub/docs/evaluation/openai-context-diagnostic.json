@@ -1,0 +1,71 @@
+{
+  "purpose": "Evaluation context and precision parser diagnostics; not benchmark answer scores",
+  "judge_provider": "openai",
+  "judge_model": "gpt-4.1-mini",
+  "source_context_fix": {
+    "statements": {
+      "statements": [
+        "The objective of campaign TX-CMP-006 was to acquire 295 verified product activations during 2026-Q2.",
+        "The campaign TX-CMP-006 focused on Mortgage Campaigns."
+      ]
+    },
+    "original_context_judgments": {
+      "statements": [
+        {
+          "statement": "The objective of campaign TX-CMP-006 was to acquire 295 verified product activations during 2026-Q2.",
+          "reason": "The context mentions acquiring 295 verified product activations during 2026-Q2 for Mortgage Campaigns but does not specify any campaign code such as TX-CMP-006. Therefore, this statement cannot be directly inferred.",
+          "verdict": 0
+        },
+        {
+          "statement": "The campaign TX-CMP-006 focused on Mortgage Campaigns.",
+          "reason": "The context refers to Mortgage Campaigns but does not mention any campaign code like TX-CMP-006. Hence, this statement cannot be directly inferred.",
+          "verdict": 0
+        }
+      ]
+    },
+    "source_labeled_context_judgments": {
+      "statements": [
+        {
+          "statement": "The objective of campaign TX-CMP-006 was to acquire 295 verified product activations during 2026-Q2.",
+          "reason": "The context explicitly states the objective as \"Acquire 295 verified product activations during 2026-Q2 for Mortgage Campaigns.\" which directly supports the statement.",
+          "verdict": 1
+        },
+        {
+          "statement": "The campaign TX-CMP-006 focused on Mortgage Campaigns.",
+          "reason": "The context mentions \"Mortgage Campaigns\" multiple times in relation to campaign TX-CMP-006, indicating the campaign focus.",
+          "verdict": 1
+        }
+      ]
+    }
+  },
+  "unsupported_negative_control": {
+    "unsupported_response": "Campaign TX-CMP-006 guaranteed USD 1000000 in profit.",
+    "statements": {
+      "statements": [
+        "Campaign TX-CMP-006 guaranteed USD 1000000 in profit."
+      ]
+    },
+    "verdicts": {
+      "statements": [
+        {
+          "statement": "Campaign TX-CMP-006 guaranteed USD 1000000 in profit.",
+          "reason": "The context provides information about product activations, eligibility incentives, audience, creative theme, and approved budget, but does not mention any guaranteed profit or its amount.",
+          "verdict": 0
+        }
+      ]
+    },
+    "score": 0.0
+  },
+  "precision_parser_failure": {
+    "case_id": "rag-ambiguous-01",
+    "parsing_error_type": "OutputParserException",
+    "reason_length": 249,
+    "verdict": 1,
+    "schema_reason_max_length": 160
+  },
+  "precision_parser_fix": {
+    "prompt_version": 4,
+    "change": "Removed only the explanation character limit. Binary verdict validation and provider output-token budgets remain unchanged.",
+    "verification": "Long-explanation regression test failed before the fix and passed afterward; all supported cases are rejudged consistently."
+  }
+}

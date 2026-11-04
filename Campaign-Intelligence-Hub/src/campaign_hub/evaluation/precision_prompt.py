@@ -1,15 +1,17 @@
 """Compact, schema-constrained verdicts for the actual RAGAS precision metric."""
 from typing import Literal
-from pydantic import Field
 
-PRECISION_OUTPUT_TOKENS={'ollama':256,'groq':1024}
+PRECISION_PROMPT_VERSION=4
+PRECISION_PROMPT_SHA256='53e7c600fb817717e0f57bcbfbabf285b00ec500a83c9af598d43f3bb4148ab4'
+CALIBRATION_VERSION=2
+
+PRECISION_OUTPUT_TOKENS={'ollama':256,'groq':1024,'openai':1024}
 
 
 def create_precision_prompt(model,provider,verdict_sink=None):
     from ragas.metrics._context_precision import ContextPrecisionPrompt,QAC,Verification
 
     class StrictVerification(Verification):
-        reason: str=Field(max_length=160)
         verdict: Literal[0,1]
 
     budget=PRECISION_OUTPUT_TOKENS[provider]

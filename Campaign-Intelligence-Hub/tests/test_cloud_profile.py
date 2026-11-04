@@ -92,17 +92,16 @@ def test_bootstrap_builds_only_missing_indexes(tmp_path,monkeypatch):
 
 
 def test_experiment_identity_separates_providers_with_same_model_names(tmp_path):
-    from campaign_hub.evaluation.runner import experiment_identity
+    from campaign_hub.rag.evaluation import run_identity
     from campaign_hub.models import RetrievalOptions
     from campaign_hub.config import Settings
     class Service:
         corpus_hash='version'
         settings=Settings(root=tmp_path)
-    service=Service();first=experiment_identity(service,RetrievalOptions(),{'id':'q1'},False,False)
+    service=Service();first=run_identity(service,RetrievalOptions(),[{'id':'q1'}],False)
     service.settings=replace(service.settings,embedding_provider='sentence_transformers',generation_provider='groq')
-    second=experiment_identity(service,RetrievalOptions(),{'id':'q1'},False,False)
+    second=run_identity(service,RetrievalOptions(),[{'id':'q1'}],False)
     assert first!=second
-    assert first['embedding']==second['embedding']
     assert first['embedding_config']!=second['embedding_config']
     assert 'chunking_config' in second
 

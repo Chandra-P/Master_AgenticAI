@@ -1,38 +1,23 @@
 # Deployment guide
 
-For a browser-only full interactive demo, use the [Streamlit Community Cloud quickstart](cloud-quickstart.md). The hosted profile uses Groq for questions, CPU embeddings and automatic Chroma setup. The public demo has passed focused incognito-access, cited-answer and report checks. A new deployment still needs its owner's sign-in/secrets configuration and acceptance checks before sharing.
-
-## Local or managed server
-
-The complete application runs locally with free Ollama APIs. Python 3.12+, sufficient RAM for the selected models, and disk for models/indexes are required.
+Run the active question-answering application locally with Ollama. Python 3.12 or later, model disk space and sufficient memory for the chosen models are required. From the project directory:
 
 ```powershell
-cd Campaign-Intelligence-Hub
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -e .
 ollama pull llama3.2:3b
 ollama pull embeddinggemma
-.venv/Scripts/python.exe -m campaign_hub generate
 .venv/Scripts/python.exe -m campaign_hub validate
 .venv/Scripts/python.exe -m campaign_hub index --chunking all
 .venv/Scripts/python.exe -m streamlit run app.py
 ```
 
-The dashboard and map source-table snapshots work without model inference or indexes. Final HTML report generation, Ask Questions and CLI RAG experiments require the running Ollama embedding service and built collections. Final report prose and chart findings use deterministic source calculations. Downloaded HTML reports contain all charts/styles/source evidence and can be viewed offline. The live geographic basemap uses an external tile service; its table remains available without tiles.
+Keep the Ollama service running. The checked-in corpus is ready for validation; `python -m campaign_hub generate` recreates the fictional fixtures when explicitly needed. Index creation requires the configured embedding service. Semantic segmentation also embeds sentence/table units before embedding final chunks.
 
-For a server, install dependencies into an isolated environment, run Ollama on the same protected host or a reachable protected service, and persist `data/indexes`, model files and source versions. Start Streamlit with `--server.address 0.0.0.0 --server.port 8501` behind your organization's authenticated HTTPS proxy. Multi-user authentication, authorization, private client ingestion, and durable shared storage are future work; this build is a synthetic local demonstration, not a production client-data service.
+Configuration lives in environment variables or administrator Streamlit secrets. See [.env.example](../.env.example) and [secrets template](../.streamlit/secrets.example.toml). A `.env` file is not automatically loaded. Defaults are `CIH_GENERATION_PROVIDER=ollama`, `CIH_GENERATION_MODEL=llama3.2:3b`, `CIH_EMBEDDING_PROVIDER=ollama`, `CIH_EMBEDDING_MODEL=embeddinggemma`, and `CIH_OLLAMA_URL=http://localhost:11434`.
 
-Configure `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` before starting the process. See `.env.example`; this app does not automatically load `.env`. Never commit credentials. Changing embedding models requires fresh indexes.
+OpenAI and Groq are optional answer providers. Set `CIH_GENERATION_PROVIDER`, an account-supported `CIH_GENERATION_MODEL`, and the corresponding `OPENAI_API_KEY` or `GROQ_API_KEY` on the server. Hosted answers send the question and retrieved passages to that provider. Embeddings are configured independently: `sentence_transformers` with `sentence-transformers/all-MiniLM-L6-v2` offers a local CPU alternative. Changing the embedding model requires compatible new indexes; changing answer providers alone does not relabel existing vectors. Optional classification has its own provider/model settings.
 
-## Streamlit Community Cloud
+For a managed server, persist corpus versions, indexes and model caches, and place Streamlit behind the organization's authenticated HTTPS proxy. `streamlit run app.py --server.address 0.0.0.0 --server.port 8501` binds the server interface. Private-data authentication, authorization and operational hardening require deployment-specific work. The sample is a demonstration framework.
 
-The [live CPU/Groq demo](https://campaign-intelligence.streamlit.app/) is deployed. Community Cloud runs on a remote host, so its `localhost:11434` cannot reach Ollama on your laptop. The hosted profile prepares all three compatible chunking indexes automatically and does not require visitor setup.
-
-1. Push the project to the intended GitHub branch. Keep the synthetic corpus and manifest in the repository; do not commit local models, caches, indexes or secrets.
-2. In Community Cloud, create an app and select the repository, branch and `Campaign-Intelligence-Hub/app.py` as entry point. Use a Python version compatible with `pyproject.toml`.
-3. Install dependencies from `Campaign-Intelligence-Hub/requirements.txt`. The app entry point adds its own `src` directory to the import path, so an editable package install is not required for the hosted UI. Confirm dependency-file selection in the cloud build logs.
-4. Use the matching project theme. Confirm corpus validation, client/campaign selection and the map table first; those do not need Ollama. The HTML report workflow needs a reachable embedding service and built index before generation; a downloaded report can be viewed offline.
-5. Select the hosted profile from the quickstart to run embeddings on the cloud CPU and questions through an owner-configured Groq endpoint. Keeping the original Ollama profile instead requires a protected remotely reachable Ollama service; Community Cloud cannot use the owner's laptop localhost. Focused functional checks are complete; sustained resource/concurrency, repeated cold-start and persistence testing remain future work. Free-tier model access is rate-limited.
-6. Review cloud logs and run the same functional checks after deployment. Never treat missing model/judge results as successful evaluation.
-
-Platform references (checked 2026-10-17): [deployment setup](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy), [dependency management](https://docs.streamlit.io/deploy/concepts/dependencies), and [secrets configuration](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management). The localhost inference constraint above follows from the app's configured endpoint and the remote-host deployment model.
+See [cloud quickstart](cloud-quickstart.md) for an optional remote-host checklist. These instructions do not assert that a new cloud deployment has been verified. Local benchmark evidence is recorded separately in [evaluation results](evaluation-results.md).

@@ -7,17 +7,18 @@ def configure_evaluation_key(path):
     """Load only the owner key from an ignored TOML file, without logging it."""
     import os,tomllib
     from pathlib import Path
-    if os.getenv('GROQ_API_KEY'):return
     path=Path(path)
     if not path.is_file():return
     try:
         data=tomllib.loads(path.read_text(encoding='utf-8-sig'))
     except (ValueError,OSError) as error:
         raise ValueError('Evaluation secrets file could not be parsed; check its TOML syntax.') from None
-    key=data.get('GROQ_API_KEY')
-    if key is not None:
-        if not isinstance(key,str) or not key.strip():raise ValueError('GROQ_API_KEY must be a nonempty string.')
-        os.environ['GROQ_API_KEY']=key.strip()
+    for name in ('GROQ_API_KEY','OPENAI_API_KEY'):
+        if os.getenv(name):continue
+        key=data.get(name)
+        if key is not None:
+            if not isinstance(key,str) or not key.strip():raise ValueError(name+' must be a nonempty string.')
+            os.environ[name]=key.strip()
 
 QUALITY_METRICS=('passage_relevance_precision','ragas_context_recall','ragas_faithfulness','ragas_factual_correctness')
 
@@ -37,7 +38,7 @@ def quality_summary(rows,expected_supported,expected_unsupported,target=.9):
     unsupported=[by_id[c] for c in expected_unsupported if c in by_id]
     metrics={}
     for name in QUALITY_METRICS:
-        values=[r[name] for r in supported if not r.get('error') and isinstance(r.get(name),(int,float))
+        values=[r[name] for r in supported if r.get('judge_calibration_passed') is True and not r.get('error') and isinstance(r.get(name),(int,float))
                 and not isinstance(r[name],bool) and math.isfinite(r[name]) and 0<=r[name]<=1]
         metrics[name]={'mean':mean(values) if values else None,'measured':len(values),'expected':len(expected_supported)}
     coverage=sum(not r.get('error') and not r.get('abstained',True) for r in supported)/len(expected_supported) if expected_supported else None
@@ -52,3 +53,21 @@ def quality_summary(rows,expected_supported,expected_unsupported,target=.9):
             'unsupported_abstention_accuracy':abstention,
             'judge_calibration_passed':bool(supported) and all(r.get('judge_calibration_passed') is True for r in supported),
             'note':'Developmental model assessment on a narrow synthetic set; not independent certification or production accuracy.'}
+
+
+def reference_f1_summary(rows,expected_supported):
+    """Complete-set reference F1; genuine refusals are zero, missing judgments are not."""
+    expected=set(expected_supported)
+    selected=[r for r in rows if r.get('case_id') in expected]
+    result={'complete':False,'score':None,'expected':len(expected),'answered':0}
+    if not expected or len(selected)!=len(expected) or {r['case_id'] for r in selected}!=expected:
+        return result
+    values=[]
+    for row in selected:
+        if row.get('error') or row.get('judge_calibration_passed') is not True or not isinstance(row.get('abstained'),bool):return result
+        if row['abstained']:
+            values.append(0.0);continue
+        value=row.get('ragas_factual_correctness')
+        if not isinstance(value,(int,float)) or isinstance(value,bool) or not math.isfinite(value) or not 0<=value<=1:return result
+        values.append(value)
+    return {**result,'complete':True,'score':mean(values),'answered':sum(not r['abstained'] for r in selected)}

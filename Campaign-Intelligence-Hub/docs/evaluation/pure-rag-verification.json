@@ -1,0 +1,125 @@
+{
+  "corpus": "710107e2f96d5a25a227d473709747fe2e606dc18db3c2b3d6a2765f17c160c9",
+  "documents": 122,
+  "index_counts": {
+    "fixed": 166,
+    "section": 550,
+    "semantic": 707
+  },
+  "sources": [
+    {
+      "document_id": "GLOBAL-learning-01",
+      "shape": "playbook",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 7,
+        "semantic": 22
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-02",
+      "shape": "playbook",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 7,
+        "semantic": 22
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-03",
+      "shape": "playbook",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 7,
+        "semantic": 21
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-04",
+      "shape": "cohesive_policy",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 3,
+        "semantic": 21
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-05",
+      "shape": "cohesive_policy",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 3,
+        "semantic": 21
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-06",
+      "shape": "cohesive_policy",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 3,
+        "semantic": 22
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-07",
+      "shape": "mixed_notes",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 3,
+        "semantic": 23
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-08",
+      "shape": "mixed_notes",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 3,
+        "semantic": 23
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-09",
+      "shape": "mixed_notes",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 3,
+        "semantic": 22
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-10",
+      "shape": "troubleshooting",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 7,
+        "semantic": 22
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-11",
+      "shape": "troubleshooting",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 7,
+        "semantic": 21
+      }
+    },
+    {
+      "document_id": "GLOBAL-learning-12",
+      "shape": "troubleshooting",
+      "chunk_counts": {
+        "fixed": 3,
+        "section": 7,
+        "semantic": 22
+      }
+    }
+  ],
+  "local_answer": "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217. [GLOBAL-learning-01:section:recovery-gate:0:40c7da79]\n\nBefore resuming distribution, send a dry run to the internal test route. [GLOBAL-learning-01:section:release-rehearsal:0:3a2a08b2]\n\nClose the incident only when the evidence identifies what the partner accepted and which queued artifacts were removed or replaced. [GLOBAL-learning-10:section:what-proves-recovery:0:a324e524]",
+  "generator": "ollama/llama3.2:3b",
+  "embedding": "ollama/embeddinggemma",
+  "evaluation_rows": 204,
+  "faithfulness": null,
+  "note": "Synthetic development examples are not independent held-out validation; retrieval metrics do not measure answer faithfulness."
+}

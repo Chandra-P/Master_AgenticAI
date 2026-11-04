@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-25",
+  "assessment_version": 3,
+  "context_format": "source-json-v1",
+  "generation_provider": "ollama",
+  "generation_model": "llama3.2:3b",
+  "judge_provider": "openai",
+  "judge_model": "gpt-4.1-mini",
+  "configuration": {
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "final_k": 5,
+    "focus_context": false
+  },
+  "completed": 30,
+  "expected": 30,
+  "execution_errors": 0,
+  "metrics": {
+    "ragas_faithfulness": {
+      "mean": 1.0,
+      "measured": 18,
+      "expected": 23
+    },
+    "ragas_context_precision": {
+      "mean": 0.7610507245834013,
+      "measured": 23,
+      "expected": 23
+    },
+    "passage_relevance_precision": {
+      "mean": 0.34782608695652173,
+      "measured": 23,
+      "expected": 23
+    },
+    "ragas_context_recall": {
+      "mean": 1.0,
+      "measured": 23,
+      "expected": 23
+    },
+    "ragas_factual_correctness": {
+      "mean": 0.3894444444444444,
+      "measured": 18,
+      "expected": 23
+    }
+  },
+  "supported_answer_coverage": {
+    "answered": 18,
+    "expected": 23,
+    "fraction": 0.782608695652174
+  },
+  "unsupported_abstention_accuracy": {
+    "correct": 7,
+    "expected": 7,
+    "fraction": 1.0
+  },
+  "observed_answer_latency_seconds": {
+    "median": 27.056038999988232,
+    "p95": 62.78542906506336,
+    "maximum": 75.64406899991445
+  },
+  "source_context_note": "Judge sees the exact source IDs and passage text supplied to generation. Text-only initial run was archived as an evaluator diagnostic and is excluded.",
+  "calibration": {
+    "version": 2,
+    "passed": true,
+    "controls": [
+      {
+        "context": "Acquire 180 verified product activations during 2026-Q2.",
+        "expected": 1,
+        "score": 0.9999999999,
+        "passed": true
+      },
+      {
+        "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+        "expected": 0,
+        "score": 0.0,
+        "passed": true
+      },
+      {
+        "context": "Approved budget: USD 24000.",
+        "expected": 0,
+        "score": 0.0,
+        "passed": true
+      },
+      {
+        "context": "Digitally active local households; existing and prospective members.",
+        "expected": 0,
+        "score": 0.0,
+        "passed": true
+      }
+    ]
+  },
+  "source_corpus_hash": "710107e2f96d5a25a227d473709747fe2e606dc18db3c2b3d6a2765f17c160c9"
+}

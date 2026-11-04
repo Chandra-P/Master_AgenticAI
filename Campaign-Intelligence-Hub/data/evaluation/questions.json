@@ -1,5 +1,577 @@
 [
   {
+    "id": "dev-01",
+    "question": "When can a quarantined consent file resume in the consent recovery playbook?",
+    "campaign_id": null,
+    "expected_answer": "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217.",
+    "expected_facts": [
+      "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-01"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-01#recovery-gate"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-02",
+    "question": "What does the branch opening playbook require for an accessible rehearsal?",
+    "campaign_id": null,
+    "expected_answer": "Run the accessible rehearsal with a keyboard-only journey and a staffed telephone alternative before gate BR-406.",
+    "expected_facts": [
+      "Run the accessible rehearsal with a keyboard-only journey and a staffed telephone alternative before gate BR-406."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-02"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-02#accessible-rehearsal"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-03",
+    "question": "What is the stop rule for the fictional creative experiment?",
+    "campaign_id": null,
+    "expected_answer": "Pause experiment EX-552 when either variant has a broken eligibility link; do not declare a winner from the partial run.",
+    "expected_facts": [
+      "Pause experiment EX-552 when either variant has a broken eligibility link; do not declare a winner from the partial run."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-03"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-03#stop-rule"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-04",
+    "question": "How are late attribution corrections handled under the custody policy?",
+    "campaign_id": null,
+    "expected_answer": "A late correction receives a new revision linked to the original snapshot; it never overwrites the signed snapshot under policy AC-318.",
+    "expected_facts": [
+      "A late correction receives a new revision linked to the original snapshot; it never overwrites the signed snapshot under policy AC-318."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-04"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-04#correction-custody"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-05",
+    "question": "What is required before using an offer eligibility exception?",
+    "campaign_id": null,
+    "expected_answer": "Exception OE-624 requires a named approver, an expiration date, and a recorded customer-facing explanation before delivery.",
+    "expected_facts": [
+      "Exception OE-624 requires a named approver, an expiration date, and a recorded customer-facing explanation before delivery."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-05"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-05#exception-control"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-06",
+    "question": "How quickly must the fictional suppression service acknowledge an emergency withdrawal?",
+    "campaign_id": null,
+    "expected_answer": "The suppression service must acknowledge emergency withdrawal SP-809 within four business hours and block queued reuse until reconciliation.",
+    "expected_facts": [
+      "The suppression service must acknowledge emergency withdrawal SP-809 within four business hours and block queued reuse until reconciliation."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-06"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-06#suppression-custody"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-07",
+    "question": "In the north handoff notebook, what happens to a partner file without a checksum?",
+    "campaign_id": null,
+    "expected_answer": "A partner file without a checksum stays in intake hold NH-143 and cannot become a delivery batch.",
+    "expected_facts": [
+      "A partner file without a checksum stays in intake hold NH-143 and cannot become a delivery batch."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-07"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-07#document"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-08",
+    "question": "What is the west notebook rule for a mismatched product code?",
+    "campaign_id": null,
+    "expected_answer": "Route product-code mismatch WH-268 to the product owner; never map it to the nearest familiar product label.",
+    "expected_facts": [
+      "Route product-code mismatch WH-268 to the product owner; never map it to the nearest familiar product label."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-08"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-08#document"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-09",
+    "question": "How should a timezone-free event timestamp be handled in the central notebook?",
+    "campaign_id": null,
+    "expected_answer": "Timestamp exception CH-731 stays unresolved until the source owner supplies the timezone; analysts must not infer it from the branch address.",
+    "expected_facts": [
+      "Timestamp exception CH-731 stays unresolved until the source owner supplies the timezone; analysts must not infer it from the branch address."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-09"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-09#document"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-10",
+    "question": "Can a delivery batch be retried after receipt timeout DR-905?",
+    "campaign_id": null,
+    "expected_answer": "For DR-905, query the partner using the original idempotency key before retrying; an accepted batch must not be resent.",
+    "expected_facts": [
+      "For DR-905, query the partner using the original idempotency key before retrying; an accepted batch must not be resent."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-10"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-10#dr-905-recovery"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-11",
+    "question": "How is a conversion exactly at the enrollment window endpoint treated?",
+    "campaign_id": null,
+    "expected_answer": "EF-412 includes a conversion exactly on the documented window endpoint, but excludes a conversion one second after that endpoint.",
+    "expected_facts": [
+      "EF-412 includes a conversion exactly on the documented window endpoint, but excludes a conversion one second after that endpoint."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-11"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-11#ef-412-boundary"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-12",
+    "question": "What should happen when a knowledge source checksum changes?",
+    "campaign_id": null,
+    "expected_answer": "KS-663 rejects a cached retrieval result when its source checksum differs from the current manifest, even if the document identifier is unchanged.",
+    "expected_facts": [
+      "KS-663 rejects a cached retrieval result when its source checksum differs from the current manifest, even if the document identifier is unchanged."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-12"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-12#ks-663-mismatch"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated development example",
+      "held_out": false,
+      "origin": "authored alongside synthetic source; exact source sentence is the answer gold",
+      "usage": "implementation and chunking demonstration; not independent quality measurement"
+    }
+  },
+  {
+    "id": "dev-req-01",
+    "question": "For fictional canary CL-640, what does opening balance measure?",
+    "campaign_id": null,
+    "expected_answer": "For CL-640, opening balance is the posted balance at account opening; it is not current balance, net new deposits, or revenue.",
+    "expected_facts": [
+      "For CL-640, opening balance is the posted balance at account opening; it is not current balance, net new deposits, or revenue."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-01"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-01#balance-meaning"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-02",
+    "question": "Under CL-640 timing policy, does an in-window late-arriving observation remain eligible?",
+    "campaign_id": null,
+    "expected_answer": "Under CL-640 timing policy, eligibility follows event occurrence time; a late-arriving in-window observation enters a reviewed revision, not an overwritten signed snapshot.",
+    "expected_facts": [
+      "Under CL-640 timing policy, eligibility follows event occurrence time; a late-arriving in-window observation enters a reviewed revision, not an overwritten signed snapshot."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-02"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-02#timing-policy"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-03",
+    "question": "Is revision one the current approval rule for CL-640 releases?",
+    "campaign_id": null,
+    "expected_answer": "Revision one is superseded for CL-640 releases on or after 2026-10-01; use revision two for those releases.",
+    "expected_facts": [
+      "Revision one is superseded for CL-640 releases on or after 2026-10-01; use revision two for those releases."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-03"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-03#archived-release-rule"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-04",
+    "question": "Who must approve a current CL-640 release under revision two?",
+    "campaign_id": null,
+    "expected_answer": "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum.",
+    "expected_facts": [
+      "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-04"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-04#current-approval-gate"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-05",
+    "question": "Can the CL-640 launch checklist accept a payload without a checksum?",
+    "campaign_id": null,
+    "expected_answer": "The CL-640 checklist keeps a payload without a checksum on hold until the source custodian supplies a reproducible checksum.",
+    "expected_facts": [
+      "The CL-640 checklist keeps a payload without a checksum on hold until the source custodian supplies a reproducible checksum."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-05"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-05#payload-identity"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-06",
+    "question": "For CL-640 receipt incident RP-664, should an accepted batch be resent after a receipt timeout?",
+    "campaign_id": null,
+    "expected_answer": "For RP-664, recover the original business batch status after a receipt timeout; do not resend an already accepted batch.",
+    "expected_facts": [
+      "For RP-664, recover the original business batch status after a receipt timeout; do not resend an already accepted batch."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-06"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-06#unknown-receipt-status"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-07",
+    "question": "What did the CL-640 notebook say about a stale policy copy on the release board?",
+    "campaign_id": null,
+    "expected_answer": "The CL-640 shift lead replaced the stale revision-one release-board copy with revision two and retained the archive for September audit questions.",
+    "expected_facts": [
+      "The CL-640 shift lead replaced the stale revision-one release-board copy with revision two and retained the archive for September audit questions."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-07"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-07#document"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-08",
+    "question": "What evidence may CL-640 analysts request for a row-level discrepancy?",
+    "campaign_id": null,
+    "expected_answer": "For a CL-640 row-level discrepancy, request an approved masked sample from the source custodian; do not place personal recipient fields in the shared analyst corpus.",
+    "expected_facts": [
+      "For a CL-640 row-level discrepancy, request an approved masked sample from the source custodian; do not place personal recipient fields in the shared analyst corpus."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-08"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-08#evidence-access"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-multi-01",
+    "question": "For CL-640, what does opening balance mean and how is an in-window late-arriving event handled?",
+    "campaign_id": null,
+    "expected_answer": "For CL-640, opening balance is the posted balance at account opening; it is not current balance, net new deposits, or revenue. Under CL-640 timing policy, eligibility follows event occurrence time; a late-arriving in-window observation enters a reviewed revision, not an overwritten signed snapshot.",
+    "expected_facts": [
+      "For CL-640, opening balance is the posted balance at account opening; it is not current balance, net new deposits, or revenue.",
+      "Under CL-640 timing policy, eligibility follows event occurrence time; a late-arriving in-window observation enters a reviewed revision, not an overwritten signed snapshot."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-01",
+      "GLOBAL-requirements-02"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-01#balance-meaning",
+      "GLOBAL-requirements-02#timing-policy"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-multi-02",
+    "question": "Who approves a current CL-640 release, and who reconciles a partner status checksum mismatch before further transmission?",
+    "campaign_id": null,
+    "expected_answer": "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum. The delivery owner and source custodian reconcile the mismatch before any further transmission.",
+    "expected_facts": [
+      "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum.",
+      "The delivery owner and source custodian reconcile the mismatch before any further transmission."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-04",
+      "GLOBAL-requirements-06"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-04#current-approval-gate",
+      "GLOBAL-requirements-06#exception-and-retry"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-multi-03",
+    "question": "How is a missing CL-640 payload checksum handled, and what must an investigation sample request name?",
+    "campaign_id": null,
+    "expected_answer": "The CL-640 checklist keeps a payload without a checksum on hold until the source custodian supplies a reproducible checksum. The request names the discrepancy, the minimum fields needed to investigate it, and the intended retention route.",
+    "expected_facts": [
+      "The CL-640 checklist keeps a payload without a checksum on hold until the source custodian supplies a reproducible checksum.",
+      "The request names the discrepancy, the minimum fields needed to investigate it, and the intended retention route."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-05",
+      "GLOBAL-requirements-08"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-05#payload-identity",
+      "GLOBAL-requirements-08#evidence-access"
+    ],
+    "split": "development",
+    "kind": "question",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-unsupported-01",
+    "question": "What is the real account identifier of the first CL-640 customer?",
+    "campaign_id": null,
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "split": "development",
+    "kind": "unsupported",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
+    "id": "dev-req-unsupported-02",
+    "question": "What randomized causal lift did the CL-640 rehearsal measure?",
+    "campaign_id": null,
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "split": "development",
+    "kind": "unsupported",
+    "measurement_provenance": {
+      "purpose": "curated requirements development example",
+      "held_out": false,
+      "origin": "authored alongside fictional evidence pack; not independent validation",
+      "usage": "coverage and chunking exercises; never a production-accuracy claim"
+    }
+  },
+  {
     "id": "q01",
     "question": "What were the objectives of campaign TX-CHK-001?",
     "campaign_id": "TX-CHK-001",
@@ -390,111 +962,6 @@
     "kind": "question"
   },
   {
-    "id": "q21",
-    "question": "Generate a complete campaign performance report for TX-CHK-001.",
-    "campaign_id": "TX-CHK-001",
-    "expected_answer": "Eleven sections with campaign-specific KPI comparisons and citations.",
-    "expected_facts": [
-      "180",
-      "230"
-    ],
-    "expected_sources": [
-      "TX-CHK-001-brief",
-      "TX-CHK-001-success_plan",
-      "TX-CHK-001-performance_report",
-      "TX-CHK-001-historical_deck"
-    ],
-    "ground_truth_citations": [
-      "TX-CHK-001-performance_report#kpi-results"
-    ],
-    "split": "held_out",
-    "kind": "report"
-  },
-  {
-    "id": "q22",
-    "question": "Generate a complete campaign performance report for CA-CMP-002.",
-    "campaign_id": "CA-CMP-002",
-    "expected_answer": "Eleven sections with campaign-specific KPI comparisons and citations.",
-    "expected_facts": [
-      "203",
-      "260"
-    ],
-    "expected_sources": [
-      "CA-CMP-002-brief",
-      "CA-CMP-002-success_plan",
-      "CA-CMP-002-performance_report",
-      "CA-CMP-002-historical_deck"
-    ],
-    "ground_truth_citations": [
-      "CA-CMP-002-performance_report#kpi-results"
-    ],
-    "split": "held_out",
-    "kind": "report"
-  },
-  {
-    "id": "q23",
-    "question": "Generate a complete campaign performance report for IL-CMP-003.",
-    "campaign_id": "IL-CMP-003",
-    "expected_answer": "Eleven sections with campaign-specific KPI comparisons and citations.",
-    "expected_facts": [
-      "226",
-      "194"
-    ],
-    "expected_sources": [
-      "IL-CMP-003-brief",
-      "IL-CMP-003-success_plan",
-      "IL-CMP-003-performance_report",
-      "IL-CMP-003-historical_deck"
-    ],
-    "ground_truth_citations": [
-      "IL-CMP-003-performance_report#kpi-results"
-    ],
-    "split": "held_out",
-    "kind": "report"
-  },
-  {
-    "id": "q24",
-    "question": "Generate a complete campaign performance report for FL-CMP-004.",
-    "campaign_id": "FL-CMP-004",
-    "expected_answer": "Eleven sections with campaign-specific KPI comparisons and citations.",
-    "expected_facts": [
-      "249",
-      "179"
-    ],
-    "expected_sources": [
-      "FL-CMP-004-brief",
-      "FL-CMP-004-success_plan",
-      "FL-CMP-004-performance_report",
-      "FL-CMP-004-historical_deck"
-    ],
-    "ground_truth_citations": [
-      "FL-CMP-004-performance_report#kpi-results"
-    ],
-    "split": "held_out",
-    "kind": "report"
-  },
-  {
-    "id": "q25",
-    "question": "Generate a complete campaign performance report for NY-CMP-005.",
-    "campaign_id": "NY-CMP-005",
-    "expected_answer": "Eleven sections with campaign-specific KPI comparisons and citations.",
-    "expected_facts": [
-      "272",
-      "324"
-    ],
-    "expected_sources": [
-      "NY-CMP-005-brief",
-      "NY-CMP-005-success_plan",
-      "NY-CMP-005-performance_report",
-      "NY-CMP-005-historical_deck"
-    ],
-    "ground_truth_citations": [
-      "NY-CMP-005-performance_report#kpi-results"
-    ],
-    "split": "held_out",
-    "kind": "report"
-  },
-  {
     "id": "q26",
     "question": "What was the CEO's private salary?",
     "campaign_id": "TX-CHK-001",
@@ -548,5 +1015,239 @@
     "ground_truth_citations": [],
     "split": "held_out",
     "kind": "unsupported"
+  },
+  {
+    "id": "rag-ambiguous-01",
+    "question": "Does a late observation mean it is outside the attribution window, or does late arrival differ from late occurrence under the correction policy?",
+    "campaign_id": null,
+    "expected_answer": "A late-arriving observation can still fall within a previously defined attribution window; an observation occurring outside that window cannot be pulled inside merely because its file arrived with eligible events.",
+    "expected_facts": [
+      "A late-arriving observation can still fall within a previously defined attribution window; an observation occurring outside that window cannot be pulled inside merely because its file arrived with eligible events."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-04"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-04#correction-custody"
+    ],
+    "split": "held_out",
+    "kind": "question",
+    "category": "ambiguous",
+    "evidence_facts": [
+      {
+        "source_id": "GLOBAL-learning-04",
+        "citation": "GLOBAL-learning-04#correction-custody",
+        "fact": "A late-arriving observation can still fall within a previously defined attribution window; an observation occurring outside that window cannot be pulled inside merely because its file arrived with eligible events."
+      }
+    ],
+    "measurement_provenance": {
+      "purpose": "source-grounded benchmark expansion",
+      "held_out": true,
+      "origin": "authored by inspecting existing immutable synthetic sources",
+      "usage": "evaluation cases; not evidence of general quality or independent external validation"
+    }
+  },
+  {
+    "id": "rag-ambiguous-02",
+    "question": "For TX-CHK-001, does the reported balance mean current balances, net new deposits, revenue, or balances at account opening?",
+    "campaign_id": "TX-CHK-001",
+    "expected_answer": "Sum of posted account balances at opening (USD); not current balances, net new deposits, or revenue.",
+    "expected_facts": [
+      "Sum of posted account balances at opening (USD); not current balances, net new deposits, or revenue."
+    ],
+    "expected_sources": [
+      "TX-CHK-001-performance_report"
+    ],
+    "ground_truth_citations": [
+      "TX-CHK-001-performance_report#balance-definition"
+    ],
+    "split": "held_out",
+    "kind": "question",
+    "category": "ambiguous",
+    "evidence_facts": [
+      {
+        "source_id": "TX-CHK-001-performance_report",
+        "citation": "TX-CHK-001-performance_report#balance-definition",
+        "fact": "Sum of posted account balances at opening (USD); not current balances, net new deposits, or revenue."
+      }
+    ],
+    "measurement_provenance": {
+      "purpose": "source-grounded benchmark expansion",
+      "held_out": true,
+      "origin": "authored by inspecting existing immutable synthetic sources",
+      "usage": "evaluation cases; not evidence of general quality or independent external validation"
+    }
+  },
+  {
+    "id": "rag-ambiguous-03",
+    "question": "In DR-905, does a receipt timeout mean we should resend an accepted batch, or first recover its status?",
+    "campaign_id": null,
+    "expected_answer": "For DR-905, query the partner using the original idempotency key before retrying; an accepted batch must not be resent.",
+    "expected_facts": [
+      "For DR-905, query the partner using the original idempotency key before retrying; an accepted batch must not be resent."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-10"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-10#dr-905-recovery"
+    ],
+    "split": "held_out",
+    "kind": "question",
+    "category": "ambiguous",
+    "evidence_facts": [
+      {
+        "source_id": "GLOBAL-learning-10",
+        "citation": "GLOBAL-learning-10#dr-905-recovery",
+        "fact": "For DR-905, query the partner using the original idempotency key before retrying; an accepted batch must not be resent."
+      }
+    ],
+    "measurement_provenance": {
+      "purpose": "source-grounded benchmark expansion",
+      "held_out": true,
+      "origin": "authored by inspecting existing immutable synthetic sources",
+      "usage": "evaluation cases; not evidence of general quality or independent external validation"
+    }
+  },
+  {
+    "id": "rag-multi-01",
+    "question": "After an attribution correction changes the source checksum under the same document ID, what must happen to the signed snapshot and to a cached answer presented as current?",
+    "campaign_id": null,
+    "expected_answer": "A late correction receives a new revision linked to the original snapshot; it never overwrites the signed snapshot under policy AC-318. KS-663 rejects a cached retrieval result when its source checksum differs from the current manifest, even if the document identifier is unchanged.",
+    "expected_facts": [
+      "A late correction receives a new revision linked to the original snapshot; it never overwrites the signed snapshot under policy AC-318.",
+      "KS-663 rejects a cached retrieval result when its source checksum differs from the current manifest, even if the document identifier is unchanged."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-04",
+      "GLOBAL-learning-12"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-04#correction-custody",
+      "GLOBAL-learning-12#ks-663-mismatch"
+    ],
+    "split": "held_out",
+    "kind": "question",
+    "category": "multi_document",
+    "evidence_facts": [
+      {
+        "source_id": "GLOBAL-learning-04",
+        "citation": "GLOBAL-learning-04#correction-custody",
+        "fact": "A late correction receives a new revision linked to the original snapshot; it never overwrites the signed snapshot under policy AC-318."
+      },
+      {
+        "source_id": "GLOBAL-learning-12",
+        "citation": "GLOBAL-learning-12#ks-663-mismatch",
+        "fact": "KS-663 rejects a cached retrieval result when its source checksum differs from the current manifest, even if the document identifier is unchanged."
+      }
+    ],
+    "measurement_provenance": {
+      "purpose": "source-grounded benchmark expansion",
+      "held_out": true,
+      "origin": "authored by inspecting existing immutable synthetic sources",
+      "usage": "evaluation cases; not evidence of general quality or independent external validation"
+    }
+  },
+  {
+    "id": "rag-multi-02",
+    "question": "During consent recovery an emergency withdrawal is received. What is the suppression acknowledgment and queued-reuse rule, and what review gate is required to resume the quarantined file?",
+    "campaign_id": null,
+    "expected_answer": "The suppression service must acknowledge emergency withdrawal SP-809 within four business hours and block queued reuse until reconciliation. Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217.",
+    "expected_facts": [
+      "The suppression service must acknowledge emergency withdrawal SP-809 within four business hours and block queued reuse until reconciliation.",
+      "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-06",
+      "GLOBAL-learning-01"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-06#suppression-custody",
+      "GLOBAL-learning-01#recovery-gate"
+    ],
+    "split": "held_out",
+    "kind": "question",
+    "category": "multi_document",
+    "evidence_facts": [
+      {
+        "source_id": "GLOBAL-learning-06",
+        "citation": "GLOBAL-learning-06#suppression-custody",
+        "fact": "The suppression service must acknowledge emergency withdrawal SP-809 within four business hours and block queued reuse until reconciliation."
+      },
+      {
+        "source_id": "GLOBAL-learning-01",
+        "citation": "GLOBAL-learning-01#recovery-gate",
+        "fact": "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217."
+      }
+    ],
+    "measurement_provenance": {
+      "purpose": "source-grounded benchmark expansion",
+      "held_out": true,
+      "origin": "authored by inspecting existing immutable synthetic sources",
+      "usage": "evaluation cases; not evidence of general quality or independent external validation"
+    }
+  },
+  {
+    "id": "rag-multi-03",
+    "question": "In a partner handoff, one new file has no checksum and a separate previously transmitted batch has a receipt timeout. What do the north notebook and delivery FAQ require for each?",
+    "campaign_id": null,
+    "expected_answer": "A partner file without a checksum stays in intake hold NH-143 and cannot become a delivery batch. For DR-905, query the partner using the original idempotency key before retrying; an accepted batch must not be resent.",
+    "expected_facts": [
+      "A partner file without a checksum stays in intake hold NH-143 and cannot become a delivery batch.",
+      "For DR-905, query the partner using the original idempotency key before retrying; an accepted batch must not be resent."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-07",
+      "GLOBAL-learning-10"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-07#document",
+      "GLOBAL-learning-10#dr-905-recovery"
+    ],
+    "split": "held_out",
+    "kind": "question",
+    "category": "multi_document",
+    "evidence_facts": [
+      {
+        "source_id": "GLOBAL-learning-07",
+        "citation": "GLOBAL-learning-07#document",
+        "fact": "A partner file without a checksum stays in intake hold NH-143 and cannot become a delivery batch."
+      },
+      {
+        "source_id": "GLOBAL-learning-10",
+        "citation": "GLOBAL-learning-10#dr-905-recovery",
+        "fact": "For DR-905, query the partner using the original idempotency key before retrying; an accepted batch must not be resent."
+      }
+    ],
+    "measurement_provenance": {
+      "purpose": "source-grounded benchmark expansion",
+      "held_out": true,
+      "origin": "authored by inspecting existing immutable synthetic sources",
+      "usage": "evaluation cases; not evidence of general quality or independent external validation"
+    }
+  },
+  {
+    "id": "rag-unsupported-01",
+    "question": "Which named employees signed CR-217 for the TX-CHK-001 consent recovery incident?",
+    "campaign_id": null,
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "split": "held_out",
+    "kind": "unsupported",
+    "category": "unsupported"
+  },
+  {
+    "id": "rag-unsupported-02",
+    "question": "What real statutory retention period does fictional policy AC-318 require?",
+    "campaign_id": null,
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "split": "held_out",
+    "kind": "unsupported",
+    "category": "unsupported"
   }
 ]

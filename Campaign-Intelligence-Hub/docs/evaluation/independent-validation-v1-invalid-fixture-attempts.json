@@ -1,0 +1,338 @@
+[
+  {
+    "case_id": "iv1-07",
+    "case_kind": "question",
+    "category": "single_document",
+    "identity": {
+      "validation_id": "independent-validation-v1",
+      "case_set_sha256": "cd9d8218f56a5a63cdc6d6b9413858df46432df7a45f56f3c3392cbf34d8b261",
+      "implementation_sha256": "77330b21bbe120fa3c37b748bff635c9a382fcfe56e6bab56af1442d3aa85db0",
+      "corpus_hash": "1fb8bde30540d326041c4614e74f2d863e791edc5b7bcd53f145aa04bc07381f",
+      "options": {
+        "chunking": "semantic",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 8,
+        "focus_context": false
+      },
+      "generation_provider": "ollama",
+      "generation_model": "llama3.2:3b",
+      "generation_prompt_sha256": "31c7b0e0813c72a09a129d10ea435059d10a3f57edeab35a1f336a369ebd77d2",
+      "local_model_digests": {
+        "embeddinggemma:latest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+        "llama3.2:3b": "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72"
+      },
+      "judge": {
+        "framework": "ragas",
+        "version": "0.3.9",
+        "assessment_version": 3,
+        "context_format": "source-json-v1",
+        "judge_provider": "openai",
+        "judge_model": "gpt-4.1-mini",
+        "judge_context_tokens": null,
+        "judge_output_tokens": 2048,
+        "judge_json_mode": true,
+        "metric_timeout_seconds": 90,
+        "metrics": [
+          "ragas_faithfulness",
+          "ragas_context_precision",
+          "ragas_context_recall",
+          "ragas_factual_correctness"
+        ],
+        "judge_provider_max_retries": 1,
+        "quality_assessment": true,
+        "precision_prompt_version": 4,
+        "precision_output_tokens": 1024,
+        "precision_prompt_sha256": "53e7c600fb817717e0f57bcbfbabf285b00ec500a83c9af598d43f3bb4148ab4",
+        "judge_calibration": {
+          "version": 2,
+          "passed": true,
+          "controls": [
+            {
+              "context": "Acquire 180 verified product activations during 2026-Q2.",
+              "expected": 1,
+              "score": 0.9999999999,
+              "passed": true
+            },
+            {
+              "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            },
+            {
+              "context": "Approved budget: USD 24000.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            },
+            {
+              "context": "Digitally active local households; existing and prospective members.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            }
+          ]
+        }
+      }
+    },
+    "error": null,
+    "metric_errors": {
+      "ragas_faithfulness": "No retrieved passages; metric unavailable.",
+      "ragas_context_precision": "No retrieved passages; metric unavailable.",
+      "ragas_context_recall": "No retrieved passages; metric unavailable.",
+      "ragas_factual_correctness": "No retrieved passages; metric unavailable."
+    },
+    "judge_calibration_passed": true,
+    "created_at_utc": "2026-10-26T06:12:16.330361+00:00",
+    "sample": {
+      "user_input": "In CL-640, how should an unavailable measurement differ from a zero in an export?",
+      "response": "I could not find sufficient evidence in the knowledge base.",
+      "reference": "An unavailable measurement must remain unavailable, rather than becoming zero during export. Zero means the owner measured the defined quantity and observed none.",
+      "retrieved_contexts": []
+    },
+    "raw_retrieved_contexts": [],
+    "abstained": true,
+    "answer_seconds": 5.000003147870302e-05,
+    "retrieval_seconds": null,
+    "document_ids": [],
+    "evidence_method": "model_quoted_claims",
+    "source_proof": [],
+    "answer_validation": {
+      "accepted_claims": null,
+      "draft_claims": null
+    },
+    "ragas_faithfulness": null,
+    "ragas_context_precision": null,
+    "ragas_context_recall": null,
+    "ragas_factual_correctness": null,
+    "passage_verdicts": [],
+    "passage_relevance_precision": null,
+    "evaluation_seconds": 0.00022749998606741428
+  },
+  {
+    "case_id": "iv1-08",
+    "case_kind": "question",
+    "category": "single_document",
+    "identity": {
+      "validation_id": "independent-validation-v1",
+      "case_set_sha256": "cd9d8218f56a5a63cdc6d6b9413858df46432df7a45f56f3c3392cbf34d8b261",
+      "implementation_sha256": "77330b21bbe120fa3c37b748bff635c9a382fcfe56e6bab56af1442d3aa85db0",
+      "corpus_hash": "1fb8bde30540d326041c4614e74f2d863e791edc5b7bcd53f145aa04bc07381f",
+      "options": {
+        "chunking": "semantic",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 8,
+        "focus_context": false
+      },
+      "generation_provider": "ollama",
+      "generation_model": "llama3.2:3b",
+      "generation_prompt_sha256": "31c7b0e0813c72a09a129d10ea435059d10a3f57edeab35a1f336a369ebd77d2",
+      "local_model_digests": {
+        "embeddinggemma:latest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+        "llama3.2:3b": "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72"
+      },
+      "judge": {
+        "framework": "ragas",
+        "version": "0.3.9",
+        "assessment_version": 3,
+        "context_format": "source-json-v1",
+        "judge_provider": "openai",
+        "judge_model": "gpt-4.1-mini",
+        "judge_context_tokens": null,
+        "judge_output_tokens": 2048,
+        "judge_json_mode": true,
+        "metric_timeout_seconds": 90,
+        "metrics": [
+          "ragas_faithfulness",
+          "ragas_context_precision",
+          "ragas_context_recall",
+          "ragas_factual_correctness"
+        ],
+        "judge_provider_max_retries": 1,
+        "quality_assessment": true,
+        "precision_prompt_version": 4,
+        "precision_output_tokens": 1024,
+        "precision_prompt_sha256": "53e7c600fb817717e0f57bcbfbabf285b00ec500a83c9af598d43f3bb4148ab4",
+        "judge_calibration": {
+          "version": 2,
+          "passed": true,
+          "controls": [
+            {
+              "context": "Acquire 180 verified product activations during 2026-Q2.",
+              "expected": 1,
+              "score": 0.9999999999,
+              "passed": true
+            },
+            {
+              "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            },
+            {
+              "context": "Approved budget: USD 24000.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            },
+            {
+              "context": "Digitally active local households; existing and prospective members.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            }
+          ]
+        }
+      }
+    },
+    "error": null,
+    "metric_errors": {
+      "ragas_faithfulness": "No retrieved passages; metric unavailable.",
+      "ragas_context_precision": "No retrieved passages; metric unavailable.",
+      "ragas_context_recall": "No retrieved passages; metric unavailable.",
+      "ragas_factual_correctness": "No retrieved passages; metric unavailable."
+    },
+    "judge_calibration_passed": true,
+    "created_at_utc": "2026-10-26T06:12:16.339890+00:00",
+    "sample": {
+      "user_input": "What should happen to a CL-640 event whose timestamp has no time-zone offset?",
+      "response": "I could not find sufficient evidence in the knowledge base.",
+      "reference": "A source timestamp lacking an offset is unresolved evidence. The custodian must recover its documented time zone or keep the observation out of time-sensitive conclusions.",
+      "retrieved_contexts": []
+    },
+    "raw_retrieved_contexts": [],
+    "abstained": true,
+    "answer_seconds": 3.170000854879618e-05,
+    "retrieval_seconds": null,
+    "document_ids": [],
+    "evidence_method": "model_quoted_claims",
+    "source_proof": [],
+    "answer_validation": {
+      "accepted_claims": null,
+      "draft_claims": null
+    },
+    "ragas_faithfulness": null,
+    "ragas_context_precision": null,
+    "ragas_context_recall": null,
+    "ragas_factual_correctness": null,
+    "passage_verdicts": [],
+    "passage_relevance_precision": null,
+    "evaluation_seconds": 0.0002579999854788184
+  },
+  {
+    "case_id": "iv1-09",
+    "case_kind": "question",
+    "category": "single_document",
+    "identity": {
+      "validation_id": "independent-validation-v1",
+      "case_set_sha256": "cd9d8218f56a5a63cdc6d6b9413858df46432df7a45f56f3c3392cbf34d8b261",
+      "implementation_sha256": "77330b21bbe120fa3c37b748bff635c9a382fcfe56e6bab56af1442d3aa85db0",
+      "corpus_hash": "1fb8bde30540d326041c4614e74f2d863e791edc5b7bcd53f145aa04bc07381f",
+      "options": {
+        "chunking": "semantic",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 8,
+        "focus_context": false
+      },
+      "generation_provider": "ollama",
+      "generation_model": "llama3.2:3b",
+      "generation_prompt_sha256": "31c7b0e0813c72a09a129d10ea435059d10a3f57edeab35a1f336a369ebd77d2",
+      "local_model_digests": {
+        "embeddinggemma:latest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+        "llama3.2:3b": "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72"
+      },
+      "judge": {
+        "framework": "ragas",
+        "version": "0.3.9",
+        "assessment_version": 3,
+        "context_format": "source-json-v1",
+        "judge_provider": "openai",
+        "judge_model": "gpt-4.1-mini",
+        "judge_context_tokens": null,
+        "judge_output_tokens": 2048,
+        "judge_json_mode": true,
+        "metric_timeout_seconds": 90,
+        "metrics": [
+          "ragas_faithfulness",
+          "ragas_context_precision",
+          "ragas_context_recall",
+          "ragas_factual_correctness"
+        ],
+        "judge_provider_max_retries": 1,
+        "quality_assessment": true,
+        "precision_prompt_version": 4,
+        "precision_output_tokens": 1024,
+        "precision_prompt_sha256": "53e7c600fb817717e0f57bcbfbabf285b00ec500a83c9af598d43f3bb4148ab4",
+        "judge_calibration": {
+          "version": 2,
+          "passed": true,
+          "controls": [
+            {
+              "context": "Acquire 180 verified product activations during 2026-Q2.",
+              "expected": 1,
+              "score": 0.9999999999,
+              "passed": true
+            },
+            {
+              "context": "Campaign-specific eligibility incentive. Product suitability must be verified.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            },
+            {
+              "context": "Approved budget: USD 24000.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            },
+            {
+              "context": "Digitally active local households; existing and prospective members.",
+              "expected": 0,
+              "score": 0.0,
+              "passed": true
+            }
+          ]
+        }
+      }
+    },
+    "error": null,
+    "metric_errors": {
+      "ragas_faithfulness": "No retrieved passages; metric unavailable.",
+      "ragas_context_precision": "No retrieved passages; metric unavailable.",
+      "ragas_context_recall": "No retrieved passages; metric unavailable.",
+      "ragas_factual_correctness": "No retrieved passages; metric unavailable."
+    },
+    "judge_calibration_passed": true,
+    "created_at_utc": "2026-10-26T06:12:16.349041+00:00",
+    "sample": {
+      "user_input": "Who must approve a CL-640 release decided on October 15, 2026, and how independent must the measurement reviewer be?",
+      "response": "I could not find sufficient evidence in the knowledge base.",
+      "reference": "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum. The measurement reviewer must not have prepared the release file.",
+      "retrieved_contexts": []
+    },
+    "raw_retrieved_contexts": [],
+    "abstained": true,
+    "answer_seconds": 3.4100026823580265e-05,
+    "retrieval_seconds": null,
+    "document_ids": [],
+    "evidence_method": "model_quoted_claims",
+    "source_proof": [],
+    "answer_validation": {
+      "accepted_claims": null,
+      "draft_claims": null
+    },
+    "ragas_faithfulness": null,
+    "ragas_context_precision": null,
+    "ragas_context_recall": null,
+    "ragas_factual_correctness": null,
+    "passage_verdicts": [],
+    "passage_relevance_precision": null,
+    "evaluation_seconds": 0.000255799968726933
+  }
+]

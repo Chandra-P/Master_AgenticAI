@@ -31,3 +31,25 @@ def test_strict_precision_uses_every_passage_and_keeps_ragas_rank_scoring():
     assert settings==[{'num_predict':256}]
     assert len(prompt.to_string())<3000
     with pytest.raises(ValueError):prompt.output_model(reason='Invalid binary value',verdict=2)
+
+
+def test_valid_binary_verdict_survives_a_long_explanation():
+    pytest.importorskip('ragas')
+    from ragas import SingleTurnSample
+    from ragas.metrics import LLMContextPrecisionWithReference
+    from campaign_hub.evaluation.precision_prompt import create_precision_prompt
+    from campaign_hub.evaluation.ragas_assessment import score_sample
+    class Model:
+        def model_copy(self,update):return self
+        def with_structured_output(self,schema,method):
+            class Chain:
+                async def ainvoke(self,*args,**kwargs):
+                    return {'reason':'The passage supports the requested reference fact. '*6,'verdict':1}
+            return Chain()
+    prompt=create_precision_prompt(Model(),'openai')
+    metric=LLMContextPrecisionWithReference(llm=SimpleNamespace(),context_precision_prompt=prompt)
+    sample={'user_input':'Goal?','reference':'180 activations.','response':'180 activations.',
+            'retrieved_contexts':['The goal is 180 activations.']}
+    result=asyncio.run(score_sample(sample,{'ragas_context_precision':metric},SingleTurnSample))
+    assert not result['metric_errors']
+    assert result['ragas_context_precision']==pytest.approx(1)

@@ -1,0 +1,921 @@
+{
+  "id": "bae90871-f365-4777-a9fe-fc16d6d793f0",
+  "question": "Can I afford the car in my current loan offer?",
+  "route": "affordability",
+  "mode": "deterministic",
+  "nodes": [
+    "Orchestrator",
+    "Document RAG",
+    "SQL Analytics",
+    "Goal & Memory",
+    "Scenario",
+    "Critic / Validator",
+    "Advisor / Synthesis",
+    "Model Council"
+  ],
+  "tools": [
+    "retrieve_documents",
+    "get_cash_position",
+    "get_monthly_cash_flow",
+    "get_debt_payments",
+    "get_user_memory",
+    "get_goal_status",
+    "simulate_scenario",
+    "model_council"
+  ],
+  "events": [
+    {
+      "node": "Document RAG",
+      "tool": "retrieve_documents",
+      "status": "complete",
+      "latency_ms": 2,
+      "summary": "retrieve documents completed"
+    },
+    {
+      "node": "SQL Analytics",
+      "tool": "get_cash_position",
+      "status": "complete",
+      "latency_ms": 0,
+      "summary": "get cash position completed"
+    },
+    {
+      "node": "SQL Analytics",
+      "tool": "get_monthly_cash_flow",
+      "status": "complete",
+      "latency_ms": 1,
+      "summary": "get monthly cash flow completed"
+    },
+    {
+      "node": "SQL Analytics",
+      "tool": "get_debt_payments",
+      "status": "complete",
+      "latency_ms": 0,
+      "summary": "get debt payments completed"
+    },
+    {
+      "node": "Goal & Memory",
+      "tool": "get_user_memory",
+      "status": "complete",
+      "latency_ms": 0,
+      "summary": "get user memory completed"
+    },
+    {
+      "node": "Goal & Memory",
+      "tool": "get_goal_status",
+      "status": "complete",
+      "latency_ms": 0,
+      "summary": "get goal status completed"
+    },
+    {
+      "node": "Scenario",
+      "tool": "simulate_scenario",
+      "status": "complete",
+      "latency_ms": 6,
+      "summary": "simulate scenario completed"
+    },
+    {
+      "node": "Model Council",
+      "tool": "model_council",
+      "status": "held",
+      "latency_ms": 0,
+      "summary": "Recommendation held for review. Resolve objections and constraint warnings; agreement cannot override deterministic checks."
+    }
+  ],
+  "sources": [
+    {
+      "chunk_id": "410aec9b-ef6f-4b7b-b731-d8cc296b0334",
+      "document_id": "auto-current",
+      "title": "Auto loan offer \u00b7 current",
+      "version": 2,
+      "page": 1,
+      "section": "Section 1",
+      "passage": "SYNTHETIC \u2014 Current auto loan offer\nVehicle price: $50,000\nAPR: 6.49%\nTerm: 60 months\nLate fee: 5% of overdue payment.\nNo prepayment penalty. Taxes, registration, insurance, and dealer fees are excluded. Offer expires November 30, 2026.",
+      "score": 0.438,
+      "effective_date": "2026-10-25",
+      "family": "auto",
+      "superseded": false
+    },
+    {
+      "chunk_id": "0a4dda54-f018-40b3-b629-ba25c9d01af3",
+      "document_id": "insurance",
+      "title": "Auto insurance policy",
+      "version": 1,
+      "page": 1,
+      "section": "Section 1",
+      "passage": "SYNTHETIC \u2014 Auto insurance policy\nCollision deductible: $1,000.\nComprehensive deductible: $500.\nThis policy covers the existing vehicle; premiums for a new car have not been quoted.",
+      "score": 0.16,
+      "effective_date": "2026-07-01",
+      "family": "insurance",
+      "superseded": false
+    }
+  ],
+  "facts": [
+    {
+      "label": "Vehicle price",
+      "value": "50000",
+      "unit": "USD",
+      "source": "410aec9b-ef6f-4b7b-b731-d8cc296b0334",
+      "path": "document.price"
+    },
+    {
+      "label": "Loan APR",
+      "value": "6.49",
+      "unit": "percent",
+      "source": "410aec9b-ef6f-4b7b-b731-d8cc296b0334",
+      "path": "document.apr"
+    },
+    {
+      "label": "Loan term",
+      "value": "60",
+      "unit": "months",
+      "source": "410aec9b-ef6f-4b7b-b731-d8cc296b0334",
+      "path": "document.term"
+    },
+    {
+      "label": "Available cash",
+      "value": "60000.00",
+      "unit": "USD",
+      "source": "get_cash_position",
+      "path": "value"
+    },
+    {
+      "label": "Baseline monthly surplus",
+      "value": "4000.00",
+      "unit": "USD",
+      "source": "get_monthly_cash_flow",
+      "path": "surplus"
+    },
+    {
+      "label": "Emergency reserve",
+      "value": "25000.00",
+      "unit": "USD",
+      "source": "get_user_memory",
+      "path": "emergency_fund_minimum"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Higher down payment",
+      "loan": {
+        "principal": "30000.00",
+        "apr": "6.49",
+        "months": "60",
+        "payment": "586.84"
+      },
+      "baseline": {
+        "monthly_income": "10000.00",
+        "monthly_expenses": "6000.00",
+        "monthly_surplus": "4000.00",
+        "cash": "60000.00",
+        "emergency_reserve": "25000.00",
+        "house_savings": "20000.00",
+        "unallocated_cash": "15000.00",
+        "house_months": 8,
+        "house_allocation_cap": "4000.00"
+      },
+      "changes": {
+        "monthly_payment": "586.84",
+        "down_payment": "20000.00",
+        "cash_purchase": "0",
+        "immediate_inflow": "0",
+        "income_reduction_pct": "0",
+        "cancel_subscription_ids": [],
+        "extra_contributions": "0"
+      },
+      "result": {
+        "monthly_income": "10000.00",
+        "monthly_expenses": "6586.84",
+        "monthly_surplus": "3413.16",
+        "remaining_cash": "40000.00",
+        "house_savings": "15000.00",
+        "house_savings_used": "5000.00",
+        "monthly_house_contribution": "3413.16",
+        "subscription_savings": "0.00"
+      },
+      "goal_impact": {
+        "baseline_months": 8,
+        "projected_months": 11,
+        "delay_months": 3,
+        "target": "50000.00",
+        "target_date": "2027-06-01"
+      },
+      "constraints": {
+        "emergency_fund": {
+          "passed": true,
+          "actual": "40000.00",
+          "minimum": "25000.00",
+          "rule": "remaining_cash >= emergency_fund_minimum"
+        },
+        "house_goal": {
+          "passed": false,
+          "delay_months": 3,
+          "maximum_delay_months": 2,
+          "rule": "projected additional months <= allowed delay"
+        },
+        "cash_flow": {
+          "passed": true,
+          "actual": "3413.16",
+          "rule": "monthly_surplus >= 0"
+        },
+        "earmarked_cash": {
+          "passed": true,
+          "rule": "remaining_cash >= emergency_reserve + remaining_house_savings; earmarks cannot overlap"
+        },
+        "purchase_funding": {
+          "passed": true,
+          "rule": "cash outflows cannot exceed available cash plus inflows"
+        }
+      },
+      "passed": false,
+      "calculation_steps": [
+        {
+          "name": "Income after reduction",
+          "expression": "10000.00 \u00d7 (1 \u2212 0.00 / 100)",
+          "value": "10000.00"
+        },
+        {
+          "name": "Monthly surplus",
+          "expression": "10000.00 \u2212 6000.00 \u2212 586.84 + 0.00 \u2212 0.00",
+          "value": "3413.16"
+        },
+        {
+          "name": "Remaining cash",
+          "expression": "60000.00 \u2212 20000.00 + 0.00",
+          "value": "40000.00"
+        },
+        {
+          "name": "House savings consumed",
+          "expression": "max(0, cash outflows \u2212 inflows \u2212 unallocated cash), capped at earmarked house savings",
+          "value": "5000.00"
+        }
+      ],
+      "assumptions": [
+        "Baseline is the last complete calendar month; amounts are USD.",
+        "House savings are included in cash. Outflows consume unallocated cash before house savings.",
+        "House contributions use available surplus capped at the configured allocation; no interest or investment returns.",
+        "Subscription cancellations take effect immediately; annual monthly equivalents may not be immediately refundable.",
+        "Vehicle tax, fees, insurance changes, maintenance, and trade-in are unknown and excluded. Loan-only estimates are not final affordability advice.",
+        "demo default; confirm before relying on advice"
+      ],
+      "source_data": {
+        "cash": {
+          "value": "60000.00",
+          "currency": "USD",
+          "period": {
+            "start": null,
+            "end_exclusive": null
+          },
+          "included_record_count": 2,
+          "exclusion_rules": [
+            "internal transfers",
+            "pending",
+            "duplicate copies",
+            "reversed",
+            "future-dated beyond as-of date",
+            "excluded accounts"
+          ],
+          "calculation_definition": "Sum available balances in eligible checking/savings; investment accounts excluded",
+          "data_as_of": "2026-11-02",
+          "completeness": "complete evidence",
+          "filters": {}
+        },
+        "cash_flow": {
+          "income": "10000.00",
+          "expenses": "6000.00",
+          "surplus": "4000.00",
+          "currency": "USD",
+          "period": {
+            "start": "2026-10-01",
+            "end_exclusive": "2026-11-01"
+          },
+          "income_metadata": {
+            "value": "10000.00",
+            "currency": "USD",
+            "period": {
+              "start": "2026-10-01",
+              "end_exclusive": "2026-11-01"
+            },
+            "included_record_count": 2,
+            "exclusion_rules": [
+              "internal transfers",
+              "pending",
+              "duplicate copies",
+              "reversed",
+              "future-dated beyond as-of date",
+              "excluded accounts"
+            ],
+            "calculation_definition": "Negative-signed posted income converted to positive inflow",
+            "data_as_of": "2026-11-02",
+            "completeness": "complete evidence",
+            "filters": {}
+          },
+          "expense_metadata": {
+            "value": "6000.00",
+            "currency": "USD",
+            "period": {
+              "start": "2026-10-01",
+              "end_exclusive": "2026-11-01"
+            },
+            "included_record_count": 17,
+            "exclusion_rules": [
+              "internal transfers",
+              "pending",
+              "duplicate copies",
+              "reversed",
+              "future-dated beyond as-of date",
+              "excluded accounts"
+            ],
+            "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+            "data_as_of": "2026-11-02",
+            "completeness": "complete evidence",
+            "filters": {
+              "category": null
+            },
+            "items": [
+              {
+                "category": "Housing",
+                "amount": "2800.00"
+              },
+              {
+                "category": "Groceries",
+                "amount": "900.00"
+              },
+              {
+                "category": "Restaurants",
+                "amount": "650.00"
+              },
+              {
+                "category": "Shopping",
+                "amount": "450.00"
+              },
+              {
+                "category": "Utilities",
+                "amount": "350.00"
+              },
+              {
+                "category": "Travel",
+                "amount": "300.00"
+              },
+              {
+                "category": "Transport",
+                "amount": "300.00"
+              },
+              {
+                "category": "Subscriptions",
+                "amount": "250.00"
+              }
+            ]
+          },
+          "calculation_definition": "income - net posted expenses",
+          "data_as_of": "2026-11-02"
+        },
+        "memory_revision": 1,
+        "goal": {
+          "id": "house",
+          "user_id": "demo",
+          "name": "House down payment",
+          "target_amount": "50000.00",
+          "current_amount": "20000.00",
+          "target_date": "2027-06-01",
+          "priority": 1,
+          "status": "active"
+        }
+      },
+      "currency": "USD"
+    },
+    {
+      "name": "Lower down payment",
+      "loan": {
+        "principal": "40000.00",
+        "apr": "6.49",
+        "months": "60",
+        "payment": "782.46"
+      },
+      "baseline": {
+        "monthly_income": "10000.00",
+        "monthly_expenses": "6000.00",
+        "monthly_surplus": "4000.00",
+        "cash": "60000.00",
+        "emergency_reserve": "25000.00",
+        "house_savings": "20000.00",
+        "unallocated_cash": "15000.00",
+        "house_months": 8,
+        "house_allocation_cap": "4000.00"
+      },
+      "changes": {
+        "monthly_payment": "782.46",
+        "down_payment": "10000.00",
+        "cash_purchase": "0",
+        "immediate_inflow": "0",
+        "income_reduction_pct": "0",
+        "cancel_subscription_ids": [],
+        "extra_contributions": "0"
+      },
+      "result": {
+        "monthly_income": "10000.00",
+        "monthly_expenses": "6782.46",
+        "monthly_surplus": "3217.54",
+        "remaining_cash": "50000.00",
+        "house_savings": "20000.00",
+        "house_savings_used": "0.00",
+        "monthly_house_contribution": "3217.54",
+        "subscription_savings": "0.00"
+      },
+      "goal_impact": {
+        "baseline_months": 8,
+        "projected_months": 10,
+        "delay_months": 2,
+        "target": "50000.00",
+        "target_date": "2027-06-01"
+      },
+      "constraints": {
+        "emergency_fund": {
+          "passed": true,
+          "actual": "50000.00",
+          "minimum": "25000.00",
+          "rule": "remaining_cash >= emergency_fund_minimum"
+        },
+        "house_goal": {
+          "passed": true,
+          "delay_months": 2,
+          "maximum_delay_months": 2,
+          "rule": "projected additional months <= allowed delay"
+        },
+        "cash_flow": {
+          "passed": true,
+          "actual": "3217.54",
+          "rule": "monthly_surplus >= 0"
+        },
+        "earmarked_cash": {
+          "passed": true,
+          "rule": "remaining_cash >= emergency_reserve + remaining_house_savings; earmarks cannot overlap"
+        },
+        "purchase_funding": {
+          "passed": true,
+          "rule": "cash outflows cannot exceed available cash plus inflows"
+        }
+      },
+      "passed": true,
+      "calculation_steps": [
+        {
+          "name": "Income after reduction",
+          "expression": "10000.00 \u00d7 (1 \u2212 0.00 / 100)",
+          "value": "10000.00"
+        },
+        {
+          "name": "Monthly surplus",
+          "expression": "10000.00 \u2212 6000.00 \u2212 782.46 + 0.00 \u2212 0.00",
+          "value": "3217.54"
+        },
+        {
+          "name": "Remaining cash",
+          "expression": "60000.00 \u2212 10000.00 + 0.00",
+          "value": "50000.00"
+        },
+        {
+          "name": "House savings consumed",
+          "expression": "max(0, cash outflows \u2212 inflows \u2212 unallocated cash), capped at earmarked house savings",
+          "value": "0.00"
+        }
+      ],
+      "assumptions": [
+        "Baseline is the last complete calendar month; amounts are USD.",
+        "House savings are included in cash. Outflows consume unallocated cash before house savings.",
+        "House contributions use available surplus capped at the configured allocation; no interest or investment returns.",
+        "Subscription cancellations take effect immediately; annual monthly equivalents may not be immediately refundable.",
+        "Vehicle tax, fees, insurance changes, maintenance, and trade-in are unknown and excluded. Loan-only estimates are not final affordability advice.",
+        "demo default; confirm before relying on advice"
+      ],
+      "source_data": {
+        "cash": {
+          "value": "60000.00",
+          "currency": "USD",
+          "period": {
+            "start": null,
+            "end_exclusive": null
+          },
+          "included_record_count": 2,
+          "exclusion_rules": [
+            "internal transfers",
+            "pending",
+            "duplicate copies",
+            "reversed",
+            "future-dated beyond as-of date",
+            "excluded accounts"
+          ],
+          "calculation_definition": "Sum available balances in eligible checking/savings; investment accounts excluded",
+          "data_as_of": "2026-11-02",
+          "completeness": "complete evidence",
+          "filters": {}
+        },
+        "cash_flow": {
+          "income": "10000.00",
+          "expenses": "6000.00",
+          "surplus": "4000.00",
+          "currency": "USD",
+          "period": {
+            "start": "2026-10-01",
+            "end_exclusive": "2026-11-01"
+          },
+          "income_metadata": {
+            "value": "10000.00",
+            "currency": "USD",
+            "period": {
+              "start": "2026-10-01",
+              "end_exclusive": "2026-11-01"
+            },
+            "included_record_count": 2,
+            "exclusion_rules": [
+              "internal transfers",
+              "pending",
+              "duplicate copies",
+              "reversed",
+              "future-dated beyond as-of date",
+              "excluded accounts"
+            ],
+            "calculation_definition": "Negative-signed posted income converted to positive inflow",
+            "data_as_of": "2026-11-02",
+            "completeness": "complete evidence",
+            "filters": {}
+          },
+          "expense_metadata": {
+            "value": "6000.00",
+            "currency": "USD",
+            "period": {
+              "start": "2026-10-01",
+              "end_exclusive": "2026-11-01"
+            },
+            "included_record_count": 17,
+            "exclusion_rules": [
+              "internal transfers",
+              "pending",
+              "duplicate copies",
+              "reversed",
+              "future-dated beyond as-of date",
+              "excluded accounts"
+            ],
+            "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+            "data_as_of": "2026-11-02",
+            "completeness": "complete evidence",
+            "filters": {
+              "category": null
+            },
+            "items": [
+              {
+                "category": "Housing",
+                "amount": "2800.00"
+              },
+              {
+                "category": "Groceries",
+                "amount": "900.00"
+              },
+              {
+                "category": "Restaurants",
+                "amount": "650.00"
+              },
+              {
+                "category": "Shopping",
+                "amount": "450.00"
+              },
+              {
+                "category": "Utilities",
+                "amount": "350.00"
+              },
+              {
+                "category": "Travel",
+                "amount": "300.00"
+              },
+              {
+                "category": "Transport",
+                "amount": "300.00"
+              },
+              {
+                "category": "Subscriptions",
+                "amount": "250.00"
+              }
+            ]
+          },
+          "calculation_definition": "income - net posted expenses",
+          "data_as_of": "2026-11-02"
+        },
+        "memory_revision": 1,
+        "goal": {
+          "id": "house",
+          "user_id": "demo",
+          "name": "House down payment",
+          "target_amount": "50000.00",
+          "current_amount": "20000.00",
+          "target_date": "2027-06-01",
+          "priority": 1,
+          "status": "active"
+        }
+      },
+      "currency": "USD"
+    },
+    {
+      "name": "Postpone purchase",
+      "loan": null,
+      "baseline": {
+        "monthly_income": "10000.00",
+        "monthly_expenses": "6000.00",
+        "monthly_surplus": "4000.00",
+        "cash": "60000.00",
+        "emergency_reserve": "25000.00",
+        "house_savings": "20000.00",
+        "unallocated_cash": "15000.00",
+        "house_months": 8,
+        "house_allocation_cap": "4000.00"
+      },
+      "changes": {
+        "monthly_payment": "0",
+        "down_payment": "0",
+        "cash_purchase": "0",
+        "immediate_inflow": "0",
+        "income_reduction_pct": "0",
+        "cancel_subscription_ids": [],
+        "extra_contributions": "0"
+      },
+      "result": {
+        "monthly_income": "10000.00",
+        "monthly_expenses": "6000.00",
+        "monthly_surplus": "4000.00",
+        "remaining_cash": "60000.00",
+        "house_savings": "20000.00",
+        "house_savings_used": "0.00",
+        "monthly_house_contribution": "4000.00",
+        "subscription_savings": "0.00"
+      },
+      "goal_impact": {
+        "baseline_months": 8,
+        "projected_months": 8,
+        "delay_months": 0,
+        "target": "50000.00",
+        "target_date": "2027-06-01"
+      },
+      "constraints": {
+        "emergency_fund": {
+          "passed": true,
+          "actual": "60000.00",
+          "minimum": "25000.00",
+          "rule": "remaining_cash >= emergency_fund_minimum"
+        },
+        "house_goal": {
+          "passed": true,
+          "delay_months": 0,
+          "maximum_delay_months": 2,
+          "rule": "projected additional months <= allowed delay"
+        },
+        "cash_flow": {
+          "passed": true,
+          "actual": "4000.00",
+          "rule": "monthly_surplus >= 0"
+        },
+        "earmarked_cash": {
+          "passed": true,
+          "rule": "remaining_cash >= emergency_reserve + remaining_house_savings; earmarks cannot overlap"
+        },
+        "purchase_funding": {
+          "passed": true,
+          "rule": "cash outflows cannot exceed available cash plus inflows"
+        }
+      },
+      "passed": true,
+      "calculation_steps": [
+        {
+          "name": "Income after reduction",
+          "expression": "10000.00 \u00d7 (1 \u2212 0.00 / 100)",
+          "value": "10000.00"
+        },
+        {
+          "name": "Monthly surplus",
+          "expression": "10000.00 \u2212 6000.00 \u2212 0.00 + 0.00 \u2212 0.00",
+          "value": "4000.00"
+        },
+        {
+          "name": "Remaining cash",
+          "expression": "60000.00 \u2212 0.00 + 0.00",
+          "value": "60000.00"
+        },
+        {
+          "name": "House savings consumed",
+          "expression": "max(0, cash outflows \u2212 inflows \u2212 unallocated cash), capped at earmarked house savings",
+          "value": "0.00"
+        }
+      ],
+      "assumptions": [
+        "Baseline is the last complete calendar month; amounts are USD.",
+        "House savings are included in cash. Outflows consume unallocated cash before house savings.",
+        "House contributions use available surplus capped at the configured allocation; no interest or investment returns.",
+        "Subscription cancellations take effect immediately; annual monthly equivalents may not be immediately refundable.",
+        "Vehicle tax, fees, insurance changes, maintenance, and trade-in are unknown and excluded. Loan-only estimates are not final affordability advice.",
+        "demo default; confirm before relying on advice"
+      ],
+      "source_data": {
+        "cash": {
+          "value": "60000.00",
+          "currency": "USD",
+          "period": {
+            "start": null,
+            "end_exclusive": null
+          },
+          "included_record_count": 2,
+          "exclusion_rules": [
+            "internal transfers",
+            "pending",
+            "duplicate copies",
+            "reversed",
+            "future-dated beyond as-of date",
+            "excluded accounts"
+          ],
+          "calculation_definition": "Sum available balances in eligible checking/savings; investment accounts excluded",
+          "data_as_of": "2026-11-02",
+          "completeness": "complete evidence",
+          "filters": {}
+        },
+        "cash_flow": {
+          "income": "10000.00",
+          "expenses": "6000.00",
+          "surplus": "4000.00",
+          "currency": "USD",
+          "period": {
+            "start": "2026-10-01",
+            "end_exclusive": "2026-11-01"
+          },
+          "income_metadata": {
+            "value": "10000.00",
+            "currency": "USD",
+            "period": {
+              "start": "2026-10-01",
+              "end_exclusive": "2026-11-01"
+            },
+            "included_record_count": 2,
+            "exclusion_rules": [
+              "internal transfers",
+              "pending",
+              "duplicate copies",
+              "reversed",
+              "future-dated beyond as-of date",
+              "excluded accounts"
+            ],
+            "calculation_definition": "Negative-signed posted income converted to positive inflow",
+            "data_as_of": "2026-11-02",
+            "completeness": "complete evidence",
+            "filters": {}
+          },
+          "expense_metadata": {
+            "value": "6000.00",
+            "currency": "USD",
+            "period": {
+              "start": "2026-10-01",
+              "end_exclusive": "2026-11-01"
+            },
+            "included_record_count": 17,
+            "exclusion_rules": [
+              "internal transfers",
+              "pending",
+              "duplicate copies",
+              "reversed",
+              "future-dated beyond as-of date",
+              "excluded accounts"
+            ],
+            "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+            "data_as_of": "2026-11-02",
+            "completeness": "complete evidence",
+            "filters": {
+              "category": null
+            },
+            "items": [
+              {
+                "category": "Housing",
+                "amount": "2800.00"
+              },
+              {
+                "category": "Groceries",
+                "amount": "900.00"
+              },
+              {
+                "category": "Restaurants",
+                "amount": "650.00"
+              },
+              {
+                "category": "Shopping",
+                "amount": "450.00"
+              },
+              {
+                "category": "Utilities",
+                "amount": "350.00"
+              },
+              {
+                "category": "Travel",
+                "amount": "300.00"
+              },
+              {
+                "category": "Transport",
+                "amount": "300.00"
+              },
+              {
+                "category": "Subscriptions",
+                "amount": "250.00"
+              }
+            ]
+          },
+          "calculation_definition": "income - net posted expenses",
+          "data_as_of": "2026-11-02"
+        },
+        "memory_revision": 1,
+        "goal": {
+          "id": "house",
+          "user_id": "demo",
+          "name": "House down payment",
+          "target_amount": "50000.00",
+          "current_amount": "20000.00",
+          "target_date": "2027-06-01",
+          "priority": 1,
+          "status": "active"
+        }
+      },
+      "currency": "USD"
+    }
+  ],
+  "assumptions": [
+    "Baseline is the last complete calendar month; amounts are USD.",
+    "House savings are included in cash. Outflows consume unallocated cash before house savings.",
+    "House contributions use available surplus capped at the configured allocation; no interest or investment returns.",
+    "Subscription cancellations take effect immediately; annual monthly equivalents may not be immediately refundable.",
+    "Vehicle tax, fees, insurance changes, maintenance, and trade-in are unknown and excluded. Loan-only estimates are not final affordability advice.",
+    "demo default; confirm before relying on advice"
+  ],
+  "limitations": [
+    "Educational simulation; not professional financial advice. Synthetic household, as of November 2, 2026."
+  ],
+  "completeness": "partial evidence",
+  "validation": {
+    "passed": true,
+    "checks": [
+      "cash identity",
+      "cash-flow identity",
+      "inclusive emergency boundary",
+      "independent house earmark and goal timeline",
+      "goal constraint consistency",
+      "loan amortization residual",
+      "semantic field and unit provenance",
+      "summary monetary/rate/term provenance"
+    ],
+    "errors": []
+  },
+  "summary": "Council review required; no council-endorsed recommendation. 2 of 2 financed options preserve your current emergency reserve. Compare the house savings consumed and goal delay below; postponing preserves the baseline timeline. Full affordability is not established until vehicle taxes, fees, insurance, and ownership costs are supplied.",
+  "error": null,
+  "council": {
+    "mode": "demo",
+    "status": "held",
+    "reviews": [
+      {
+        "role": "Evidence reviewer",
+        "model": "simulated policy",
+        "simulated": true,
+        "verdict": "block",
+        "concerns": [
+          "missing_evidence",
+          "constraints"
+        ],
+        "evidence_refs": [
+          "validation"
+        ],
+        "error": null
+      },
+      {
+        "role": "Constraint reviewer",
+        "model": "simulated policy",
+        "simulated": true,
+        "verdict": "block",
+        "concerns": [
+          "missing_evidence",
+          "constraints"
+        ],
+        "evidence_refs": [
+          "validation"
+        ],
+        "error": null
+      },
+      {
+        "role": "Assumption reviewer",
+        "model": "simulated policy",
+        "simulated": true,
+        "verdict": "block",
+        "concerns": [
+          "missing_evidence",
+          "constraints"
+        ],
+        "evidence_refs": [
+          "validation"
+        ],
+        "error": null
+      }
+    ],
+    "disagreement": false,
+    "latency_ms": 0,
+    "reconciliation": "Recommendation held for review. Resolve objections and constraint warnings; agreement cannot override deterministic checks."
+  },
+  "latency_ms": 13,
+  "tracing": "local only"
+}

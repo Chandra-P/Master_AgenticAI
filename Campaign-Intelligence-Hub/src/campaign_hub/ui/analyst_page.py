@@ -70,6 +70,8 @@ def show(service, options, campaign_id=None, answer=False):
         return
     if answer:
         st.markdown(result['answer'])
+        if result.get('latency_seconds') is not None:
+            st.caption(f"End-to-end answer: {result['latency_seconds']:.2f}s · retrieval and filtering: {result.get('retrieval_seconds',0):.2f}s")
         st.caption('Answers retain source validation. Retrieval scores do not measure answer faithfulness.')
     st.subheader('Retrieved evidence')
     for rank, hit in enumerate(result['hits'], 1):

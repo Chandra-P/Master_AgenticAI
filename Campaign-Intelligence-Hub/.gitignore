@@ -9,4 +9,8 @@ data/cache/
 data/runs/
 data/reports/
 .execution/
+.test-tmp*/
 *.log
+
+.repository-backups/
+docs/submission/*_Source.zip

@@ -1,0 +1,795 @@
+[
+  {
+    "id": "iv1-01",
+    "category": "factual",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "For CA-CMP-007, what audience was planned and what did the offer require?",
+    "campaign_id": "CA-CMP-007",
+    "expected_answer": "Digitally active local households; includes existing and prospective members. Campaign-specific eligibility incentive for auto loan campaigns. Eligibility and product suitability must be verified.",
+    "expected_facts": [
+      "Digitally active local households; includes existing and prospective members.",
+      "Campaign-specific eligibility incentive for auto loan campaigns. Eligibility and product suitability must be verified."
+    ],
+    "expected_sources": [
+      "CA-CMP-007-brief"
+    ],
+    "ground_truth_citations": [
+      "CA-CMP-007-brief#audience",
+      "CA-CMP-007-brief#offer"
+    ],
+    "evidence": [
+      {
+        "source_id": "CA-CMP-007-brief",
+        "quote": "Digitally active local households; includes existing and prospective members.",
+        "heading": "Audience"
+      },
+      {
+        "source_id": "CA-CMP-007-brief",
+        "quote": "Campaign-specific eligibility incentive for auto loan campaigns. Eligibility and product suitability must be verified.",
+        "heading": "Offer"
+      }
+    ],
+    "rationale": "Campaign-specific planning statements, not outcomes.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-02",
+    "category": "factual",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "What activation objective and approved budget did TX-CMP-011 set for its 2024 digital banking campaign?",
+    "campaign_id": "TX-CMP-011",
+    "expected_answer": "Acquire 410 verified product activations during 2024-Q2 for Digital Banking Adoption. Approved budget: USD 41500.",
+    "expected_facts": [
+      "Acquire 410 verified product activations during 2024-Q2 for Digital Banking Adoption.",
+      "Approved budget: USD 41500."
+    ],
+    "expected_sources": [
+      "TX-CMP-011-brief"
+    ],
+    "ground_truth_citations": [
+      "TX-CMP-011-brief#objectives",
+      "TX-CMP-011-brief#budget"
+    ],
+    "evidence": [
+      {
+        "source_id": "TX-CMP-011-brief",
+        "quote": "Acquire 410 verified product activations during 2024-Q2 for Digital Banking Adoption.",
+        "heading": "Objectives"
+      },
+      {
+        "source_id": "TX-CMP-011-brief",
+        "quote": "Approved budget: USD 41500.",
+        "heading": "Budget"
+      }
+    ],
+    "rationale": "The brief explicitly states both planned quantities.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-03",
+    "category": "factual",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "Summarize IL-CMP-018 results against its activation target and the suggested next operational steps.",
+    "campaign_id": "IL-CMP-018",
+    "expected_answer": "IL-CMP-018 delivered 617 verified activations versus a target of 571; spend was USD 46675. Audit enrollment tracking, design a holdout test, and review results after the next reporting cycle.",
+    "expected_facts": [
+      "IL-CMP-018 delivered 617 verified activations versus a target of 571; spend was USD 46675.",
+      "Audit enrollment tracking, design a holdout test, and review results after the next reporting cycle."
+    ],
+    "expected_sources": [
+      "IL-CMP-018-historical_deck"
+    ],
+    "ground_truth_citations": [
+      "IL-CMP-018-historical_deck#executive-summary",
+      "IL-CMP-018-historical_deck#suggested-next-steps"
+    ],
+    "evidence": [
+      {
+        "source_id": "IL-CMP-018-historical_deck",
+        "quote": "IL-CMP-018 delivered 617 verified activations versus a target of 571; spend was USD 46675.",
+        "heading": "Executive Summary"
+      },
+      {
+        "source_id": "IL-CMP-018-historical_deck",
+        "quote": "Audit enrollment tracking, design a holdout test, and review results after the next reporting cycle.",
+        "heading": "Suggested Next Steps"
+      }
+    ],
+    "rationale": "Uses observed summary and explicitly proposed next steps without claiming a test occurred.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-04",
+    "category": "factual",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "For NY-CMP-020, what were the stated success conditions and opening balance target?",
+    "campaign_id": "NY-CMP-020",
+    "expected_answer": "Success requires at least 617 verified activations within 2025-Q2 and spend no higher than USD 57250. Verified activations target: 617 count; acquisition cost ceiling: USD 92.79/activation; spend ceiling: USD 57250; opening account balance target: USD 1851000.00.",
+    "expected_facts": [
+      "Success requires at least 617 verified activations within 2025-Q2 and spend no higher than USD 57250.",
+      "Verified activations target: 617 count; acquisition cost ceiling: USD 92.79/activation; spend ceiling: USD 57250; opening account balance target: USD 1851000.00."
+    ],
+    "expected_sources": [
+      "NY-CMP-020-success_plan"
+    ],
+    "ground_truth_citations": [
+      "NY-CMP-020-success_plan#success-criteria",
+      "NY-CMP-020-success_plan#targets"
+    ],
+    "evidence": [
+      {
+        "source_id": "NY-CMP-020-success_plan",
+        "quote": "Success requires at least 617 verified activations within 2025-Q2 and spend no higher than USD 57250.",
+        "heading": "Success Criteria"
+      },
+      {
+        "source_id": "NY-CMP-020-success_plan",
+        "quote": "Verified activations target: 617 count; acquisition cost ceiling: USD 92.79/activation; spend ceiling: USD 57250; opening account balance target: USD 1851000.00.",
+        "heading": "Targets"
+      }
+    ],
+    "rationale": "These are targets, not a claim of achieved success.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-05",
+    "category": "factual",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "What actual activation count and actual acquisition cost were reported for FL-CMP-014 in 2025-Q2?",
+    "campaign_id": "FL-CMP-014",
+    "expected_answer": "FL-CMP-014 reported 412 verified activations and acquisition cost of USD 111.50/activation in 2025-Q2.",
+    "expected_facts": [
+      "FL-CMP-014: KPI Results, Verified activations row, Actual=412 count, Period=2025-Q2.",
+      "FL-CMP-014: KPI Results, Acquisition cost row, Actual=111.50 USD/activation, Period=2025-Q2."
+    ],
+    "expected_sources": [
+      "FL-CMP-014-performance_report"
+    ],
+    "ground_truth_citations": [
+      "FL-CMP-014-performance_report#kpi-results"
+    ],
+    "evidence": [
+      {
+        "source_id": "FL-CMP-014-performance_report",
+        "quote": "| Metric | Target | Actual | Unit | Direction | Period |",
+        "heading": "KPI Results"
+      },
+      {
+        "source_id": "FL-CMP-014-performance_report",
+        "quote": "| Verified activations | 479 | 412 | count | higher | 2025-Q2 |",
+        "heading": "KPI Results"
+      },
+      {
+        "source_id": "FL-CMP-014-performance_report",
+        "quote": "| Metric | Target | Actual | Unit | Direction | Period |",
+        "heading": "KPI Results"
+      },
+      {
+        "source_id": "FL-CMP-014-performance_report",
+        "quote": "| Acquisition cost | 97.60 | 111.50 | USD/activation | lower | 2025-Q2 |",
+        "heading": "KPI Results"
+      }
+    ],
+    "rationale": "Typed table-cell facts; each evidence row uses the Metric/Target/Actual/Unit/Direction/Period header.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-06",
+    "category": "factual",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "For CA-CMP-002, what accounts and exposure count appear for San Diego display, and on what as-of date?",
+    "campaign_id": "CA-CMP-002",
+    "expected_answer": "The San Diego display row for CA-CMP-002 records 26 accounts and 2600 exposures as of 2026-06-30.",
+    "expected_facts": [
+      "CA-CMP-002: Geographic Results, row Location=San Diego and Channel=display, Accounts=26, Exposures=2600, As of=2026-06-30."
+    ],
+    "expected_sources": [
+      "CA-CMP-002-performance_report"
+    ],
+    "ground_truth_citations": [
+      "CA-CMP-002-performance_report#geographic-results"
+    ],
+    "evidence": [
+      {
+        "source_id": "CA-CMP-002-performance_report",
+        "quote": "| Location | Channel | Accounts | Opening balance cents | Exposures | Latitude | Longitude | As of |",
+        "heading": "Geographic Results"
+      },
+      {
+        "source_id": "CA-CMP-002-performance_report",
+        "quote": "| San Diego | display | 26 | 7865000 | 2600 | 32.716 | -117.161 | 2026-06-30 |",
+        "heading": "Geographic Results"
+      }
+    ],
+    "rationale": "Typed numeric cells under Location, Channel, Accounts, Opening balance cents, Exposures, Latitude, Longitude, As of.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-07",
+    "category": "single_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "In CL-640, how should an unavailable measurement differ from a zero in an export?",
+    "campaign_id": null,
+    "expected_answer": "An unavailable measurement must remain unavailable, rather than becoming zero during export. Zero means the owner measured the defined quantity and observed none.",
+    "expected_facts": [
+      "An unavailable measurement must remain unavailable, rather than becoming zero during export. Zero means the owner measured the defined quantity and observed none."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-01"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-01#missing-values-and-zero"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-requirements-01",
+        "quote": "An unavailable measurement must remain unavailable, rather than becoming zero during export. Zero means the owner measured the defined quantity and observed none.",
+        "heading": "Missing values and zero"
+      }
+    ],
+    "rationale": "Dictionary defines the missing/zero distinction.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-08",
+    "category": "single_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "What should happen to a CL-640 event whose timestamp has no time-zone offset?",
+    "campaign_id": null,
+    "expected_answer": "A source timestamp lacking an offset is unresolved evidence. The custodian must recover its documented time zone or keep the observation out of time-sensitive conclusions.",
+    "expected_facts": [
+      "A source timestamp lacking an offset is unresolved evidence. The custodian must recover its documented time zone or keep the observation out of time-sensitive conclusions."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-02"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-02#timing-policy"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-requirements-02",
+        "quote": "A source timestamp lacking an offset is unresolved evidence. The custodian must recover its documented time zone or keep the observation out of time-sensitive conclusions.",
+        "heading": "Timing policy"
+      }
+    ],
+    "rationale": "Timing policy directly resolves the incomplete timestamp.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-09",
+    "category": "single_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "Who must approve a CL-640 release decided on October 15, 2026, and how independent must the measurement reviewer be?",
+    "campaign_id": null,
+    "expected_answer": "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum. The measurement reviewer must not have prepared the release file.",
+    "expected_facts": [
+      "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum.",
+      "The measurement reviewer must not have prepared the release file."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-04"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-04#current-approval-gate"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-requirements-04",
+        "quote": "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum.",
+        "heading": "Current approval gate"
+      },
+      {
+        "source_id": "GLOBAL-requirements-04",
+        "quote": "The measurement reviewer must not have prepared the release file.",
+        "heading": "Current approval gate"
+      }
+    ],
+    "rationale": "Date falls in the explicit active scope.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-10",
+    "category": "single_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "In EX-552, can we name a winner after repairing a broken eligibility link midway through the experiment?",
+    "campaign_id": null,
+    "expected_answer": "Pause experiment EX-552 when either variant has a broken eligibility link; do not declare a winner from the partial run. A repaired link can restore operations, but it does not retrospectively restore comparability to the interrupted experiment.",
+    "expected_facts": [
+      "Pause experiment EX-552 when either variant has a broken eligibility link; do not declare a winner from the partial run.",
+      "A repaired link can restore operations, but it does not retrospectively restore comparability to the interrupted experiment."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-03"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-03#stop-rule"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-learning-03",
+        "quote": "Pause experiment EX-552 when either variant has a broken eligibility link; do not declare a winner from the partial run.",
+        "heading": "Stop rule"
+      },
+      {
+        "source_id": "GLOBAL-learning-03",
+        "quote": "A repaired link can restore operations, but it does not retrospectively restore comparability to the interrupted experiment.",
+        "heading": "Stop rule"
+      }
+    ],
+    "rationale": "The experiment playbook addresses interruption and repair without fabricating a treatment result.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-11",
+    "category": "single_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "Under CR-217, what review is required to resume distribution and what partner-queue condition can still keep the gate closed?",
+    "campaign_id": null,
+    "expected_answer": "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217. If the delivery partner cannot attest that the old file was removed from its outbound queue, the recovery gate remains closed even when the replacement file is correct.",
+    "expected_facts": [
+      "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217.",
+      "If the delivery partner cannot attest that the old file was removed from its outbound queue, the recovery gate remains closed even when the replacement file is correct."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-01"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-01#recovery-gate"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-learning-01",
+        "quote": "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217.",
+        "heading": "Recovery gate"
+      },
+      {
+        "source_id": "GLOBAL-learning-01",
+        "quote": "If the delivery partner cannot attest that the old file was removed from its outbound queue, the recovery gate remains closed even when the replacement file is correct.",
+        "heading": "Recovery gate"
+      }
+    ],
+    "rationale": "Both requirements are in the consent-recovery authority.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-12",
+    "category": "single_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "How does DR-906 handle a repaired rejected payload and why is reusing its original key risky?",
+    "campaign_id": null,
+    "expected_answer": "Exception DR-906 applies when a rejected batch must be repaired. The replacement payload receives a new revision and checksum, with a reference to the rejected predecessor. Reusing a key for changed content can cause a partner to return the old response without accepting the repair.",
+    "expected_facts": [
+      "Exception DR-906 applies when a rejected batch must be repaired. The replacement payload receives a new revision and checksum, with a reference to the rejected predecessor.",
+      "Reusing a key for changed content can cause a partner to return the old response without accepting the repair."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-10"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-10#exception-for-a-changed-payload"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-learning-10",
+        "quote": "Exception DR-906 applies when a rejected batch must be repaired. The replacement payload receives a new revision and checksum, with a reference to the rejected predecessor.",
+        "heading": "Exception for a changed payload"
+      },
+      {
+        "source_id": "GLOBAL-learning-10",
+        "quote": "Reusing a key for changed content can cause a partner to return the old response without accepting the repair.",
+        "heading": "Exception for a changed payload"
+      }
+    ],
+    "rationale": "FAQ states the revision route and its operational reason.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-13",
+    "category": "multi_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "For a CL-640 snapshot, what does opening balance mean, and what should we do with a late-arriving event that occurred inside its attribution window?",
+    "campaign_id": null,
+    "expected_answer": "For CL-640, opening balance is the posted balance at account opening; it is not current balance, net new deposits, or revenue. Under CL-640 timing policy, eligibility follows event occurrence time; a late-arriving in-window observation enters a reviewed revision, not an overwritten signed snapshot.",
+    "expected_facts": [
+      "For CL-640, opening balance is the posted balance at account opening; it is not current balance, net new deposits, or revenue.",
+      "Under CL-640 timing policy, eligibility follows event occurrence time; a late-arriving in-window observation enters a reviewed revision, not an overwritten signed snapshot."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-01",
+      "GLOBAL-requirements-02"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-01#balance-meaning",
+      "GLOBAL-requirements-02#timing-policy"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-requirements-01",
+        "quote": "For CL-640, opening balance is the posted balance at account opening; it is not current balance, net new deposits, or revenue.",
+        "heading": "Balance meaning"
+      },
+      {
+        "source_id": "GLOBAL-requirements-02",
+        "quote": "Under CL-640 timing policy, eligibility follows event occurrence time; a late-arriving in-window observation enters a reviewed revision, not an overwritten signed snapshot.",
+        "heading": "Timing policy"
+      }
+    ],
+    "rationale": "Requires separate measurement-definition and timing authorities.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-14",
+    "category": "multi_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "A new CL-640 payload has no checksum, while a different already-accepted batch has a delayed receipt. What action applies to each?",
+    "campaign_id": null,
+    "expected_answer": "The CL-640 checklist keeps a payload without a checksum on hold until the source custodian supplies a reproducible checksum. For RP-664, recover the original business batch status after a receipt timeout; do not resend an already accepted batch.",
+    "expected_facts": [
+      "The CL-640 checklist keeps a payload without a checksum on hold until the source custodian supplies a reproducible checksum.",
+      "For RP-664, recover the original business batch status after a receipt timeout; do not resend an already accepted batch."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-05",
+      "GLOBAL-requirements-06"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-05#payload-identity",
+      "GLOBAL-requirements-06#unknown-receipt-status"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-requirements-05",
+        "quote": "The CL-640 checklist keeps a payload without a checksum on hold until the source custodian supplies a reproducible checksum.",
+        "heading": "Payload identity"
+      },
+      {
+        "source_id": "GLOBAL-requirements-06",
+        "quote": "For RP-664, recover the original business batch status after a receipt timeout; do not resend an already accepted batch.",
+        "heading": "Unknown receipt status"
+      }
+    ],
+    "rationale": "Question asks governing actions from preparation and receipt authorities; notebook observations are not substituted for policy.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-15",
+    "category": "multi_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "For an October CL-640 release, identify the required approvers and the approved way to investigate a row-level discrepancy without sharing recipient fields.",
+    "campaign_id": null,
+    "expected_answer": "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum. For a CL-640 row-level discrepancy, request an approved masked sample from the source custodian; do not place personal recipient fields in the shared analyst corpus.",
+    "expected_facts": [
+      "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum.",
+      "For a CL-640 row-level discrepancy, request an approved masked sample from the source custodian; do not place personal recipient fields in the shared analyst corpus."
+    ],
+    "expected_sources": [
+      "GLOBAL-requirements-04",
+      "GLOBAL-requirements-08"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-requirements-04#current-approval-gate",
+      "GLOBAL-requirements-08#evidence-access"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-requirements-04",
+        "quote": "For CL-640 releases on or after 2026-10-01, both the release controller and an independent measurement reviewer must approve the same batch checksum.",
+        "heading": "Current approval gate"
+      },
+      {
+        "source_id": "GLOBAL-requirements-08",
+        "quote": "For a CL-640 row-level discrepancy, request an approved masked sample from the source custodian; do not place personal recipient fields in the shared analyst corpus.",
+        "heading": "Evidence access"
+      }
+    ],
+    "rationale": "Release role rule and evidence-access rule require different authorities.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-16",
+    "category": "multi_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "How do the required gates differ between resuming a consent-recovery distribution under CR-217 and stopping a wording experiment with a broken eligibility link under EX-552?",
+    "campaign_id": null,
+    "expected_answer": "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217. Pause experiment EX-552 when either variant has a broken eligibility link; do not declare a winner from the partial run.",
+    "expected_facts": [
+      "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217.",
+      "Pause experiment EX-552 when either variant has a broken eligibility link; do not declare a winner from the partial run."
+    ],
+    "expected_sources": [
+      "GLOBAL-learning-01",
+      "GLOBAL-learning-03"
+    ],
+    "ground_truth_citations": [
+      "GLOBAL-learning-01#recovery-gate",
+      "GLOBAL-learning-03#stop-rule"
+    ],
+    "evidence": [
+      {
+        "source_id": "GLOBAL-learning-01",
+        "quote": "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217.",
+        "heading": "Recovery gate"
+      },
+      {
+        "source_id": "GLOBAL-learning-03",
+        "quote": "Pause experiment EX-552 when either variant has a broken eligibility link; do not declare a winner from the partial run.",
+        "heading": "Stop rule"
+      }
+    ],
+    "rationale": "Distinct original long playbooks govern recovery and experiment interruption; neither supplies the other gate.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-17",
+    "category": "multi_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "Compare the planned activation objectives and reporting quarters for CA-CMP-007 auto loans and TX-CMP-011 digital adoption.",
+    "campaign_id": null,
+    "expected_answer": "Acquire 318 verified product activations during 2026-Q2 for Auto Loan Campaigns. Acquire 410 verified product activations during 2024-Q2 for Digital Banking Adoption.",
+    "expected_facts": [
+      "Acquire 318 verified product activations during 2026-Q2 for Auto Loan Campaigns.",
+      "Acquire 410 verified product activations during 2024-Q2 for Digital Banking Adoption."
+    ],
+    "expected_sources": [
+      "CA-CMP-007-brief",
+      "TX-CMP-011-brief"
+    ],
+    "ground_truth_citations": [
+      "CA-CMP-007-brief#objectives",
+      "TX-CMP-011-brief#objectives"
+    ],
+    "evidence": [
+      {
+        "source_id": "CA-CMP-007-brief",
+        "quote": "Acquire 318 verified product activations during 2026-Q2 for Auto Loan Campaigns.",
+        "heading": "Objectives"
+      },
+      {
+        "source_id": "TX-CMP-011-brief",
+        "quote": "Acquire 410 verified product activations during 2024-Q2 for Digital Banking Adoption.",
+        "heading": "Objectives"
+      }
+    ],
+    "rationale": "Separate campaign briefs are required; comparing plans does not imply outcome comparability.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-18",
+    "category": "multi_document",
+    "kind": "question",
+    "split": "independent_validation",
+    "question": "What channel activation split did CA-CMP-002 report, and what activation result against target did IL-CMP-018 report?",
+    "campaign_id": null,
+    "expected_answer": "Direct mail accounted for 156 verified activations and display for 104. Channel composition is an observed association, not causal lift. IL-CMP-018 delivered 617 verified activations versus a target of 571; spend was USD 46675.",
+    "expected_facts": [
+      "Direct mail accounted for 156 verified activations and display for 104. Channel composition is an observed association, not causal lift.",
+      "IL-CMP-018 delivered 617 verified activations versus a target of 571; spend was USD 46675."
+    ],
+    "expected_sources": [
+      "CA-CMP-002-performance_report",
+      "IL-CMP-018-historical_deck"
+    ],
+    "ground_truth_citations": [
+      "CA-CMP-002-performance_report#performance-drivers",
+      "IL-CMP-018-historical_deck#executive-summary"
+    ],
+    "evidence": [
+      {
+        "source_id": "CA-CMP-002-performance_report",
+        "quote": "Direct mail accounted for 156 verified activations and display for 104. Channel composition is an observed association, not causal lift.",
+        "heading": "Performance Drivers"
+      },
+      {
+        "source_id": "IL-CMP-018-historical_deck",
+        "quote": "IL-CMP-018 delivered 617 verified activations versus a target of 571; spend was USD 46675.",
+        "heading": "Executive Summary"
+      }
+    ],
+    "rationale": "Cross-campaign synthesis requires two reports and preserves observational qualification.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-19",
+    "category": "unsupported",
+    "kind": "unsupported",
+    "split": "independent_validation",
+    "question": "What was CL-640 net new deposit growth after excluding internal transfers?",
+    "campaign_id": null,
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "evidence": [],
+    "rationale": "CL-640 dictionary explicitly marks net new deposits unavailable because transfer evidence is absent.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-20",
+    "category": "unsupported",
+    "kind": "unsupported",
+    "split": "independent_validation",
+    "question": "What randomized causal activation lift did CA-CMP-002 display deliver?",
+    "campaign_id": "CA-CMP-002",
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "evidence": [],
+    "rationale": "Campaign report uses observational attribution without a randomized control group; no causal lift is supplied.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-21",
+    "category": "unsupported",
+    "kind": "unsupported",
+    "split": "independent_validation",
+    "question": "Which individual recipients in the CL-640 masked sample were older than 65?",
+    "campaign_id": null,
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "evidence": [],
+    "rationale": "Synthetic aggregates and procedures contain no real account identifiers or individual ages.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-22",
+    "category": "unsupported",
+    "kind": "unsupported",
+    "split": "independent_validation",
+    "question": "What was FL-CMP-014 channel ROI after financial return?",
+    "campaign_id": "FL-CMP-014",
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "evidence": [],
+    "rationale": "Financial return is unavailable, so channel ROI cannot be calculated.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-23",
+    "category": "unsupported",
+    "kind": "unsupported",
+    "split": "independent_validation",
+    "question": "Which income bracket supplied the most FL-CMP-014 activations?",
+    "campaign_id": "FL-CMP-014",
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "evidence": [],
+    "rationale": "Report explicitly states no income-level outcome breakdown was measured.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  },
+  {
+    "id": "iv1-24",
+    "category": "unsupported",
+    "kind": "unsupported",
+    "split": "independent_validation",
+    "question": "What exact minute did variant B eligibility fail in the worked EX-552 interruption?",
+    "campaign_id": null,
+    "expected_answer": "I could not find sufficient evidence in the knowledge base.",
+    "expected_facts": [],
+    "expected_sources": [],
+    "ground_truth_citations": [],
+    "evidence": [],
+    "rationale": "The exercise states the failure occurred between checks and the exact minute cannot be identified.",
+    "authoring_provenance": {
+      "author": "blind source-only automated author",
+      "human_validated": false,
+      "prior_runtime_or_results_access": false
+    }
+  }
+]

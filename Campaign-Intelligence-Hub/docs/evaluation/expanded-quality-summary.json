@@ -1,0 +1,71 @@
+{
+  "corpus_hash": "1fb8bde30540d326041c4614e74f2d863e791edc5b7bcd53f145aa04bc07381f",
+  "documents": 130,
+  "primary_definition": "Mean reference F1 across all23 supported cases, genuine refusals counted0. Missing answered-case judgments or execution errors make a run incomplete.",
+  "limitations": "Developmental comparison on previously inspected cases, one execution/profile; not fresh held-out or production certification. Trials overlap, so timing is not a controlled latency comparison.",
+  "profiles": [
+    {
+      "profile": "baseline",
+      "primary_reference_f1": 0.3691304347826087,
+      "supported_answered": 21,
+      "supported_cases": 23,
+      "unsupported_correctly_refused": 7,
+      "unsupported_cases": 7,
+      "faithfulness_answered_only": 1.0,
+      "passage_precision": 0.42391304347826086,
+      "context_recall": 1.0,
+      "options": {
+        "chunking": "semantic",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5,
+        "focus_context": false
+      },
+      "generation_prompt_sha256": "b15cb7c87034ed288fe51f7f33a32e071a64fa6cbf2b861ca3c05c8d01cc0629",
+      "f1_goal_met": false
+    },
+    {
+      "profile": "factual-v1",
+      "primary_reference_f1": 0.7978260869565218,
+      "supported_answered": 22,
+      "supported_cases": 23,
+      "unsupported_correctly_refused": 7,
+      "unsupported_cases": 7,
+      "faithfulness_answered_only": 0.9924242424242424,
+      "passage_precision": 0.42391304347826086,
+      "context_recall": 0.9782608695652174,
+      "options": {
+        "chunking": "semantic",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 5,
+        "focus_context": false
+      },
+      "generation_prompt_sha256": "31c7b0e0813c72a09a129d10ea435059d10a3f57edeab35a1f336a369ebd77d2",
+      "f1_goal_met": false
+    },
+    {
+      "profile": "factual-k8",
+      "primary_reference_f1": 0.8734782608695653,
+      "supported_answered": 22,
+      "supported_cases": 23,
+      "unsupported_correctly_refused": 7,
+      "unsupported_cases": 7,
+      "faithfulness_answered_only": 1.0,
+      "passage_precision": 0.3423913043478261,
+      "context_recall": 0.9782608695652174,
+      "options": {
+        "chunking": "semantic",
+        "retrieval": "hybrid",
+        "reranking": false,
+        "candidate_k": 20,
+        "final_k": 8,
+        "focus_context": false
+      },
+      "generation_prompt_sha256": "31c7b0e0813c72a09a129d10ea435059d10a3f57edeab35a1f336a369ebd77d2",
+      "f1_goal_met": true
+    }
+  ]
+}

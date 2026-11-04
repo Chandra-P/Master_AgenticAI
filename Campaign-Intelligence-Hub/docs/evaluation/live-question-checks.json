@@ -1,0 +1,28 @@
+{
+  "observed_date": "2026-10-25",
+  "source": "Visible local Streamlit UI, executed with Ollama",
+  "generation_provider": "ollama",
+  "generation_model": "llama3.2:3b",
+  "chunking": "section",
+  "retrieval": "hybrid",
+  "reranking": false,
+  "checks": [
+    {
+      "question": "What should staff do when consent recovery raises a concern?",
+      "answer": "I could not find sufficient evidence in the knowledge base.",
+      "answer_seconds": 10.01,
+      "retrieval_seconds": 0.71,
+      "observation": "Conservative abstention despite retrieving consent-related guide passages; requires relevance and answer-coverage investigation."
+    },
+    {
+      "case_id": "dev-01",
+      "question": "When can a quarantined consent file resume in the consent recovery playbook?",
+      "expected_sentence_present": "Resume only after two independent reviewers reconcile every quarantined row and sign gate CR-217.",
+      "answer_seconds": 67.53,
+      "retrieval_seconds": 0.60,
+      "observation": "Answer included the expected cited sentence plus two other source-backed sentences. Citations do not establish that every sentence is relevant."
+    }
+  ],
+  "faithfulness": null,
+  "limitations": "Two UI checks are not a generated-answer benchmark. Concurrent retrieval benchmarking affected machine load; warm-state and p95 were not established. The 67.53-second sample exceeds the proposed 60-second target. No calibrated local judge score is available."
+}

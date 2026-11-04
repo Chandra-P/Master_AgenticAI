@@ -1,0 +1,12 @@
+'use client';
+import { Users } from 'lucide-react';
+import type { Answer, Council } from '../lib/types';
+import { Badge } from './ui';
+
+const concerns:Record<string,string>={missing_evidence:'Missing evidence',constraints:'Constraint warnings',assumptions:'Assumptions need review',validation:'Validation concerns'};
+const verdicts={approve:'Accepted packet',caution:'Caution',block:'Objection',unavailable:'Unavailable'};
+export function CouncilView({council,facts=[],scenarios=[]}:{council?:Council;facts?:Answer['facts'];scenarios?:Answer['scenarios']}){
+ if(!council||council.status==='off'||council.status==='skipped')return null;
+ function reference(ref:string){if(ref==='validation')return 'Deterministic validator';const [kind,index]=ref.split(':');return kind==='fact'?facts[Number(index)]?.label||`Fact ${Number(index)+1}`:scenarios[Number(index)]?.name||`Scenario ${Number(index)+1}`;}
+ return <section className="council-panel" aria-label="Independent model review"><div className="row wrap"><div className="council-title"><Users size={20}/><h3>Model council</h3></div><Badge tone={council.status==='approved'?'green':'amber'}>{council.status==='approved'?'Packet accepted':council.status==='held'?'Review required':'Review incomplete'}</Badge></div><p className="fine">{council.mode==='demo'?'Simulated reviews · no model calls':'Live model review · availability shown per reviewer'} · {council.latency_ms} ms</p><p className="council-reconciliation">{council.reconciliation}</p>{council.disagreement&&<Badge tone="amber">Reviewers disagree</Badge>}<div className="council-grid">{council.reviews.map((r,i)=><article className="council-member" key={i}><span className="eyebrow">Reviewer {i+1}</span><h4>{r.role}</h4><span className="fine council-model">{r.model}</span><Badge tone={r.verdict==='approve'?'green':r.verdict==='block'?'red':'amber'}>{verdicts[r.verdict]}</Badge>{r.concerns.length>0&&<ul>{r.concerns.map(c=><li key={c}>{concerns[c]||'Review concern'}</li>)}</ul>}{r.error&&<p className="fine">{r.error}</p>}{r.evidence_refs.length>0&&<details><summary>Reviewed references</summary><p className="fine">{r.evidence_refs.map(reference).join(', ')}</p></details>}</article>)}</div><p className="fine">Agreement is not a confidence score. Reviews cover a compact evidence packet; deterministic validation remains authoritative. Models cannot authorize financial actions.</p></section>;
+}

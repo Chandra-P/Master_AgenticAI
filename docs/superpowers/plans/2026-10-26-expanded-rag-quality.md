@@ -1,0 +1,22 @@
+# Expanded RAG quality experiment plan
+
+User requests continued evaluation and fixes toward80% F1. Use the unchanged130-source corpus and original30 benchmark references. The13 newly authored exercises remain development-only. No OpenAI answer-generation approval is inferred; Ollama remains default and the approved OpenAI judge scores actual answers.
+
+1. Execute full semantic/hybrid baseline, no focusing/reranking, candidate20/final5, current grounding contract. Save all30 cases, genuine refusals counted0 in the primary23-supported-case F1; errors/missing judgments prevent success.
+2. Test source-grounded factual projection. For narrow single-campaign objective questions, extract complete objective paragraphs from retrieved brief sections. For narrow activation-results/channel questions, parse retrieved count tables and render only actual total and channel counts. Require consistent campaign/period, nonnegative integral counts, unique values and reconciled sums. Reject incomplete/contradictory evidence and extra requested facets by returning to existing Ollama generation. Use source text/metadata only, never manifest outcomes or evaluation gold.
+3. Structured projections retain auditable raw row/header/cell evidence and actual source IDs. They are deterministic table-derived answers, not claimed verbatim quotations. Quote validation remains unchanged for model answers. Version the full answering contract and test counterexamples before promotion.
+4. Compare full30 cases and report actual scores, answer coverage and unsupported refusals; do not alter references or redefine the metric to reach the target. Test generalization separately with held-out independent questions before production claims. Reuse no scores from changed models/contracts. Keep historical datasets/runs and keys private.
+
+Architecture choice: deterministic extraction is appropriate for structured factual fields; LLM-only prompts already showed unreliable relevance and citation compliance. Keep generative RAG for broader explanation/policy queries. This is a narrow behavior fix, not replacing the use case or dataset. Standing user preference is inline execution without confirmation pauses.
+
+## Findings and controlled second profile
+Reviewer found overbroad query intent and unchecked requested scope; replaced denylist with positive complete-query grammar and explicit campaign matching. Objective fragments require equality with the complete hashed parent Objectives section, and that section text must already be in the retrieved chunk. Reproduced each failure before fixing. Review accepted the fixes;144 tests passed.
+
+Local retrieval check found15/23 source-supported projections at k5, versus17/23 at k8 with the same20 candidates. The missing cases lacked the channel table at k5. Predeclare a separate k8 full30-case profile, keeping prompt/scorer/references/corpus unchanged; this tests evidence coverage, not a scorer change. Trials can overlap, so do not make latency comparisons from these runs.
+
+## Completed results and promotion
+All90 executions finished without errors. Current130-source baseline referenceF1=0.3691304348, factual-k5=0.7978260870, factual-k8=0.8734782609. All profiles refused7/7 unsupported controls. Winning k8 answered22/23 supported cases and achieved conditional faithfulness1.0; useful-passage precision0.342391 remains below its separate target. Complex six-case F1=0.515, including one refused multi-document question.
+
+Promoted semantic/hybrid/k8 defaults in model, CLI and app while retaining Ollama. Added complete-set F1 caption and raw F1 column in Evaluation, with a regression for refusal-zero versus missing judgments. Published only the current k8 run; historical runs retained. Full suite145 passed, three known RAGAS deprecation warnings. Headless actual-app startup/Evaluation check passed and displayed87.3% over23 supported cases. Actual default CLI returned230 total,138 direct-mail,92 display activations with correct sources; corpus validation passed. Independent reviewer checked all90 cases, unchanged references/current corpus, arithmetic and sourceproof. API-key scan passed; no commit or push.
+
+The80% reference-F1 objective is met on the fixed development benchmark. Do not infer independent accuracy, universal chunker superiority, passage-relevance target achievement or latency SLA. Submission assets from the previous corpus remain explicitly historical and outside this metric-improvement scope.

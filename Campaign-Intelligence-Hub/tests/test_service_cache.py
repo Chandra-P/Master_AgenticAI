@@ -4,7 +4,7 @@ def test_service_cache_invalidates_after_application_code_changes(tmp_path,monke
     settings=Settings(root=tmp_path)
     settings.data.mkdir()
     (settings.data/'manifest.json').write_text('{}')
-    source=tmp_path/'src/campaign_hub/reporting/service.py'
+    source=tmp_path/'src/campaign_hub/rag/service.py'
     source.parent.mkdir(parents=True)
     source.write_text('revision one')
     monkeypatch.setattr(resources,'Settings',lambda:settings)

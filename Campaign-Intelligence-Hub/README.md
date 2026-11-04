@@ -1,201 +1,214 @@
-# Campaign Intelligence Hub
+# Campaign Intelligence Hub — RAG workspace
 
-Transform campaign objectives, success plans, and performance reports into actionable insights and executive-ready narratives.
+Ask questions about campaign knowledge, retrieve source evidence, and compare how
+chunking changes what is retrieved. The active application is a RAG solution:
 
-A Week 2 RAG course project for campaign insights analysts. The main output is a Campaign Performance Report grounded in a fictional banking/credit-union corpus, with inline source citations, KPI comparisons, and an evidence-coverage checklist.
+**Sources → chunks → local embeddings → Chroma → dense/hybrid retrieval → optional reranking → context → cited answer.**
 
-## What is included
+Report generation, KPI dashboards, presentation export, and historical-comparison
+workflows are no longer part of the active app or CLI. Original campaign reports
+remain useful **input documents** in the knowledge base. Obsolete report code,
+export assets, dependencies and historical score bundles have been removed.
+The active LangGraph workflow explicitly routes retrieval to a source-validated
+answer or refusal, and records retrieval and end-to-end answer latency.
 
-### Review deliverables
+## Run locally on Windows
 
-- [Word project overview](docs/Campaign_Intelligence_Hub_Project_Overview.docx): three-page explanation with campaign examples, a simple fixed-versus-semantic explanation, the measured comparison and next steps. Detailed implementation remains in the separate HTML technical kit.
-- [Technical Solution Kit](docs/technical_solution_kit.html): architecture, component deep dives, exact runtime prompts, decisions, measured comparisons, setup and explicit implementation boundaries.
-- [Executive Campaign Performance Dashboard](docs/campaign_performance_dashboard.html): interactive Chart.js comparisons, KPI target/variance/status cards, audience composition, attribution timeline, adjacent findings/actions, recommendations, seven-part presentation storyline and source evidence.
-
-Both files embed Bootstrap CSS and Chart.js locally and work without a CDN. SVG/data-table fallbacks preserve readable charts when JavaScript is blocked or the report is printed. Rebuild them from the validated saved example packet with `python -m campaign_hub.deliverables`. Generate that packet first with `python -m campaign_hub client-report --campaign TX-CHK-001` if it is absent.
-
-The dashboard explicitly marks unsupported trends, funded-account stages, funnel events and financial ROI as unavailable. Opening balances are not net deposit growth. Findings are derived from cited source tables; causes and projected impacts are not invented. See the [new deliverable requirements audit](docs/visual-deliverable-status.md).
-
-- 110 deterministic synthetic Markdown documents for 20 campaigns and shared guidance.
-- 30 evaluation cases with expected facts and source/section citations.
-- LangChain `OllamaEmbeddings`, `ChatOllama`, prompt/structured-output chains, and the LangChain Chroma integration; no API key or paid API calls by default.
-- Persistent ChromaDB with fixed-size, section-based, and embedding-based semantic chunks. All use a 500-token bound and 50-token overflow overlap; semantic boundaries use sentence/unit embeddings and cosine-distance percentiles.
-- Dense retrieval, dense/BM25 reciprocal-rank fusion, and optional real cross-encoder reranking.
-- LangGraph report orchestration and explicit insufficient-evidence behavior.
-- Streamlit report generation, historical campaign comparison, questions, retrieval exploration, and measured evaluation views.
-- Automatic client/campaign map showing attributed accounts and opening balances, with channel filters and a geographic results table.
-- A standalone HTML client presentation with embedded Chart.js comparisons, SVG/table fallbacks, findings directly below each chart, and clickable source evidence. The final report retrieves chunks through Chroma, expands validated source documents, and calculates metrics in Python.
-
-See the complete [implementation status report](docs/implementation-status.md): **94 of 102 checklist items implemented (92.2%)**, with eight explicit future-work items and production release boundaries. See the [deployment guide](docs/deployment.md) for local/server/Community Cloud instructions.
-
-See the [three-method chunking comparison](docs/chunking-comparison.md) and [deliverable audit](docs/deliverable-audit.md) for the distinction between structural and embedding-based boundaries, experiment rules, and remaining requirements. The earlier heading-based `semantic` mode is now `section`; `semantic` now means actual embedding-based topic segmentation. Rebuild all indexes after updating.
-
-**[Open the live demo](https://campaign-intelligence.streamlit.app/)** with no installation or visitor API key. Public access, cited Groq answers, and hosted chart-led report generation were checked on 2026-10-18. The [cloud quickstart](docs/cloud-quickstart.md) documents the deployment and verification limits. Hosting uses Streamlit Community Cloud, server-side CPU embeddings, automatic Chroma indexes and Groq generation; free-tier sleeping and API quotas apply. Local Ollama remains the default for local setup.
-
-## Channels, attribution, and historical standing
-
-Only **direct mail** and **display** are included:
-
-| Channel | Attribution window | Starting event | Activation-rate denominator |
-| --- | --- | --- | --- |
-| Direct mail | 60 days | Mail/drop date | Mailed households |
-| Display | 30 days | Exposure date | Unique exposed users |
-
-Windows include the anchor date through the channel's final elapsed-day boundary; earlier/later conversions are excluded. The synthetic records use date-level cohorts and deduplicated outcomes assigned to one eligible channel. A campaign is mature only when its complete channel window has elapsed.
-
-Use **Historical Comparison** to see activation rate and cost per activation against earlier campaigns of the **same client**, product type, channel, attribution rule, and denominator. An optional cross-client view is labeled **Synthetic peer reference — not an industry benchmark**. The page shows individual peers, peer medians, rank (1 = best), and a performance percentile with tie handling. Lower acquisition cost is better. Rates are compared within channels, not pooled across direct mail and display.
-
-The same source-cited comparison appears in the client report's Progress Toward Goals. This 20-campaign corpus spans eleven product types and five fictional clients; the default campaign has two same-client historical comparators. Some products have no history. Small samples are explicitly flagged; a rank is a descriptive comparison, not a claim that a campaign is universally good. No compatible mature history means no ranking. Verified industry benchmark data has not been supplied.
+Keep Ollama running and download the models once:
 
 ```powershell
-python -m campaign_hub compare --campaign TX-CHK-001
-```
-
-## Setup (Windows PowerShell)
-
-Use Python 3.12 or newer and install [Ollama](https://ollama.com/download).
-
-```powershell
-cd Campaign-Intelligence-Hub
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e .
 ollama pull llama3.2:3b
-ollama pull embeddinggemma
-python -m campaign_hub generate
-python -m campaign_hub validate
-python -m campaign_hub index --chunking all
-python -m streamlit run app.py
+ollama pull embeddinggemma:latest
 ```
 
-If activation is blocked, replace `python` with `.\.venv\Scripts\python.exe`. On macOS/Linux activate with `source .venv/bin/activate`. Commands can use absolute file paths; data paths resolve from the project, not the shell working directory. Keep Ollama running. Initial installation and model downloads require internet access; local generation/embedding do not require paid calls.
-
-## Generate a report
-
-Select **Generate Report**, choose a **Client**, then choose one of that client's campaigns. KPI cards, map and same-client historical standing update automatically. Use the channel and map-measure controls to inspect accounts or opening balances. Click **Generate client-facing report** to retrieve evidence and see the HTML presentation preview. Choose **Download HTML presentation**, then open the file in a browser. Client and campaign selectors also appear on Historical Comparison and Ask Questions. Analyst View adds metadata classification and evidence inspection; the older Retrieval Explorer and Evaluation Dashboard remain development modules outside app navigation.
-
-The HTML presentation includes client/campaign identity, Executive Summary, Goals, chart-led Progress Toward Goals, Channels, Same-client History, Geography, Learnings, Recommendations, Next Steps, Measurement Notes and Source Citations. Each comparison chart has an adjacent insight and numbered source links. The file is self-contained and needs no CDN or network connection to view. Reconciliation failures, altered narrative, missing required retrieval evidence or immature attribution block exports. Proposed tests are labeled; owner/date/priority remain unassigned when absent from sources. These checks do not guarantee 100% correctness. The source corpus and client names are synthetic.
-
-## Metadata classification and analyst view
-
-Choose **Analyst View** to inspect retrieval without generating an answer. Enter a
-question and optionally combine campaign ID, client, campaign type, region, year,
-reporting period and document type. Values within one field use OR; different
-fields use AND. The same effective filter scopes dense and BM25 retrieval.
-Only values present in the corpus are accepted; a requested period not in the
-corpus is rejected rather than silently replaced.
-
-**Automatically classify metadata** defaults to local Ollama (`llama3.2:3b`).
-Model choices are constrained to labels or supported aliases mentioned in the
-question, and each inferred constraint must quote supporting words from it.
-General questions without metadata terms use no inferred filters and need no
-classification call. Use manual controls for unsupported paraphrases and shared
-`ALL`/`GLOBAL` values. These guards check provenance, not full semantic entailment;
-inspect the displayed filters before relying on the results.
-The result shows manual selections, selected campaign scope, inferred filters,
-question-routing filters, effective filters and ranked evidence. Expand evidence
-to inspect source text, metadata and available ranking scores. Scores are not
-confidence probabilities. Conflicting manual/inferred constraints stop the search;
-empty results never trigger an unfiltered retry. Disable classification for
-manual-only retrieval. Input edits hide stale results; only **Find evidence**
-starts inference and retrieval.
-
-**Ask Questions** uses the same controls while keeping its selected campaign
-binding and retaining source-validated answers. Report calculations and historical
-comparison eligibility are unchanged. The older comparison explorer and evaluation
-dashboard remain development modules outside app navigation.
-
-### Optional OpenAI alternative
-
-Ollama remains the default for classification and local answer generation.
-Select **openai** explicitly in **Classification provider** or the sidebar's
-**Answer provider**. The default OpenAI model is `gpt-4.1-mini`; a configured
-model must support structured outputs. Embeddings and Chroma indexes retain
-their configured provider; choosing OpenAI answers does not re-embed the corpus.
-
-Configure `OPENAI_API_KEY` in your process environment or the ignored
-`Campaign-Intelligence-Hub/.streamlit/secrets.toml`, never in source files or a
-widget. A placeholder-only example is in `.streamlit/secrets.example.toml`.
-OpenAI classification sends your question and the allowed metadata values;
-OpenAI answers also send retrieved passages. These calls use your API account.
-There is no automatic fallback between local and hosted providers.
-
-Optional server settings: `CIH_CLASSIFICATION_PROVIDER` (`ollama` by default)
-and `CIH_CLASSIFICATION_MODEL` (`llama3.2:3b` by default, or `gpt-4.1-mini` for
-an explicitly configured OpenAI classifier). `CIH_GENERATION_PROVIDER` and
-`CIH_GENERATION_MODEL` independently control the answer provider.
-The app reads process environment and private Streamlit secrets; it does not
-automatically load a project `.env` file.
-
-OpenAI request handling follows the official
-[Structured Outputs documentation](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat).
-
-Open the [example HTML presentation](docs/campaign_performance_dashboard.html). HTML is now the default client output in the UI and CLI; PDF/PowerPoint are no longer generated by that workflow. The obsolete PDF/PowerPoint exporters and their dependencies have been removed.
+From this project directory, use Python3.12 or newer. On this workstation the
+project environment is already installed. For a fresh checkout:
 
 ```powershell
-python -m campaign_hub client-report --campaign TX-CHK-001
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e .
 ```
 
-The final report uses the selected fixed-size/section-based/embedding-based semantic, dense/hybrid and reranking settings against the corresponding Chroma index. Retrieved chunk IDs, queries, scores and source hashes are recorded in the frozen JSON packet. Validated parent expansion preserves complete source tables for Python calculations. The CLI writes HTML, diagnostic Markdown and JSON under `data/reports/`. Report generation needs a configured embedding provider and compatible index; it does not require model prose generation. The landing map remains a fast source-table snapshot. Map filters do not change the full-campaign report scope. Opening balances mean account balances at opening in USD, not current balances, net new deposits or revenue.
-
-The current input corpus is synthetic Markdown under `data/corpus/`. Real PDF, Word, PowerPoint, Excel/CSV and database ingestion is explicitly future work; the app does not yet ingest real client files.
-
-The separate eleven-section analytical RAG report remains available with:
+Generate/validate the source corpus and build all three actual indexes:
 
 ```powershell
-python -m campaign_hub report --campaign TX-CHK-001
+.\.venv\Scripts\python.exe -m campaign_hub generate
+.\.venv\Scripts\python.exe -m campaign_hub validate
+.\.venv\Scripts\python.exe -m campaign_hub index --chunking all
+.\.venv\Scripts\python.exe -m streamlit run app.py --server.port 8504
 ```
 
-For a faster deterministic report retaining source wording, without model prose generation:
+Open http://127.0.0.1:8504. Initial indexing may take several minutes on a CPU.
+Later builds reuse the embedding cache. Index directories include the corpus
+identity so expanded sources do not overwrite historical collections. Changing
+sources, embedding model, or chunking configuration requires compatible indexes.
+Stop the server with Ctrl+C. Calling the environment's Python directly avoids
+PowerShell activation-policy problems.
+
+## The four workflows
+
+### Ask Questions
+
+Search the **entire knowledge base** by default, or choose **Selected campaign**
+for a binding campaign scope. Enter a question and select **Find evidence**.
+Answers use retrieved passages and exact source citations. Unsupported claims
+are withheld; source-validated wording is deliberately conservative rather than
+free-form report writing. No report arithmetic or presentation template is run.
+
+Automatic metadata classification defaults to local Ollama. Combined filters
+support campaign ID, client, campaign type, region, year, reporting period and
+document type. Values inside one field use OR; different fields use AND. Manual
+constraints intersect inferred constraints; conflicts stop the search. A general
+question without recognized metadata terms needs no classification call.
+Unsupported paraphrases and shared ALL/GLOBAL values can use manual controls.
+
+### Analyst View
+
+Inspect manual, inferred, scope, routing and effective filters. Expand retrieved
+chunks to see source text, metadata, chunk IDs and ranking scores. Scores are
+labeled dense/BM25/fusion/reranking signals, not confidence probabilities. Edits
+hide stale evidence, and no inference runs until explicit submission.
+
+### Chunking Lab
+
+Choose one of the new long learning guides and click **Inspect indexed chunks**.
+The same canonical source appears with its actual fixed-size, section-based and
+embedding-based semantic chunks. Expand chunks to see token lengths, verified
+source spans, overlap and boundary metadata. Unknown spans remain unknown.
+
+- **Fixed-size:** up to500 cl100k_base tokens with50-token overflow overlap.
+- **Section-based:** heading boundaries, with the same overflow bounds for long sections.
+- **Semantic:** sentence/unit embedding cosine-distance boundaries at the configured percentile,
+  with bounded overflow windows. This is actual embedding-based segmentation.
+
+Then enter a query and choose **Compare retrieved evidence**. All three indexes
+receive the same query, metadata filters, retrieval method and reranking setting.
+The selected source is for chunk inspection; retrieval comparison searches the
+filtered corpus rather than secretly restricting results to that source.
+Semantic chunking does not necessarily improve every query.
+
+### Evaluation
+
+Current document precision, document recall, MRR and latency are computed only
+from question cases on the matching corpus/model/chunker configuration. Report
+cases and old bundled scores are excluded. The page shows measured-case coverage
+and errors; a one-case smoke run is explicitly incomplete.
+
+The new guide questions are labeled **development** examples, separate from
+legacy held-out cases. These are synthetic teaching data, not independent real
+client validation. Retrieval precision/recall do not measure answer faithfulness.
+Faithfulness remains unavailable unless separately assessed on generated answers.
 
 ```powershell
-python -m campaign_hub report --campaign TX-CHK-001 --extractive
+# Six retrieval configurations, one held-out question each, no generation
+.\.venv\Scripts\python.exe -m campaign_hub evaluate --smoke
+# All new demonstration questions across six configurations
+.\.venv\Scripts\python.exe -m campaign_hub evaluate --full --split development
+# All eligible held-out question cases; add --generated for actual answers
+.\.venv\Scripts\python.exe -m campaign_hub evaluate --full
 ```
 
-These two analytical modes use real embeddings, Chroma retrieval, and cited evidence. The optional model can suggest concise wording; unsupported paraphrases fall back to verbatim source evidence. KPI variance arithmetic is performed in Python. Analytical outputs are under `data/reports/`: `<campaign>.md`, `<campaign>-technical.md`, and `<campaign>.json`. Outputs are never automatically re-ingested. Use `client-report` for the final presentation packet.
+Use --include-reranking to add both reranking states. The optional cross-encoder
+requires its downloaded model files. Current artifacts are in data/runs/rag/latest;
+historical raw runs are excluded. Optional `evaluate --ragas --ragas-limit 1`
+assesses actual generated answers after judge calibration. Use
+`--judge-provider openai --judge-model gpt-4.1-mini` only with a private owner key.
+Ollama remains the default. Failed calibration is shown explicitly in Evaluation;
+it cannot produce reportable scores. A smoke assessment is not a full benchmark.
 
-Report sections: Executive Summary, Goal Achievement Analysis, KPI Performance Review, Performance Drivers, Audience Insights, Channel Insights, Recommendations, Lessons Learned, Suggested Next Steps, Presentation Storyline, and Source Citations.
+## Current answer-quality result
 
-Inputs: campaign brief, success plan, KPI results, historical campaigns, and best practices. Source performance reports contain KPI actuals; they are distinct from newly generated reports. Missing evidence yields a partial report with explicit gaps, not invented findings. Confidence is evidence coverage, not probability of truth.
+The fixed 30-case benchmark on the expanded 130-source corpus reached **87.3% reference F1**, up from **36.9%** for its baseline. It answered 22/23 supported questions and refused all 7 unsupported controls. The default is now semantic chunking with hybrid retrieval and eight chunks; Ollama remains the answer provider. Narrow factual answers use verified source extraction, while broader questions use the local model.
 
-## Ask, inspect, and evaluate
+This is a development benchmark, not independent certification. Complex-question F1 averaged 51.5%, and useful-passage precision remains below target. See [complete results and limitations](docs/expanded-quality-results.md).
+
+## Corpus
+
+The original 110 source documents and their hashes are preserved. The expanded
+corpus contains 130 documents: the original 110, twelve original learning guides,
+and eight new [requirements-pack sources](docs/requirements-corpus.md). The original guides include long
+playbooks, cohesive policies, heading-free mixed-topic notes, and troubleshooting
+FAQs with identifiers, tables, exceptions and boundary-sensitive facts. They
+exist to make chunking behavior inspectable, rather than padding source text.
+Each has a curated development question and expected source evidence. Check the
+manifest and Chunking Lab for actual token/chunk counts.
+
+Current local Ollama indexes contain **180 fixed**, **580 section-based**, and
+**788 semantic** chunks. New-source inspections are recorded
+in [corpus validation](docs/evaluation/requirements-corpus-validation.json). For the preserved consent-recovery playbook alone the counts are
+**3 / 7 / 22**, illustrating different boundary decisions rather than proving one
+method is universally better. All new guide chunks passed canonical source-span
+and token-bound checks.
+
+Historical 122-source [retrieval measurements](docs/evaluation/pure-rag-retrieval-comparison.csv)
+and [paired reranking analysis](docs/evaluation-results.md) compare the same
+questions across chunkers and reranking states. The benchmark includes ambiguous,
+multi-document and unsupported cases. Newly authored synthetic examples are not
+independent blind validation. Unsupported questions have undefined retrieval
+relevance rather than artificial zero scores.
+
+The [course framework](docs/course-project.md), [requirements matrix](docs/requirements-matrix.md)
+and [local submission document](docs/submission/Campaign_Knowledge_RAG.docx)
+separate implemented features from measured quality targets. The local judge's
+[failed calibration](docs/evaluation/current-judge-controls.json) means local
+faithfulness scores remain unavailable.
+
+Local hand-in assets include a [three-page overview](docs/submission/Campaign_Knowledge_RAG.docx)
+and [2:06 edited walkthrough](docs/submission/Campaign_RAG_Walkthrough.mp4).
+The video uses actual UI captures with text narration; it is labeled as edited
+footage. The owner requested local document delivery, so no Google Doc or course
+submission was created. The observed 67.53-second answer exceeded the proposed
+60-second sample ceiling; a warm p95 pass has not been demonstrated.
+
+## Models and credentials
+
+The completed [three-chunker answer-quality comparison](docs/chunking-answer-quality-comparison.md)
+contains 90 case/method records. Semantic had the highest observed reference F1
+across all 23 supported questions, counting refusals as zero: **33.5%**, versus
+**30.5% section-based** and **22.0% fixed-size**. It answered **20/23** supported
+questions; all three methods correctly refused all seven unsupported controls.
+The observed advantage came from the longer learning-guide questions. This is a
+single-run synthetic comparison; the app's default chunker was not changed.
+
+The completed [OpenAI-judged quality evaluation](docs/openai-quality-results.md)
+is the section-based baseline and uses Ollama answers with an explicit OpenAI judge across 30 cases. Faithfulness
+was 100% on 18 answered supported cases; five supported cases were refused.
+RAGAS rank-weighted context precision was 76.1%, useful-passage precision 34.8%,
+and context recall 100%. All seven unsupported controls returned the canonical
+refusal. Reference factual-correctness F1 was 38.9% on assessed answers, and
+observed answer p95 was 62.79 seconds. These results do not meet all stated
+quality targets. The key remains in private ignored settings.
+
+The evaluator now preserves the exact source IDs and text visible to generation.
+Precision explanations are bounded by provider token limits rather than an
+unnecessary character cap; binary verdicts remain strictly validated. Prior
+diagnostic runs are archived and excluded from current results.
+
+Ollama is the default for classification, embeddings and answers; no API keys are
+required for that profile. The configured local defaults are llama3.2:3b and
+embeddinggemma. CIH_OLLAMA_URL selects the local endpoint.
+
+OpenAI remains an optional explicit **Classification provider** or sidebar
+**Answer provider**, defaulting to gpt-4.1-mini for that alternative. Configure
+OPENAI_API_KEY in the process environment or ignored .streamlit/secrets.toml.
+Never paste keys into source or widgets. OpenAI classification sends the question
+and candidate metadata; OpenAI answers also send retrieved passages. There is no
+automatic cloud fallback. Embeddings remain unchanged when selecting an answer provider.
+
+Configuration names: CIH_GENERATION_PROVIDER, CIH_GENERATION_MODEL,
+CIH_EMBEDDING_PROVIDER, CIH_EMBEDDING_MODEL, CIH_CLASSIFICATION_PROVIDER,
+CIH_CLASSIFICATION_MODEL, CIH_OLLAMA_URL. The app reads process environment and
+private Streamlit secrets; a project .env is not loaded automatically.
+
+## CLI examples
 
 ```powershell
-python -m campaign_hub ask --campaign TX-CHK-001 --question "What were the objectives?"
-python -m campaign_hub evaluate --smoke --extractive
-python -m campaign_hub evaluate --full
-python -m pytest -q
+.\.venv\Scripts\python.exe -m campaign_hub ask --question "What are the tracking validation procedures?"
+.\.venv\Scripts\python.exe -m campaign_hub ask --campaign TX-CHK-001 --question "What were the objectives?"
+.\.venv\Scripts\python.exe -m campaign_hub ask --classify --question "Find performance reports for Texas campaigns in 2026."
+.\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Reranking downloads `cross-encoder/ms-marco-MiniLM-L-6-v2` on first use. Enable with `--rerank` or the UI toggle; the experiment matrix tests both states. Full evaluation may take considerable time on CPU. Run artifacts under `data/runs/` contain actual results/errors, not example scores. A retrieval-only experiment marks generation as skipped. Add `--judge` for a separate local model support judgment; source/number validation alone does not prove semantic faithfulness, and a model judge is not human verification.
-
-Actual **RAGAS faithfulness, passage context precision and reference-claim context recall** are available through the optional [RAGAS assessment workflow](docs/ragas-assessment.md). Install `requirements-ragas.txt`, then run `python -m campaign_hub evaluate --ragas --ragas-limit 1` with the selected generation/embedding providers. This assesses real generated answers and preserves exact contexts/references and judge identity in saved JSON/CSV artifacts. The evaluation dashboard module is retained for development and is not exposed in client navigation. It never substitutes document-ID overlap scores for RAGAS judgments. Local Ollama inference needs no paid API; missing judgments remain unavailable.
-
-The opt-in [90% quality target workflow](docs/quality-target.md) adds reference-based factual correctness, actual per-passage verdicts, complete-case coverage and judge calibration checks. `--focus-context` tests question-specific evidence sections without changing live defaults. The first local judge failed negative controls, so its high raw relevance scores are explicitly untrusted; the target remains unmet. Use a separately configured judge that passes controls before interpreting a quality score.
-
-Default model settings use local Ollama. `CIH_GENERATION_PROVIDER` and `CIH_EMBEDDING_PROVIDER` can select the hosted Groq/CPU profile; OpenAI answer generation is also optional. See the cloud quickstart for server secrets. `CIH_OLLAMA_URL`, `CIH_GENERATION_MODEL`, and `CIH_EMBEDDING_MODEL` configure the selected models. Model/chunker changes use isolated compatible indexes.
-
-## Project layout
-
-```text
-app.py                 Streamlit entry point
-src/campaign_hub/
-  synthetic_data/      Seeded corpus and manifest validation
-  ingestion/           Source parsing and path validation
-  chunking/            Fixed, section-based and embedding-based semantic chunking
-  embeddings/          Local embedding client and cache
-  generation/          Local structured generation client
-  vectordb/            Persistent Chroma indexes
-  retrieval/           Dense/BM25 fusion
-  reranking/           Local cross-encoder
-  reporting/           KPI calculations, claims, report rendering
-  langgraph/           Executable report workflow
-  evaluation/          Gold metrics and experiment runner
-  ui/                  Streamlit interface
-data/corpus/           Synthetic Markdown sources
-data/evaluation/       Gold questions
-docs/                  Architecture and course methodology
-tests/                 Automated tests
-```
-
-See [architecture](docs/architecture.md), [methodology](docs/methodology.md), and [evaluation status](docs/evaluation-results.md).
+Supported commands are generate, validate, index, ask and evaluate. Prior report,
+client-report and compare commands have been removed. No authentication or real
+client-data tenancy is claimed; the supplied corpus is fictional teaching data.

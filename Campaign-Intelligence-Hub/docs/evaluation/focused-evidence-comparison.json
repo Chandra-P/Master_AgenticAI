@@ -1,0 +1,23 @@
+{
+  "scope": "Developmental comparison on previously inspected 30 cases, one execution per configuration; not independent held-out certification. Focused run predates citation recovery.",
+  "baseline": {
+    "primary_f1": 0.3347826086956522,
+    "supported_answered": 20,
+    "supported_total": 23,
+    "unsupported_correctly_refused": 7,
+    "unsupported_total": 7,
+    "faithfulness_answered_only": 1.0,
+    "passage_precision": 0.3804347826086957
+  },
+  "focused_evidence": {
+    "primary_f1": 0.12173913043478261,
+    "supported_answered": 10,
+    "supported_total": 23,
+    "unsupported_correctly_refused": 7,
+    "unsupported_total": 7,
+    "faithfulness_answered_only": 0.9333333333333333,
+    "passage_precision": 0.6985507246376812
+  },
+  "decision": "Do not enable focus by default; preserve the measured regression.",
+  "judge_limitation": "q11 trace shows correct activation total rejected because reference lacks campaign identifier and verified qualifier. Missing channel breakdown is still a real answer defect. Original references and historical scores unchanged."
+}

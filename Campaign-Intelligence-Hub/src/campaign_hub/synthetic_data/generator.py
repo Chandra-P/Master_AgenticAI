@@ -1,13 +1,16 @@
 """Deterministic fictional banking corpus; no LLM or external data is used."""
 import hashlib
+from itertools import chain
 import json
 import random
 from datetime import date,timedelta
 from pathlib import Path
 
 import yaml
-from campaign_hub.reporting.attribution import CHANNEL_RULES,attributable,matured
+from campaign_hub.synthetic_data.attribution import CHANNEL_RULES,attributable,matured
 from campaign_hub.synthetic_data.geography import campaign_geography
+from campaign_hub.synthetic_data.learning_corpus import learning_sources
+from campaign_hub.synthetic_data.requirements_corpus import requirements_sources,requirements_cross_cases
 
 TYPES = ["Checking Account Acquisition", "Deposit Growth", "High Yield Savings", "CD Promotions",
          "HELOC Campaigns", "Mortgage Campaigns", "Auto Loan Campaigns", "Credit Card Acquisition",
@@ -17,6 +20,203 @@ REGIONS = ["TX", "CA", "IL", "FL", "NY"]
 
 def digest(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def benchmark_questions() -> list[dict]:
+    """Gold questions authored from existing sources, without retrieval-score tuning."""
+    return [{'id': 'rag-ambiguous-01',
+      'question': 'Does a late observation mean it is outside the attribution window, or does late '
+                  'arrival differ from late occurrence under the correction policy?',
+      'campaign_id': None,
+      'expected_answer': 'A late-arriving observation can still fall within a previously defined '
+                         'attribution window; an observation occurring outside that window cannot be '
+                         'pulled inside merely because its file arrived with eligible events.',
+      'expected_facts': ['A late-arriving observation can still fall within a previously defined '
+                         'attribution window; an observation occurring outside that window cannot be '
+                         'pulled inside merely because its file arrived with eligible events.'],
+      'expected_sources': ['GLOBAL-learning-04'],
+      'ground_truth_citations': ['GLOBAL-learning-04#correction-custody'],
+      'split': 'held_out',
+      'kind': 'question',
+      'category': 'ambiguous',
+      'evidence_facts': [{'source_id': 'GLOBAL-learning-04',
+                          'citation': 'GLOBAL-learning-04#correction-custody',
+                          'fact': 'A late-arriving observation can still fall within a previously '
+                                  'defined attribution window; an observation occurring outside that '
+                                  'window cannot be pulled inside merely because its file arrived with '
+                                  'eligible events.'}],
+      'measurement_provenance': {'purpose': 'source-grounded benchmark expansion',
+                                 'held_out': True,
+                                 'origin': 'authored by inspecting existing immutable synthetic '
+                                           'sources',
+                                 'usage': 'evaluation cases; not evidence of general quality or '
+                                          'independent external validation'}},
+     {'id': 'rag-ambiguous-02',
+      'question': 'For TX-CHK-001, does the reported balance mean current balances, net new deposits, '
+                  'revenue, or balances at account opening?',
+      'campaign_id': 'TX-CHK-001',
+      'expected_answer': 'Sum of posted account balances at opening (USD); not current balances, net '
+                         'new deposits, or revenue.',
+      'expected_facts': ['Sum of posted account balances at opening (USD); not current balances, net '
+                         'new deposits, or revenue.'],
+      'expected_sources': ['TX-CHK-001-performance_report'],
+      'ground_truth_citations': ['TX-CHK-001-performance_report#balance-definition'],
+      'split': 'held_out',
+      'kind': 'question',
+      'category': 'ambiguous',
+      'evidence_facts': [{'source_id': 'TX-CHK-001-performance_report',
+                          'citation': 'TX-CHK-001-performance_report#balance-definition',
+                          'fact': 'Sum of posted account balances at opening (USD); not current '
+                                  'balances, net new deposits, or revenue.'}],
+      'measurement_provenance': {'purpose': 'source-grounded benchmark expansion',
+                                 'held_out': True,
+                                 'origin': 'authored by inspecting existing immutable synthetic '
+                                           'sources',
+                                 'usage': 'evaluation cases; not evidence of general quality or '
+                                          'independent external validation'}},
+     {'id': 'rag-ambiguous-03',
+      'question': 'In DR-905, does a receipt timeout mean we should resend an accepted batch, or first '
+                  'recover its status?',
+      'campaign_id': None,
+      'expected_answer': 'For DR-905, query the partner using the original idempotency key before '
+                         'retrying; an accepted batch must not be resent.',
+      'expected_facts': ['For DR-905, query the partner using the original idempotency key before '
+                         'retrying; an accepted batch must not be resent.'],
+      'expected_sources': ['GLOBAL-learning-10'],
+      'ground_truth_citations': ['GLOBAL-learning-10#dr-905-recovery'],
+      'split': 'held_out',
+      'kind': 'question',
+      'category': 'ambiguous',
+      'evidence_facts': [{'source_id': 'GLOBAL-learning-10',
+                          'citation': 'GLOBAL-learning-10#dr-905-recovery',
+                          'fact': 'For DR-905, query the partner using the original idempotency key '
+                                  'before retrying; an accepted batch must not be resent.'}],
+      'measurement_provenance': {'purpose': 'source-grounded benchmark expansion',
+                                 'held_out': True,
+                                 'origin': 'authored by inspecting existing immutable synthetic '
+                                           'sources',
+                                 'usage': 'evaluation cases; not evidence of general quality or '
+                                          'independent external validation'}},
+     {'id': 'rag-multi-01',
+      'question': 'After an attribution correction changes the source checksum under the same document '
+                  'ID, what must happen to the signed snapshot and to a cached answer presented as '
+                  'current?',
+      'campaign_id': None,
+      'expected_answer': 'A late correction receives a new revision linked to the original snapshot; '
+                         'it never overwrites the signed snapshot under policy AC-318. KS-663 rejects '
+                         'a cached retrieval result when its source checksum differs from the current '
+                         'manifest, even if the document identifier is unchanged.',
+      'expected_facts': ['A late correction receives a new revision linked to the original snapshot; '
+                         'it never overwrites the signed snapshot under policy AC-318.',
+                         'KS-663 rejects a cached retrieval result when its source checksum differs '
+                         'from the current manifest, even if the document identifier is unchanged.'],
+      'expected_sources': ['GLOBAL-learning-04', 'GLOBAL-learning-12'],
+      'ground_truth_citations': ['GLOBAL-learning-04#correction-custody',
+                                 'GLOBAL-learning-12#ks-663-mismatch'],
+      'split': 'held_out',
+      'kind': 'question',
+      'category': 'multi_document',
+      'evidence_facts': [{'source_id': 'GLOBAL-learning-04',
+                          'citation': 'GLOBAL-learning-04#correction-custody',
+                          'fact': 'A late correction receives a new revision linked to the original '
+                                  'snapshot; it never overwrites the signed snapshot under policy '
+                                  'AC-318.'},
+                         {'source_id': 'GLOBAL-learning-12',
+                          'citation': 'GLOBAL-learning-12#ks-663-mismatch',
+                          'fact': 'KS-663 rejects a cached retrieval result when its source checksum '
+                                  'differs from the current manifest, even if the document identifier '
+                                  'is unchanged.'}],
+      'measurement_provenance': {'purpose': 'source-grounded benchmark expansion',
+                                 'held_out': True,
+                                 'origin': 'authored by inspecting existing immutable synthetic '
+                                           'sources',
+                                 'usage': 'evaluation cases; not evidence of general quality or '
+                                          'independent external validation'}},
+     {'id': 'rag-multi-02',
+      'question': 'During consent recovery an emergency withdrawal is received. What is the '
+                  'suppression acknowledgment and queued-reuse rule, and what review gate is required '
+                  'to resume the quarantined file?',
+      'campaign_id': None,
+      'expected_answer': 'The suppression service must acknowledge emergency withdrawal SP-809 within '
+                         'four business hours and block queued reuse until reconciliation. Resume only '
+                         'after two independent reviewers reconcile every quarantined row and sign '
+                         'gate CR-217.',
+      'expected_facts': ['The suppression service must acknowledge emergency withdrawal SP-809 within '
+                         'four business hours and block queued reuse until reconciliation.',
+                         'Resume only after two independent reviewers reconcile every quarantined row '
+                         'and sign gate CR-217.'],
+      'expected_sources': ['GLOBAL-learning-06', 'GLOBAL-learning-01'],
+      'ground_truth_citations': ['GLOBAL-learning-06#suppression-custody',
+                                 'GLOBAL-learning-01#recovery-gate'],
+      'split': 'held_out',
+      'kind': 'question',
+      'category': 'multi_document',
+      'evidence_facts': [{'source_id': 'GLOBAL-learning-06',
+                          'citation': 'GLOBAL-learning-06#suppression-custody',
+                          'fact': 'The suppression service must acknowledge emergency withdrawal '
+                                  'SP-809 within four business hours and block queued reuse until '
+                                  'reconciliation.'},
+                         {'source_id': 'GLOBAL-learning-01',
+                          'citation': 'GLOBAL-learning-01#recovery-gate',
+                          'fact': 'Resume only after two independent reviewers reconcile every '
+                                  'quarantined row and sign gate CR-217.'}],
+      'measurement_provenance': {'purpose': 'source-grounded benchmark expansion',
+                                 'held_out': True,
+                                 'origin': 'authored by inspecting existing immutable synthetic '
+                                           'sources',
+                                 'usage': 'evaluation cases; not evidence of general quality or '
+                                          'independent external validation'}},
+     {'id': 'rag-multi-03',
+      'question': 'In a partner handoff, one new file has no checksum and a separate previously '
+                  'transmitted batch has a receipt timeout. What do the north notebook and delivery '
+                  'FAQ require for each?',
+      'campaign_id': None,
+      'expected_answer': 'A partner file without a checksum stays in intake hold NH-143 and cannot '
+                         'become a delivery batch. For DR-905, query the partner using the original '
+                         'idempotency key before retrying; an accepted batch must not be resent.',
+      'expected_facts': ['A partner file without a checksum stays in intake hold NH-143 and cannot '
+                         'become a delivery batch.',
+                         'For DR-905, query the partner using the original idempotency key before '
+                         'retrying; an accepted batch must not be resent.'],
+      'expected_sources': ['GLOBAL-learning-07', 'GLOBAL-learning-10'],
+      'ground_truth_citations': ['GLOBAL-learning-07#document', 'GLOBAL-learning-10#dr-905-recovery'],
+      'split': 'held_out',
+      'kind': 'question',
+      'category': 'multi_document',
+      'evidence_facts': [{'source_id': 'GLOBAL-learning-07',
+                          'citation': 'GLOBAL-learning-07#document',
+                          'fact': 'A partner file without a checksum stays in intake hold NH-143 and '
+                                  'cannot become a delivery batch.'},
+                         {'source_id': 'GLOBAL-learning-10',
+                          'citation': 'GLOBAL-learning-10#dr-905-recovery',
+                          'fact': 'For DR-905, query the partner using the original idempotency key '
+                                  'before retrying; an accepted batch must not be resent.'}],
+      'measurement_provenance': {'purpose': 'source-grounded benchmark expansion',
+                                 'held_out': True,
+                                 'origin': 'authored by inspecting existing immutable synthetic '
+                                           'sources',
+                                 'usage': 'evaluation cases; not evidence of general quality or '
+                                          'independent external validation'}},
+     {'id': 'rag-unsupported-01',
+      'question': 'Which named employees signed CR-217 for the TX-CHK-001 consent recovery incident?',
+      'campaign_id': None,
+      'expected_answer': 'I could not find sufficient evidence in the knowledge base.',
+      'expected_facts': [],
+      'expected_sources': [],
+      'ground_truth_citations': [],
+      'split': 'held_out',
+      'kind': 'unsupported',
+      'category': 'unsupported'},
+     {'id': 'rag-unsupported-02',
+      'question': 'What real statutory retention period does fictional policy AC-318 require?',
+      'campaign_id': None,
+      'expected_answer': 'I could not find sufficient evidence in the knowledge base.',
+      'expected_facts': [],
+      'expected_sources': [],
+      'ground_truth_citations': [],
+      'split': 'held_out',
+      'kind': 'unsupported',
+      'category': 'unsupported'}]
 
 
 def generate_corpus(output: Path, seed: int = 42) -> dict:
@@ -126,19 +326,26 @@ def generate_corpus(output: Path, seed: int = 42) -> dict:
             write(dict(campaign_id="GLOBAL", campaign_name=f"Banking {kind} {i+1}", client_name="Synthetic course library",
                        campaign_type=TYPES[i % 11], region="ALL", year=2026, period="ALL", document_type=kind,
                        document_id=f"GLOBAL-{kind}-{i+1:02}"), {heading: f"{body}\n\nApplication focus: {TYPES[i%11]}. Guide edition: {i+1}."})
-    for i in range(5):
-        c = campaigns[i]
-        cases.append(dict(id=f"q{i+21:02}", question=f"Generate a complete campaign performance report for {c['campaign_id']}.", campaign_id=c['campaign_id'],
-                          expected_answer="Eleven sections with campaign-specific KPI comparisons and citations.", expected_facts=[str(c['target']), str(c['actual'])],
-                          expected_sources=[f"{c['campaign_id']}-{t}" for t in ['brief','success_plan','performance_report','historical_deck']],
-                          ground_truth_citations=[f"{c['campaign_id']}-performance_report#kpi-results"], split="held_out", kind="report"))
     for i, question in enumerate(["What was the CEO's private salary?", "What is the campaign's randomized causal lift?", "What was the channel ROI without channel revenue?", "Generate a report for ZZ-UNKNOWN-999", "What are activation results by exact customer age?"]):
         cases.append(dict(id=f"q{i+26:02}", question=question, campaign_id="TX-CHK-001" if i != 3 else "ZZ-UNKNOWN-999",
                           expected_answer="I could not find sufficient evidence in the knowledge base.", expected_facts=[], expected_sources=[],
                           ground_truth_citations=[], split="held_out", kind="unsupported"))
+    cases.extend(benchmark_questions())
+    for meta, body, case in chain(learning_sources(),requirements_sources()):
+        text = "---\n" + yaml.safe_dump(meta, sort_keys=True) + "---\n\n"
+        text += f"# {meta['campaign_name']}\n\n"
+        text += "SYNTHETIC COURSE DATA: original fictional teaching scenario; no real institutions or customer records.\n\n"
+        text += body + '\n'
+        relative = f"corpus/learning_guide/{meta['document_id']}.md"
+        path = output / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding='utf-8')
+        documents.append({**meta, 'source_path': relative, 'content_hash': digest(text)})
+        cases.append(case)
+    cases.extend(requirements_cross_cases())
     geography_text=json.dumps(geography,indent=2,sort_keys=True)
     (output/'geography.json').write_text(geography_text,encoding='utf-8')
-    manifest = dict(schema_version=3, seed=seed, campaigns=campaigns, documents=documents,geography_hash=digest(geography_text))
+    manifest = dict(schema_version=4, seed=seed, campaigns=campaigns, documents=documents,geography_hash=digest(geography_text))
     output.mkdir(parents=True, exist_ok=True)
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
     (output / "evaluation").mkdir(exist_ok=True)

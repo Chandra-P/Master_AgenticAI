@@ -1,0 +1,80 @@
+[
+  {
+    "split": "held_out",
+    "chunking": "fixed",
+    "retrieval": "dense",
+    "paired_successes": 30,
+    "before_failures": 0,
+    "after_failures": 0,
+    "unpaired_cases": 0,
+    "precision_delta": -0.0036231884057971032,
+    "recall_delta": 0.0,
+    "mrr_delta": -0.007246376811594201,
+    "latency_delta_seconds": 2.5749688833369873
+  },
+  {
+    "split": "held_out",
+    "chunking": "fixed",
+    "retrieval": "hybrid",
+    "paired_successes": 30,
+    "before_failures": 0,
+    "after_failures": 0,
+    "unpaired_cases": 0,
+    "precision_delta": -0.02173913043478261,
+    "recall_delta": 0.0,
+    "mrr_delta": -0.021739130434782608,
+    "latency_delta_seconds": 4.783779003327557
+  },
+  {
+    "split": "held_out",
+    "chunking": "section",
+    "retrieval": "dense",
+    "paired_successes": 30,
+    "before_failures": 0,
+    "after_failures": 0,
+    "unpaired_cases": 0,
+    "precision_delta": -0.018115942028985515,
+    "recall_delta": 0.08695652173913043,
+    "mrr_delta": 0.05434782608695652,
+    "latency_delta_seconds": 7.319815026662157
+  },
+  {
+    "split": "held_out",
+    "chunking": "section",
+    "retrieval": "hybrid",
+    "paired_successes": 30,
+    "before_failures": 0,
+    "after_failures": 0,
+    "unpaired_cases": 0,
+    "precision_delta": 0.014492753623188403,
+    "recall_delta": 0.0,
+    "mrr_delta": 0.021739130434782605,
+    "latency_delta_seconds": 9.209587783339279
+  },
+  {
+    "split": "held_out",
+    "chunking": "semantic",
+    "retrieval": "dense",
+    "paired_successes": 30,
+    "before_failures": 0,
+    "after_failures": 0,
+    "unpaired_cases": 0,
+    "precision_delta": -0.010869565217391304,
+    "recall_delta": 0.0,
+    "mrr_delta": 0.0,
+    "latency_delta_seconds": 10.65622629666468
+  },
+  {
+    "split": "held_out",
+    "chunking": "semantic",
+    "retrieval": "hybrid",
+    "paired_successes": 30,
+    "before_failures": 0,
+    "after_failures": 0,
+    "unpaired_cases": 0,
+    "precision_delta": -0.04347826086956523,
+    "recall_delta": 0.0,
+    "mrr_delta": 0.0,
+    "latency_delta_seconds": 11.142976483310727
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "corpus_hash": "1fb8bde30540d326041c4614e74f2d863e791edc5b7bcd53f145aa04bc07381f",
+  "documents": 130,
+  "full_profiles": 3,
+  "case_executions": 90,
+  "execution_errors": 0,
+  "primary_reference_f1": 0.8734782608695653,
+  "supported_answered": 22,
+  "supported_denominator": 23,
+  "unsupported_correctly_refused": 7,
+  "unsupported_controls": 7,
+  "non_live_tests_passed": 145,
+  "known_deprecation_warnings": 3,
+  "headless_app_evaluation_verified": true,
+  "live_hosted_generation_used": false,
+  "generation_provider": "ollama",
+  "generation_model": "llama3.2:3b",
+  "default_profile": {
+    "chunking": "semantic",
+    "retrieval": "hybrid",
+    "candidate_k": 20,
+    "final_k": 8,
+    "reranking": false,
+    "focus_context": false
+  },
+  "current_score_loader_accepted_rows": 30,
+  "source_proof_and_arithmetic_review": "passed",
+  "configured_api_keys_in_new_artifacts": false,
+  "commit_or_push_performed": false,
+  "limitations": "Developmental fixed benchmark; complex subset51.5% F1, useful-passage precision34.2%; not unseen certification or latency SLA."
+}

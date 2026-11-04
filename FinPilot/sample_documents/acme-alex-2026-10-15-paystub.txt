@@ -1,0 +1,43 @@
+SYNTHETIC — Paystub for explicit review
+Employment ID: acme-alex
+Employee ID: alex
+Employee name: Alex Morgan
+Employer name: Acme
+Age: 35
+Pay frequency: semimonthly
+Pay type: regular
+Pay date: 2026-10-15
+Next pay date: 2026-10-31
+Pay period start: 2026-10-01
+Pay period end: 2026-10-15
+Annual pay periods: 24
+Completed pay periods: 19
+Remaining pay periods: 5
+Gross pay current: $4000.00
+Gross pay YTD: $76000.00
+Federal taxable wages current: $3500.00
+Federal taxable wages YTD: $66500.00
+Federal withholding current: $201.65
+Federal withholding YTD: $3831.35
+Social Security wages current: $3900.00
+Social Security wages YTD: $74100.00
+Medicare wages current: $3900.00
+Medicare wages YTD: $74100.00
+Social Security withholding current: $241.80
+Social Security withholding YTD: $4594.20
+Medicare withholding current: $56.55
+Medicare withholding YTD: $1074.45
+Additional Medicare withholding current: $0.00
+Additional Medicare withholding YTD: $0.00
+Traditional 401k current: $400.00
+Traditional 401k YTD: $7600.00
+Roth 401k current: $0.00
+Roth 401k YTD: $0.00
+HSA current: $100.00
+HSA YTD: $1900.00
+Employer HSA current: $0.00
+Employer HSA YTD: $0.00
+Other deductions current: $0.00
+Other deductions YTD: $0.00
+Net pay current: $3000.00
+Net pay YTD: $57000.00

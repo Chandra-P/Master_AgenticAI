@@ -1,0 +1,45 @@
+{
+  "case_id": "q04",
+  "question": "What were the objectives of campaign FL-CMP-004?",
+  "sources": [
+    {
+      "id": "FL-CMP-004-brief:semantic:0:cbfe4125",
+      "text": "## Objectives\nAcquire 249 verified product activations during 2026-Q2 for CD Promotions."
+    }
+  ],
+  "draft": {
+    "claims": [
+      {
+        "text": "Acquire 249 verified product activations during 2026-Q2 for CD Promotions.",
+        "citations": []
+      },
+      {
+        "text": "## Objectives",
+        "citations": [
+          "FL-CMP-004-brief:semantic:0:cbfe4125"
+        ]
+      },
+      {
+        "text": "CD Promotions",
+        "citations": [
+          "FL-CMP-004-brief:semantic:0:cbfe4125"
+        ]
+      }
+    ]
+  },
+  "checks": [
+    {
+      "citation_ids_known": true,
+      "exact_quote": false
+    },
+    {
+      "citation_ids_known": true,
+      "exact_quote": true
+    },
+    {
+      "citation_ids_known": true,
+      "exact_quote": true
+    }
+  ],
+  "scope": "Local diagnostic rerun; not a replacement evaluation answer."
+}

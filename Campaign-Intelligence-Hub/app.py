@@ -17,12 +17,12 @@ st.set_page_config(page_title='Campaign Intelligence Hub',page_icon=':material/i
 from campaign_hub.ui.appearance import apply_appearance
 apply_appearance()
 st.title('Campaign Intelligence Hub')
-st.caption('From campaign evidence to executive-ready performance reports.')
+st.caption('Ask questions, inspect retrieved evidence, and compare chunking techniques.')
 st.badge('Synthetic course data',icon=':material/science:')
 
 with st.sidebar:
     st.subheader('Workspace')
-    page=st.radio('Navigate',['Generate Report','Historical Comparison','Ask Questions','Analyst View'])
+    page=st.radio('Navigate',['Ask Questions','Analyst View','Chunking Lab','Evaluation'])
     st.divider()
     with st.expander('Analyst model and retrieval settings'):
         providers=['ollama','openai','groq']
@@ -43,12 +43,12 @@ except (ValueError,RuntimeError) as error:
     st.error(f'Knowledge-base startup failed: {error}')
     st.stop()
 
-if page=='Generate Report':
-    from campaign_hub.ui.report_page import show
-elif page=='Historical Comparison':
-    from campaign_hub.ui.history_page import show
-elif page=='Ask Questions':
+if page=='Ask Questions':
     from campaign_hub.ui.questions_page import show
-else:
+elif page=='Analyst View':
     from campaign_hub.ui.analyst_page import show
+elif page=='Chunking Lab':
+    from campaign_hub.ui.chunking_page import show
+else:
+    from campaign_hub.ui.rag_evaluation_page import show
 show(service,options)

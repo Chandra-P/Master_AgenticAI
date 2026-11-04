@@ -1,0 +1,16 @@
+.git
+.venv
+**/node_modules
+**/.next
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/*.db
+**/*.db-*
+.env
+**/.env
+**/.env.local
+artifacts
+shared
+library-files
+scratch

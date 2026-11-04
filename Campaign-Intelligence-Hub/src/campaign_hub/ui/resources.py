@@ -7,8 +7,8 @@ from campaign_hub.models import RetrievalOptions
 
 @st.cache_resource(max_entries=4)
 def _cached_service(model,manifest_hash,provider_identity,code_hash):
-    from campaign_hub.reporting.service import CampaignService
-    service=CampaignService(replace(Settings(),generation_model=model,generation_provider=provider_identity[2]))
+    from campaign_hub.rag.service import RAGService
+    service=RAGService(replace(Settings(),generation_model=model,generation_provider=provider_identity[2]))
     if service.settings.auto_index:
         from campaign_hub.hosting.bootstrap import prepare_indexes
         with st.spinner('Preparing the hosted knowledge base. The first startup can take a few minutes…'):
@@ -34,7 +34,7 @@ def service_for(model,provider=None):
 
 def controls():
     from campaign_hub.chunking.pipeline import LABELS
-    chunking=st.selectbox('Chunking',['section','fixed','semantic'],format_func=LABELS.get,
+    chunking=st.selectbox('Chunking',['section','fixed','semantic'],index=['section','fixed','semantic'].index(RetrievalOptions().chunking),format_func=LABELS.get,
         help='Fixed-size uses token windows; section-based follows headings; embedding-based semantic detects topic changes using sentence embeddings.')
     retrieval=st.selectbox('Retrieval',['hybrid','dense'])
     reranking=st.checkbox('Cross-encoder reranking',value=False)

@@ -1,0 +1,42 @@
+{
+  "target_primary_f1": 0.8,
+  "supported_denominator": 23,
+  "unsupported_controls": 7,
+  "corpus_hash": "1fb8bde30540d326041c4614e74f2d863e791edc5b7bcd53f145aa04bc07381f",
+  "documents": 130,
+  "case_set_hash": "cf84290305d5ac634268ab0f0f0deaef508ec63b00616716fa4036488e2dda1d",
+  "references_changed": false,
+  "answer_provider": "ollama",
+  "answer_model": "llama3.2:3b",
+  "judge_provider": "openai",
+  "judge_model": "gpt-4.1-mini",
+  "primary_definition": "Mean raw RAGAS factual correctness F1 across all23 supported cases; genuine refusals0, missing answered judgments/error incomplete.",
+  "source_factual_sha256": "e603f7ba2222b0df8c8a24afb2f42b0fd4f5fffcb92ad3f2ab749e620a21b3a9",
+  "profiles": [
+    {
+      "name": "baseline",
+      "final_k": 5,
+      "grounding_contract_version": 2
+    },
+    {
+      "name": "factual-v1",
+      "final_k": 5,
+      "grounding_contract_version": 3,
+      "factual_projection_version": 1
+    },
+    {
+      "name": "factual-k8",
+      "final_k": 8,
+      "grounding_contract_version": 3,
+      "factual_projection_version": 1
+    }
+  ],
+  "constant_settings": {
+    "chunking": "semantic",
+    "retrieval": "hybrid",
+    "reranking": false,
+    "candidate_k": 20,
+    "focus_context": false
+  },
+  "limitations": "Previously inspected developmental benchmark; not independently held out. Concurrent execution means latency is uncontrolled."
+}

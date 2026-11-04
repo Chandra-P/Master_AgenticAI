@@ -1,12 +1,13 @@
 from types import SimpleNamespace
 from campaign_hub.config import Settings
 from campaign_hub.models import RetrievalOptions, Chunk, SearchHit
-from campaign_hub.reporting.service import CampaignService
+from campaign_hub.rag.service import RAGService
 
 
 def fixture_service(monkeypatch, inferred):
-    service = CampaignService.__new__(CampaignService)
+    service = RAGService.__new__(RAGService)
     service.settings = Settings()
+    service.campaigns = {"A":{},"B":{}}
     service.manifest = {'documents': [
         {'campaign_id': 'A', 'region': 'TX', 'year': 2026, 'document_type': 'brief'},
         {'campaign_id': 'B', 'region': 'CA', 'year': 2025, 'document_type': 'performance_report'}]}
@@ -58,7 +59,7 @@ def test_question_conflict_does_not_generate_answer_or_drop_selected_campaign(mo
 
 def test_filtered_question_preserves_goal_routing_and_focus(monkeypatch):
     service, calls = fixture_service(monkeypatch, {})
-    import campaign_hub.reporting.service as module
+    import campaign_hub.rag.workflow as module
     monkeypatch.setattr(module, 'grounded_answer', lambda settings, question, hits: {'answer': 'ok'})
     result = service.answer_question('What were the objectives?', 'A', RetrievalOptions(), filters={})
     assert result['effective_filters']['document_type'] == ['brief']
@@ -71,7 +72,7 @@ def test_filtered_question_preserves_goal_routing_and_focus(monkeypatch):
 
 def test_explicit_document_filter_is_never_replaced_by_goal_routing(monkeypatch):
     service, calls = fixture_service(monkeypatch, {})
-    import campaign_hub.reporting.service as module
+    import campaign_hub.rag.workflow as module
     monkeypatch.setattr(module, 'grounded_answer', lambda *args: {'answer': 'ok'})
     result = service.answer_question('What were the objectives?', 'A', RetrievalOptions(),
                                      filters={'document_type': ['performance_report']})
