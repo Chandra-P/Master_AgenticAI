@@ -1,0 +1,59 @@
+All checks passed!
+16 files already formatted
+..............................................                           [100%]
+46 passed in 0.92s
+
+> finpilot@1.0.0 lint
+> eslint .
+
+
+> finpilot@1.0.0 typecheck
+> tsc --noEmit
+
+
+> finpilot@1.0.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/frontend
+
+ ✓ tests/core.test.tsx (5 tests) 224ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  01:53:12
+   Duration  1.00s (transform 100ms, setup 0ms, collect 233ms, tests 224ms, environment 381ms, prepare 53ms)
+
+
+> finpilot@1.0.0 build
+> next build
+
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.6s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/4) ...
+   Generating static pages (1/4) 
+   Generating static pages (2/4) 
+   Generating static pages (3/4) 
+ ✓ Generating static pages (4/4)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                     123 kB         225 kB
+├ ○ /_not-found                            996 B         103 kB
+└ ƒ /api/[...path]                         123 B         103 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-51cc180f6c33fa39.js       46.3 kB
+  ├ chunks/4bd1b696-409494caf8c83275.js  54.2 kB
+  └ other shared chunks (total)          1.97 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+For live browser checks: cd frontend && npx playwright install chromium && npm run test:e2e
