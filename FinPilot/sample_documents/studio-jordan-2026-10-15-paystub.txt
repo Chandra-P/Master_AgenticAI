@@ -1,0 +1,43 @@
+SYNTHETIC — Paystub for explicit review
+Employment ID: studio-jordan
+Employee ID: jordan
+Employee name: Jordan Morgan
+Employer name: Studio Works
+Age: 33
+Pay frequency: semimonthly
+Pay type: regular
+Pay date: 2026-10-15
+Next pay date: 2026-10-31
+Pay period start: 2026-10-01
+Pay period end: 2026-10-15
+Annual pay periods: 24
+Completed pay periods: 19
+Remaining pay periods: 5
+Gross pay current: $2700.00
+Gross pay YTD: $51300.00
+Federal taxable wages current: $2500.00
+Federal taxable wages YTD: $47500.00
+Federal withholding current: $293.45
+Federal withholding YTD: $5575.55
+Social Security wages current: $2700.00
+Social Security wages YTD: $51300.00
+Medicare wages current: $2700.00
+Medicare wages YTD: $51300.00
+Social Security withholding current: $167.40
+Social Security withholding YTD: $3180.60
+Medicare withholding current: $39.15
+Medicare withholding YTD: $743.85
+Additional Medicare withholding current: $0.00
+Additional Medicare withholding YTD: $0.00
+Traditional 401k current: $200.00
+Traditional 401k YTD: $3800.00
+Roth 401k current: $0.00
+Roth 401k YTD: $0.00
+HSA current: $0.00
+HSA YTD: $0.00
+Employer HSA current: $0.00
+Employer HSA YTD: $0.00
+Other deductions current: $0.00
+Other deductions YTD: $0.00
+Net pay current: $2000.00
+Net pay YTD: $38000.00

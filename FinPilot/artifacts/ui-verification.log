@@ -1,0 +1,64 @@
+All checks passed!
+19 files already formatted
+........................................................................ [ 96%]
+...                                                                      [100%]
+75 passed in 3.56s
+
+> finpilot@1.0.0 lint
+> eslint .
+
+
+> finpilot@1.0.0 typecheck
+> tsc --noEmit
+
+
+> finpilot@1.0.0 test
+> vitest run
+
+
+ RUN  v3.2.7 /workspace/frontend
+
+ ✓ tests/copilot-delivery.test.tsx (1 test) 289ms
+ ✓ tests/core.test.tsx (5 tests) 306ms
+ ✓ tests/tax.test.tsx (5 tests) 655ms
+ ✓ tests/search.test.tsx (3 tests) 403ms
+ ✓ tests/overview.test.tsx (3 tests) 509ms
+
+ Test Files  5 passed (5)
+      Tests  17 passed (17)
+   Start at  04:07:25
+   Duration  3.55s (transform 595ms, setup 0ms, collect 2.41s, tests 2.16s, environment 2.46s, prepare 615ms)
+
+
+> finpilot@1.0.0 build
+> next build
+
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.9s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/4) ...
+   Generating static pages (1/4) 
+   Generating static pages (2/4) 
+   Generating static pages (3/4) 
+ ✓ Generating static pages (4/4)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                     131 kB         233 kB
+├ ○ /_not-found                            996 B         103 kB
+└ ƒ /api/[...path]                         123 B         103 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-51cc180f6c33fa39.js       46.3 kB
+  ├ chunks/4bd1b696-409494caf8c83275.js  54.2 kB
+  └ other shared chunks (total)          1.98 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+For live browser checks: cd frontend && npx playwright install chromium && npm run test:e2e

@@ -1,0 +1,25 @@
+{
+  "version":"us-tx-w2-2026.1",
+  "tax_year":2026,
+  "verified_on":"2026-11-04",
+  "standard_deduction":{"single":"16100","married_filing_jointly":"32200"},
+  "brackets":{
+    "single":[["12400","0.10"],["50400","0.12"],["105700","0.22"],["201775","0.24"],["256225","0.32"],["640600","0.35"],[null,"0.37"]],
+    "married_filing_jointly":[["24800","0.10"],["100800","0.12"],["211400","0.22"],["403550","0.24"],["512450","0.32"],["768700","0.35"],[null,"0.37"]]
+  },
+  "social_security":{"rate":"0.062","wage_base":"184500"},
+  "medicare_rate":"0.0145",
+  "additional_medicare":{"rate":"0.009","employer_threshold":"200000","single":"200000","married_filing_jointly":"250000"},
+  "employee_401k_limit":"24500",
+  "hsa_limit":{"none":"0","self_only":"4400","family":"8750"},
+  "safe_harbor":{"current_year_fraction":"0.90","prior_year_fraction":"1.00","high_agi_fraction":"1.10","high_prior_agi_threshold":"150000","small_balance_threshold":"1000"},
+  "sources":[
+    {"title":"IRS Revenue Procedure 2025-32, tax year 2026","url":"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf","section":"§3.01 tax tables; §3.14 standard deduction"},
+    {"title":"IRS Revenue Procedure 2025-19","url":"https://www.irs.gov/pub/irs-drop/rp-25-19.pdf","section":"§2.01 HSA contribution limits for 2026"},
+    {"title":"IRS 2026 retirement contribution limits","url":"https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500","section":"Employee elective deferral limit"},
+    {"title":"IRS Publication 15 (2026)","url":"https://www.irs.gov/publications/p15","section":"Social Security/Medicare rates and §7 Additional Medicare withholding"},
+    {"title":"IRS Publication 505 (2026)","url":"https://www.irs.gov/publications/p505","section":"Required annual payment; Additional Medicare thresholds"},
+    {"title":"IRS Publication 969","url":"https://www.irs.gov/publications/p969","section":"HSA eligibility; employer/cafeteria contributions"},
+    {"title":"Texas Constitution Article VIII","url":"https://statutes.capitol.texas.gov/Docs/CN/htm/CN.8.htm","section":"§24-a prohibition on individual net income tax"}
+  ]
+}

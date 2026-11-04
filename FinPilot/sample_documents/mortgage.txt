@@ -1,0 +1,4 @@
+SYNTHETIC — Mortgage statement
+Mortgage interest rate: 3.25% fixed.
+Monthly payment: $2,800.
+Outstanding principal: $320,000. Escrow is included in the stated payment.

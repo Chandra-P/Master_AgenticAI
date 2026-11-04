@@ -1,0 +1,51 @@
+[
+  {
+    "file": "irs-2026-brackets.pdf",
+    "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+    "sha256": "e9ada115fb43a4af5ea326ca91edd40ab0bf29b9be01d2c13d7b8fa96214635b",
+    "verified_on": "2026-11-04"
+  },
+  {
+    "file": "irs-2026-hsa.pdf",
+    "url": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
+    "sha256": "ff2ba4bac62ef6940c57578d70f8be88ff3898ac806e921ad52787c11da35bf4",
+    "verified_on": "2026-11-04"
+  },
+  {
+    "file": "irs-2026-retirement.html",
+    "url": "https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500",
+    "sha256": "7a96ebc74c156c3bb24567a7777afca0afcad2dd7797a15a971ceafa90a3cbcc",
+    "verified_on": "2026-11-04"
+  },
+  {
+    "file": "irs-publication-15.html",
+    "url": "https://www.irs.gov/publications/p15",
+    "sha256": "8f510f435d49c4f765a4f457ed097d6aed454f05230bc0b206cc7f6d8b9732ee",
+    "verified_on": "2026-11-04"
+  },
+  {
+    "file": "irs-publication-505.html",
+    "url": "https://www.irs.gov/publications/p505",
+    "sha256": "cb4fe3336f572fd1add6b955abee8632ec6a02b570da84d8d064b8759ed68427",
+    "verified_on": "2026-11-04"
+  },
+  {
+    "file": "irs-hsa-treatment.html",
+    "url": "https://www.irs.gov/publications/p969",
+    "sha256": "377697f2dd7d2b6e609b149d3c11c952ec15069d496c889a97ed970cca7aa349",
+    "verified_on": "2026-11-04"
+  },
+  {
+    "file": "ssa-wage-base.html",
+    "url": "https://www.ssa.gov/oact/cola/cbb.html",
+    "sha256": "c709802f6c941ce24441e90a5ce10118b30d8175a07a7a1402f671ab182b616e",
+    "verified_on": "2026-11-04"
+  },
+  {
+    "file": "texas-constitution.html",
+    "url": "https://statutes.capitol.texas.gov/Docs/CN/htm/CN.8.htm",
+    "sha256": "dbfba8a96dc3cd584157ca66aaafdf67e0ed15dd5a0c8a58f3d4bd0f109fc646",
+    "verified_on": "2026-11-04",
+    "verification_note": "Downloaded client-rendered navigation shell; statutory text not extracted. Reference URL only."
+  }
+]

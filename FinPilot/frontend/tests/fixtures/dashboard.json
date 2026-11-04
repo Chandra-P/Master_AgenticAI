@@ -1,0 +1,1219 @@
+{
+  "user": "Alex Morgan",
+  "as_of": "2026-11-02",
+  "cash": {
+    "value": "60000.00",
+    "currency": "USD",
+    "period": {
+      "start": null,
+      "end_exclusive": null
+    },
+    "included_record_count": 2,
+    "exclusion_rules": [
+      "internal transfers",
+      "pending",
+      "duplicate copies",
+      "reversed",
+      "future-dated beyond as-of date",
+      "excluded accounts"
+    ],
+    "calculation_definition": "Sum available balances in eligible checking/savings; investment accounts excluded",
+    "data_as_of": "2026-11-02",
+    "completeness": "complete evidence",
+    "filters": {}
+  },
+  "cash_flow": {
+    "income": "10000.00",
+    "expenses": "6000.00",
+    "surplus": "4000.00",
+    "currency": "USD",
+    "period": {
+      "start": "2026-10-01",
+      "end_exclusive": "2026-11-01"
+    },
+    "income_metadata": {
+      "value": "10000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-10-01",
+        "end_exclusive": "2026-11-01"
+      },
+      "included_record_count": 2,
+      "exclusion_rules": [
+        "internal transfers",
+        "pending",
+        "duplicate copies",
+        "reversed",
+        "future-dated beyond as-of date",
+        "excluded accounts"
+      ],
+      "calculation_definition": "Negative-signed posted income converted to positive inflow",
+      "data_as_of": "2026-11-02",
+      "completeness": "complete evidence",
+      "filters": {}
+    },
+    "expense_metadata": {
+      "value": "6000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-10-01",
+        "end_exclusive": "2026-11-01"
+      },
+      "included_record_count": 17,
+      "exclusion_rules": [
+        "internal transfers",
+        "pending",
+        "duplicate copies",
+        "reversed",
+        "future-dated beyond as-of date",
+        "excluded accounts"
+      ],
+      "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+      "data_as_of": "2026-11-02",
+      "completeness": "complete evidence",
+      "filters": {
+        "category": null
+      },
+      "items": [
+        {
+          "category": "Housing",
+          "amount": "2800.00"
+        },
+        {
+          "category": "Groceries",
+          "amount": "900.00"
+        },
+        {
+          "category": "Restaurants",
+          "amount": "650.00"
+        },
+        {
+          "category": "Shopping",
+          "amount": "450.00"
+        },
+        {
+          "category": "Utilities",
+          "amount": "350.00"
+        },
+        {
+          "category": "Travel",
+          "amount": "300.00"
+        },
+        {
+          "category": "Transport",
+          "amount": "300.00"
+        },
+        {
+          "category": "Subscriptions",
+          "amount": "250.00"
+        }
+      ]
+    },
+    "calculation_definition": "income - net posted expenses",
+    "data_as_of": "2026-11-02"
+  },
+  "savings_rate": {
+    "income": "10000.00",
+    "expenses": "6000.00",
+    "surplus": "4000.00",
+    "currency": "USD",
+    "period": {
+      "start": "2026-10-01",
+      "end_exclusive": "2026-11-01"
+    },
+    "income_metadata": {
+      "value": "10000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-10-01",
+        "end_exclusive": "2026-11-01"
+      },
+      "included_record_count": 2,
+      "exclusion_rules": [
+        "internal transfers",
+        "pending",
+        "duplicate copies",
+        "reversed",
+        "future-dated beyond as-of date",
+        "excluded accounts"
+      ],
+      "calculation_definition": "Negative-signed posted income converted to positive inflow",
+      "data_as_of": "2026-11-02",
+      "completeness": "complete evidence",
+      "filters": {}
+    },
+    "expense_metadata": {
+      "value": "6000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-10-01",
+        "end_exclusive": "2026-11-01"
+      },
+      "included_record_count": 17,
+      "exclusion_rules": [
+        "internal transfers",
+        "pending",
+        "duplicate copies",
+        "reversed",
+        "future-dated beyond as-of date",
+        "excluded accounts"
+      ],
+      "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+      "data_as_of": "2026-11-02",
+      "completeness": "complete evidence",
+      "filters": {
+        "category": null
+      },
+      "items": [
+        {
+          "category": "Housing",
+          "amount": "2800.00"
+        },
+        {
+          "category": "Groceries",
+          "amount": "900.00"
+        },
+        {
+          "category": "Restaurants",
+          "amount": "650.00"
+        },
+        {
+          "category": "Shopping",
+          "amount": "450.00"
+        },
+        {
+          "category": "Utilities",
+          "amount": "350.00"
+        },
+        {
+          "category": "Travel",
+          "amount": "300.00"
+        },
+        {
+          "category": "Transport",
+          "amount": "300.00"
+        },
+        {
+          "category": "Subscriptions",
+          "amount": "250.00"
+        }
+      ]
+    },
+    "calculation_definition": "(income - expenses) / income * 100",
+    "data_as_of": "2026-11-02",
+    "value": "40.00",
+    "unit": "percent",
+    "reason": null
+  },
+  "categories": {
+    "value": "6000.00",
+    "currency": "USD",
+    "period": {
+      "start": "2026-10-01",
+      "end_exclusive": "2026-11-01"
+    },
+    "included_record_count": 17,
+    "exclusion_rules": [
+      "internal transfers",
+      "pending",
+      "duplicate copies",
+      "reversed",
+      "future-dated beyond as-of date",
+      "excluded accounts"
+    ],
+    "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+    "data_as_of": "2026-11-02",
+    "completeness": "complete evidence",
+    "filters": {
+      "category": null
+    },
+    "items": [
+      {
+        "category": "Housing",
+        "amount": "2800.00"
+      },
+      {
+        "category": "Groceries",
+        "amount": "900.00"
+      },
+      {
+        "category": "Restaurants",
+        "amount": "650.00"
+      },
+      {
+        "category": "Shopping",
+        "amount": "450.00"
+      },
+      {
+        "category": "Utilities",
+        "amount": "350.00"
+      },
+      {
+        "category": "Travel",
+        "amount": "300.00"
+      },
+      {
+        "category": "Transport",
+        "amount": "300.00"
+      },
+      {
+        "category": "Subscriptions",
+        "amount": "250.00"
+      }
+    ]
+  },
+  "trend": [
+    {
+      "month": "2026-05-01",
+      "income": "10000.00",
+      "expenses": "6000.00",
+      "surplus": "4000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-05-01",
+        "end_exclusive": "2026-06-01"
+      },
+      "income_metadata": {
+        "value": "10000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-05-01",
+          "end_exclusive": "2026-06-01"
+        },
+        "included_record_count": 2,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "Negative-signed posted income converted to positive inflow",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {}
+      },
+      "expense_metadata": {
+        "value": "6000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-05-01",
+          "end_exclusive": "2026-06-01"
+        },
+        "included_record_count": 17,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {
+          "category": null
+        },
+        "items": [
+          {
+            "category": "Housing",
+            "amount": "2800.00"
+          },
+          {
+            "category": "Groceries",
+            "amount": "900.00"
+          },
+          {
+            "category": "Restaurants",
+            "amount": "650.00"
+          },
+          {
+            "category": "Shopping",
+            "amount": "450.00"
+          },
+          {
+            "category": "Utilities",
+            "amount": "350.00"
+          },
+          {
+            "category": "Travel",
+            "amount": "300.00"
+          },
+          {
+            "category": "Transport",
+            "amount": "300.00"
+          },
+          {
+            "category": "Subscriptions",
+            "amount": "250.00"
+          }
+        ]
+      },
+      "calculation_definition": "income - net posted expenses",
+      "data_as_of": "2026-11-02"
+    },
+    {
+      "month": "2026-06-01",
+      "income": "10000.00",
+      "expenses": "6000.00",
+      "surplus": "4000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-06-01",
+        "end_exclusive": "2026-07-01"
+      },
+      "income_metadata": {
+        "value": "10000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-06-01",
+          "end_exclusive": "2026-07-01"
+        },
+        "included_record_count": 2,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "Negative-signed posted income converted to positive inflow",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {}
+      },
+      "expense_metadata": {
+        "value": "6000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-06-01",
+          "end_exclusive": "2026-07-01"
+        },
+        "included_record_count": 17,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {
+          "category": null
+        },
+        "items": [
+          {
+            "category": "Housing",
+            "amount": "2800.00"
+          },
+          {
+            "category": "Groceries",
+            "amount": "900.00"
+          },
+          {
+            "category": "Restaurants",
+            "amount": "650.00"
+          },
+          {
+            "category": "Shopping",
+            "amount": "450.00"
+          },
+          {
+            "category": "Utilities",
+            "amount": "350.00"
+          },
+          {
+            "category": "Travel",
+            "amount": "300.00"
+          },
+          {
+            "category": "Transport",
+            "amount": "300.00"
+          },
+          {
+            "category": "Subscriptions",
+            "amount": "250.00"
+          }
+        ]
+      },
+      "calculation_definition": "income - net posted expenses",
+      "data_as_of": "2026-11-02"
+    },
+    {
+      "month": "2026-07-01",
+      "income": "10000.00",
+      "expenses": "6000.00",
+      "surplus": "4000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-07-01",
+        "end_exclusive": "2026-08-01"
+      },
+      "income_metadata": {
+        "value": "10000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-07-01",
+          "end_exclusive": "2026-08-01"
+        },
+        "included_record_count": 2,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "Negative-signed posted income converted to positive inflow",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {}
+      },
+      "expense_metadata": {
+        "value": "6000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-07-01",
+          "end_exclusive": "2026-08-01"
+        },
+        "included_record_count": 17,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {
+          "category": null
+        },
+        "items": [
+          {
+            "category": "Housing",
+            "amount": "2800.00"
+          },
+          {
+            "category": "Groceries",
+            "amount": "900.00"
+          },
+          {
+            "category": "Restaurants",
+            "amount": "650.00"
+          },
+          {
+            "category": "Shopping",
+            "amount": "450.00"
+          },
+          {
+            "category": "Utilities",
+            "amount": "350.00"
+          },
+          {
+            "category": "Travel",
+            "amount": "300.00"
+          },
+          {
+            "category": "Transport",
+            "amount": "300.00"
+          },
+          {
+            "category": "Subscriptions",
+            "amount": "250.00"
+          }
+        ]
+      },
+      "calculation_definition": "income - net posted expenses",
+      "data_as_of": "2026-11-02"
+    },
+    {
+      "month": "2026-08-01",
+      "income": "10000.00",
+      "expenses": "6000.00",
+      "surplus": "4000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-08-01",
+        "end_exclusive": "2026-09-01"
+      },
+      "income_metadata": {
+        "value": "10000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-08-01",
+          "end_exclusive": "2026-09-01"
+        },
+        "included_record_count": 2,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "Negative-signed posted income converted to positive inflow",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {}
+      },
+      "expense_metadata": {
+        "value": "6000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-08-01",
+          "end_exclusive": "2026-09-01"
+        },
+        "included_record_count": 17,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {
+          "category": null
+        },
+        "items": [
+          {
+            "category": "Housing",
+            "amount": "2800.00"
+          },
+          {
+            "category": "Groceries",
+            "amount": "900.00"
+          },
+          {
+            "category": "Restaurants",
+            "amount": "650.00"
+          },
+          {
+            "category": "Shopping",
+            "amount": "450.00"
+          },
+          {
+            "category": "Utilities",
+            "amount": "350.00"
+          },
+          {
+            "category": "Travel",
+            "amount": "300.00"
+          },
+          {
+            "category": "Transport",
+            "amount": "300.00"
+          },
+          {
+            "category": "Subscriptions",
+            "amount": "250.00"
+          }
+        ]
+      },
+      "calculation_definition": "income - net posted expenses",
+      "data_as_of": "2026-11-02"
+    },
+    {
+      "month": "2026-09-01",
+      "income": "10000.00",
+      "expenses": "5800.00",
+      "surplus": "4200.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-09-01",
+        "end_exclusive": "2026-10-01"
+      },
+      "income_metadata": {
+        "value": "10000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-09-01",
+          "end_exclusive": "2026-10-01"
+        },
+        "included_record_count": 2,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "Negative-signed posted income converted to positive inflow",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {}
+      },
+      "expense_metadata": {
+        "value": "5800.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-09-01",
+          "end_exclusive": "2026-10-01"
+        },
+        "included_record_count": 16,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {
+          "category": null
+        },
+        "items": [
+          {
+            "category": "Housing",
+            "amount": "2800.00"
+          },
+          {
+            "category": "Groceries",
+            "amount": "800.00"
+          },
+          {
+            "category": "Shopping",
+            "amount": "750.00"
+          },
+          {
+            "category": "Restaurants",
+            "amount": "550.00"
+          },
+          {
+            "category": "Utilities",
+            "amount": "350.00"
+          },
+          {
+            "category": "Transport",
+            "amount": "300.00"
+          },
+          {
+            "category": "Subscriptions",
+            "amount": "250.00"
+          },
+          {
+            "category": "Travel",
+            "amount": "0.00"
+          }
+        ]
+      },
+      "calculation_definition": "income - net posted expenses",
+      "data_as_of": "2026-11-02"
+    },
+    {
+      "month": "2026-10-01",
+      "income": "10000.00",
+      "expenses": "6000.00",
+      "surplus": "4000.00",
+      "currency": "USD",
+      "period": {
+        "start": "2026-10-01",
+        "end_exclusive": "2026-11-01"
+      },
+      "income_metadata": {
+        "value": "10000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-10-01",
+          "end_exclusive": "2026-11-01"
+        },
+        "included_record_count": 2,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "Negative-signed posted income converted to positive inflow",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {}
+      },
+      "expense_metadata": {
+        "value": "6000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-10-01",
+          "end_exclusive": "2026-11-01"
+        },
+        "included_record_count": 17,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {
+          "category": null
+        },
+        "items": [
+          {
+            "category": "Housing",
+            "amount": "2800.00"
+          },
+          {
+            "category": "Groceries",
+            "amount": "900.00"
+          },
+          {
+            "category": "Restaurants",
+            "amount": "650.00"
+          },
+          {
+            "category": "Shopping",
+            "amount": "450.00"
+          },
+          {
+            "category": "Utilities",
+            "amount": "350.00"
+          },
+          {
+            "category": "Travel",
+            "amount": "300.00"
+          },
+          {
+            "category": "Transport",
+            "amount": "300.00"
+          },
+          {
+            "category": "Subscriptions",
+            "amount": "250.00"
+          }
+        ]
+      },
+      "calculation_definition": "income - net posted expenses",
+      "data_as_of": "2026-11-02"
+    }
+  ],
+  "goals": {
+    "value": null,
+    "currency": "USD",
+    "period": {
+      "start": null,
+      "end_exclusive": null
+    },
+    "included_record_count": 1,
+    "exclusion_rules": [
+      "internal transfers",
+      "pending",
+      "duplicate copies",
+      "reversed",
+      "future-dated beyond as-of date",
+      "excluded accounts"
+    ],
+    "calculation_definition": "Structured goal records; earmarked savings are included in cash",
+    "data_as_of": "2026-11-02",
+    "completeness": "complete evidence",
+    "filters": {},
+    "items": [
+      {
+        "id": "house",
+        "user_id": "demo",
+        "name": "House down payment",
+        "target_amount": "50000.00",
+        "current_amount": "20000.00",
+        "target_date": "2027-06-01",
+        "priority": 1,
+        "status": "active"
+      }
+    ]
+  },
+  "memory": {
+    "user_id": "demo",
+    "emergency_fund_minimum": "25000.00",
+    "preferred_currency": "USD",
+    "risk_preference": "balanced",
+    "excluded_accounts": [],
+    "rules": {
+      "max_goal_delay_months": 2,
+      "house_monthly_allocation": "4000.00",
+      "assumption_status": "demo default; confirm before relying on advice"
+    },
+    "revision": 1,
+    "house_goal": {
+      "target_amount": "50000.00",
+      "current_amount": "20000.00"
+    },
+    "source": "User-approved structured memory (demo defaults until confirmed)"
+  },
+  "anomalies": {
+    "value": "6000.00",
+    "currency": "USD",
+    "period": {
+      "start": "2026-10-01",
+      "end_exclusive": "2026-11-01"
+    },
+    "included_record_count": 17,
+    "exclusion_rules": [
+      "internal transfers",
+      "pending",
+      "duplicate copies",
+      "reversed",
+      "future-dated beyond as-of date",
+      "excluded accounts"
+    ],
+    "calculation_definition": "Category increases versus preceding calendar month; descriptive, not proof of cause",
+    "data_as_of": "2026-11-02",
+    "completeness": "complete evidence",
+    "filters": {
+      "category": null
+    },
+    "items": [
+      {
+        "category": "Groceries",
+        "previous": "800.00",
+        "current": "900.00",
+        "difference": "100.00",
+        "percent_change": "12.50"
+      },
+      {
+        "category": "Restaurants",
+        "previous": "550.00",
+        "current": "650.00",
+        "difference": "100.00",
+        "percent_change": "18.18"
+      },
+      {
+        "category": "Travel",
+        "previous": "0.00",
+        "current": "300.00",
+        "difference": "300.00",
+        "percent_change": null
+      }
+    ],
+    "comparison_period": {
+      "start": "2026-09-01",
+      "end_exclusive": "2026-10-01"
+    }
+  },
+  "subscriptions": {
+    "value": "250.00",
+    "currency": "USD",
+    "period": {
+      "start": null,
+      "end_exclusive": null
+    },
+    "included_record_count": 5,
+    "exclusion_rules": [
+      "internal transfers",
+      "pending",
+      "duplicate copies",
+      "reversed",
+      "future-dated beyond as-of date",
+      "excluded accounts"
+    ],
+    "calculation_definition": "Active monthly schedules verified against at least three complete months of matching posted charges; explicit annual schedules / 12. Monthly equivalents are not posted cash expenses.",
+    "data_as_of": "2026-11-02",
+    "completeness": "complete evidence",
+    "filters": {},
+    "items": [
+      {
+        "id": "stream",
+        "user_id": "demo",
+        "merchant": "StreamBox",
+        "amount": "80.00",
+        "frequency": "monthly",
+        "active": 1,
+        "evidence": "Repeated posted charges, May\u2013October 2026; annual plan from synthetic billing schedule.",
+        "observed_months": 6,
+        "detection_method": "Matched posted monthly charges in at least three complete months",
+        "monthly_equivalent": "80.00"
+      },
+      {
+        "id": "gym",
+        "user_id": "demo",
+        "merchant": "Pulse Fitness",
+        "amount": "70.00",
+        "frequency": "monthly",
+        "active": 1,
+        "evidence": "Repeated posted charges, May\u2013October 2026; annual plan from synthetic billing schedule.",
+        "observed_months": 6,
+        "detection_method": "Matched posted monthly charges in at least three complete months",
+        "monthly_equivalent": "70.00"
+      },
+      {
+        "id": "cloud",
+        "user_id": "demo",
+        "merchant": "Cloud Studio",
+        "amount": "50.00",
+        "frequency": "monthly",
+        "active": 1,
+        "evidence": "Repeated posted charges, May\u2013October 2026; annual plan from synthetic billing schedule.",
+        "observed_months": 6,
+        "detection_method": "Matched posted monthly charges in at least three complete months",
+        "monthly_equivalent": "50.00"
+      },
+      {
+        "id": "music",
+        "user_id": "demo",
+        "merchant": "Soundwave",
+        "amount": "20.00",
+        "frequency": "monthly",
+        "active": 1,
+        "evidence": "Repeated posted charges, May\u2013October 2026; annual plan from synthetic billing schedule.",
+        "observed_months": 6,
+        "detection_method": "Matched posted monthly charges in at least three complete months",
+        "monthly_equivalent": "20.00"
+      },
+      {
+        "id": "news",
+        "user_id": "demo",
+        "merchant": "Daily Journal",
+        "amount": "30.00",
+        "frequency": "monthly",
+        "active": 1,
+        "evidence": "Repeated posted charges, May\u2013October 2026; annual plan from synthetic billing schedule.",
+        "observed_months": 6,
+        "detection_method": "Matched posted monthly charges in at least three complete months",
+        "monthly_equivalent": "30.00"
+      }
+    ]
+  },
+  "baseline_projection": {
+    "baseline": {
+      "monthly_income": "10000.00",
+      "monthly_expenses": "6000.00",
+      "monthly_surplus": "4000.00",
+      "cash": "60000.00",
+      "emergency_reserve": "25000.00",
+      "house_savings": "20000.00",
+      "unallocated_cash": "15000.00",
+      "house_months": 8,
+      "house_allocation_cap": "4000.00"
+    },
+    "changes": {
+      "monthly_payment": "0",
+      "down_payment": "0",
+      "cash_purchase": "0",
+      "immediate_inflow": "0",
+      "income_reduction_pct": "0",
+      "cancel_subscription_ids": [],
+      "extra_contributions": "0"
+    },
+    "result": {
+      "monthly_income": "10000.00",
+      "monthly_expenses": "6000.00",
+      "monthly_surplus": "4000.00",
+      "remaining_cash": "60000.00",
+      "house_savings": "20000.00",
+      "house_savings_used": "0.00",
+      "monthly_house_contribution": "4000.00",
+      "subscription_savings": "0.00"
+    },
+    "goal_impact": {
+      "baseline_months": 8,
+      "projected_months": 8,
+      "delay_months": 0,
+      "target": "50000.00",
+      "target_date": "2027-06-01"
+    },
+    "constraints": {
+      "emergency_fund": {
+        "passed": true,
+        "actual": "60000.00",
+        "minimum": "25000.00",
+        "rule": "remaining_cash >= emergency_fund_minimum"
+      },
+      "house_goal": {
+        "passed": true,
+        "delay_months": 0,
+        "maximum_delay_months": 2,
+        "rule": "projected additional months <= allowed delay"
+      },
+      "cash_flow": {
+        "passed": true,
+        "actual": "4000.00",
+        "rule": "monthly_surplus >= 0"
+      },
+      "earmarked_cash": {
+        "passed": true,
+        "rule": "remaining_cash >= emergency_reserve + remaining_house_savings; earmarks cannot overlap"
+      },
+      "purchase_funding": {
+        "passed": true,
+        "rule": "cash outflows cannot exceed available cash plus inflows"
+      }
+    },
+    "passed": true,
+    "calculation_steps": [
+      {
+        "name": "Income after reduction",
+        "expression": "10000.00 \u00d7 (1 \u2212 0.00 / 100)",
+        "value": "10000.00"
+      },
+      {
+        "name": "Monthly surplus",
+        "expression": "10000.00 \u2212 6000.00 \u2212 0.00 + 0.00 \u2212 0.00",
+        "value": "4000.00"
+      },
+      {
+        "name": "Remaining cash",
+        "expression": "60000.00 \u2212 0.00 + 0.00",
+        "value": "60000.00"
+      },
+      {
+        "name": "House savings consumed",
+        "expression": "max(0, cash outflows \u2212 inflows \u2212 unallocated cash), capped at earmarked house savings",
+        "value": "0.00"
+      }
+    ],
+    "assumptions": [
+      "Baseline is the last complete calendar month; amounts are USD.",
+      "House savings are included in cash. Outflows consume unallocated cash before house savings.",
+      "House contributions use available surplus capped at the configured allocation; no interest or investment returns.",
+      "Subscription cancellations take effect immediately; annual monthly equivalents may not be immediately refundable.",
+      "Vehicle tax, fees, insurance changes, maintenance, and trade-in are unknown and excluded. Loan-only estimates are not final affordability advice.",
+      "demo default; confirm before relying on advice"
+    ],
+    "source_data": {
+      "cash": {
+        "value": "60000.00",
+        "currency": "USD",
+        "period": {
+          "start": null,
+          "end_exclusive": null
+        },
+        "included_record_count": 2,
+        "exclusion_rules": [
+          "internal transfers",
+          "pending",
+          "duplicate copies",
+          "reversed",
+          "future-dated beyond as-of date",
+          "excluded accounts"
+        ],
+        "calculation_definition": "Sum available balances in eligible checking/savings; investment accounts excluded",
+        "data_as_of": "2026-11-02",
+        "completeness": "complete evidence",
+        "filters": {}
+      },
+      "cash_flow": {
+        "income": "10000.00",
+        "expenses": "6000.00",
+        "surplus": "4000.00",
+        "currency": "USD",
+        "period": {
+          "start": "2026-10-01",
+          "end_exclusive": "2026-11-01"
+        },
+        "income_metadata": {
+          "value": "10000.00",
+          "currency": "USD",
+          "period": {
+            "start": "2026-10-01",
+            "end_exclusive": "2026-11-01"
+          },
+          "included_record_count": 2,
+          "exclusion_rules": [
+            "internal transfers",
+            "pending",
+            "duplicate copies",
+            "reversed",
+            "future-dated beyond as-of date",
+            "excluded accounts"
+          ],
+          "calculation_definition": "Negative-signed posted income converted to positive inflow",
+          "data_as_of": "2026-11-02",
+          "completeness": "complete evidence",
+          "filters": {}
+        },
+        "expense_metadata": {
+          "value": "6000.00",
+          "currency": "USD",
+          "period": {
+            "start": "2026-10-01",
+            "end_exclusive": "2026-11-01"
+          },
+          "included_record_count": 17,
+          "exclusion_rules": [
+            "internal transfers",
+            "pending",
+            "duplicate copies",
+            "reversed",
+            "future-dated beyond as-of date",
+            "excluded accounts"
+          ],
+          "calculation_definition": "SUM(posted expense cents), refunds reduce expense",
+          "data_as_of": "2026-11-02",
+          "completeness": "complete evidence",
+          "filters": {
+            "category": null
+          },
+          "items": [
+            {
+              "category": "Housing",
+              "amount": "2800.00"
+            },
+            {
+              "category": "Groceries",
+              "amount": "900.00"
+            },
+            {
+              "category": "Restaurants",
+              "amount": "650.00"
+            },
+            {
+              "category": "Shopping",
+              "amount": "450.00"
+            },
+            {
+              "category": "Utilities",
+              "amount": "350.00"
+            },
+            {
+              "category": "Travel",
+              "amount": "300.00"
+            },
+            {
+              "category": "Transport",
+              "amount": "300.00"
+            },
+            {
+              "category": "Subscriptions",
+              "amount": "250.00"
+            }
+          ]
+        },
+        "calculation_definition": "income - net posted expenses",
+        "data_as_of": "2026-11-02"
+      },
+      "memory_revision": 1,
+      "goal": {
+        "id": "house",
+        "user_id": "demo",
+        "name": "House down payment",
+        "target_amount": "50000.00",
+        "current_amount": "20000.00",
+        "target_date": "2027-06-01",
+        "priority": 1,
+        "status": "active"
+      }
+    },
+    "currency": "USD"
+  }
+}
