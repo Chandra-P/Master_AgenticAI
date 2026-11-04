@@ -1,14 +1,17 @@
 import os, copy, time
 from fastapi import FastAPI, Depends, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field, StrictInt
 from typing import Literal
 from .core import *
 
-class Create(BaseModel):
-    kind:Literal['outing','trip']; title:str=Field(min_length=1,max_length=200); start:str; end:str; participants:str=''
+from .models import Create, AssistantOutput, MAX_MESSAGES, MAX_PREFERENCES, MAX_MEMBERS
 class Update(BaseModel):
     plan:dict; expected_revision:int
+class PatchRequest(BaseModel):
+    expected_revision:StrictInt
+    patches:list[dict]=Field(min_length=1,max_length=200)
 class Chat(BaseModel):
     message:str=Field(min_length=1,max_length=10000)
 class Share(BaseModel):
@@ -18,7 +21,7 @@ class Document(BaseModel):
 
 def create_app(repo=None,authenticate=None,ai=None):
     app=FastAPI(title='Tagalong API')
-    app.add_middleware(CORSMiddleware,allow_origins=[x for x in os.getenv('CORS_ORIGINS','http://localhost:3000').split(',') if x],allow_methods=['GET','POST','PUT','DELETE'],allow_headers=['Authorization','Content-Type'])
+    app.add_middleware(CORSMiddleware,allow_origins=[x for x in os.getenv('CORS_ORIGINS','http://localhost:3000').split(',') if x],allow_methods=['GET','POST','PUT','PATCH','DELETE'],allow_headers=['Authorization','Content-Type'])
     if repo is None and os.getenv('DATABASE_URL'):
         from .repository import PostgresRepository
         repo=PostgresRepository(os.environ['DATABASE_URL'])
@@ -35,7 +38,10 @@ def create_app(repo=None,authenticate=None,ai=None):
         repo.transact(lambda s:register(s,a))
         return a
     @app.get('/health')
-    def health(): return {'status':'ok' if repo and authenticate else 'unconfigured','mode':'connected','capabilities':{'plans':bool(repo and authenticate),'assistant':bool(ai),'documents':bool(repo),'places':False,'calendar':False}}
+    def health():
+        ready=bool(repo and authenticate and repo.health())
+        status='ok' if ready else ('unavailable' if repo and authenticate else 'unconfigured')
+        return JSONResponse(status_code=200 if ready else 503,content={'status':status,'mode':'connected','capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':False,'calendar':False}})
     @app.get('/v1/me')
     def me(a=Depends(actor)): return vars(a)
     @app.get('/v1/plans')
@@ -46,6 +52,9 @@ def create_app(repo=None,authenticate=None,ai=None):
     def get(pid:str,a=Depends(actor)): return repo.transact(lambda s:view(s,access(s,pid,a),a))
     @app.put('/v1/plans/{pid}')
     def put(pid:str,b:Update,a=Depends(actor)): return repo.transact(lambda s:update(s,a,pid,b.plan,b.expected_revision))
+    @app.patch('/v1/plans/{pid}')
+    def patch(pid:str,b:PatchRequest,a=Depends(actor)):
+        return repo.transact(lambda s:patch_plan(s,a,pid,b.patches,b.expected_revision))
     @app.post('/v1/plans/{pid}/members')
     def share(pid:str,b:Share,a=Depends(actor)):
         def check(s):
@@ -56,9 +65,22 @@ def create_app(repo=None,authenticate=None,ai=None):
         def add(s):
             check(s); p=access(s,pid,a); register(s,target)
             if target.id not in s['members'][pid]:
+                if len(s['members'][pid])>=MAX_MEMBERS: fail(409,'Plan member limit reached')
                 s['members'][pid].append(target.id); p['members'].append({'name':target.name,'user_id':target.id,'color':'#14b8a6'}); p['revision']+=1
             return {'status':'added'}
         return repo.transact(add)
+    @app.delete('/v1/plans/{pid}/members/{user_id}')
+    def remove_member(pid:str,user_id:str,a=Depends(actor)):
+        def remove(s):
+            p=access(s,pid,a)
+            if p['owner_id']!=a.id: fail(403,'Only owner can remove members')
+            if user_id==p['owner_id']: fail(409,'The owner cannot be removed')
+            if user_id not in s['members'][pid]: fail(404,'Member not found')
+            s['members'][pid].remove(user_id)
+            p['members']=[m for m in p['members'] if m.get('user_id')!=user_id]
+            p['revision']+=1
+            return {'status':'removed'}
+        return repo.transact(remove)
     @app.get('/v1/plans/{pid}/proposals')
     def proposals(pid:str,a=Depends(actor)):
         def read(s):
@@ -90,10 +112,17 @@ def create_app(repo=None,authenticate=None,ai=None):
             def resolve_sources(matches):
                 def evidence(s):
                     access(s,pid,a)
-                    return [copy.deepcopy(src) for hit in matches if (src:=s['sources'].get(pid+':'+hit['id'])) and not src['deleted'] and src['version']==hit.get('version') and src['plan_id']==pid]
+                    verified=[]
+                    for hit in matches[:6]:
+                        src=s['sources'].get(pid+':'+hit['id'])
+                        if src and not src['deleted'] and src['version']==hit.get('version') and src['plan_id']==pid:
+                            item=copy.deepcopy(src); chunk=max(0,int(hit.get('chunk',0)))
+                            item['text']=item['text'][chunk*6000:(chunk+1)*6000]; verified.append(item)
+                    return verified
                 return repo.transact(evidence)
             output,sources=ai.answer(plan,b.message,resolve_sources)
-            if not isinstance(output.get('text'),str) or not isinstance(output.get('preferences'),list) or any(not isinstance(x,str) or len(x)>200 for x in output['preferences']): raise ValueError()
+            output=AssistantOutput.model_validate(output).model_dump()
+            if not set(output['source_ids']).issubset({src['id'] for src in sources}): raise ValueError('Unverified citation')
             cited=[src for src in sources if src['id'] in output.get('source_ids',[])]
         except HTTPException: raise
         except Exception: fail(502,'AI provider unavailable or returned invalid output')
@@ -103,8 +132,13 @@ def create_app(repo=None,authenticate=None,ai=None):
             for src in cited:
                 current=s['sources'].get(pid+':'+src['id'])
                 if not current or current['deleted'] or current['version']!=src['version']: fail(409,'Evidence changed; retry')
+            if len(p['messages'])>MAX_MESSAGES-2: fail(409,'Plan message limit reached')
+            labels={x['label'] for x in view(s,p,a)['preferences']}
+            if len(labels | set(output['preferences']))>MAX_PREFERENCES: fail(409,'Plan preference limit reached')
             ids=[]
             for label in output['preferences'][:10]:
+                if label in labels: continue
+                labels.add(label)
                 proposal_id=uid(); ids.append(proposal_id); s['proposals'][proposal_id]={'id':proposal_id,'plan_id':pid,'label':label,'status':'pending','created_by':a.id}
             public=[{'id':x['id'],'title':x['title'],'text':x['text']} for x in cited]
             last=p['messages'][-1] if p['messages'] else {}
@@ -117,23 +151,28 @@ def create_app(repo=None,authenticate=None,ai=None):
     @app.post('/v1/plans/{pid}/documents')
     def document(pid:str,b:Document,a=Depends(actor)):
         def add(s):
-            access(s,pid,a); sid=uid(); source(s,pid,sid,b.title,b.text); return {'id':sid,'title':b.title,'status':'queued'}
+            access(s,pid,a); sid=uid(); source(s,pid,sid,b.title,b.text,kind='document'); return {'id':sid,'title':b.title,'status':'queued'}
         return repo.transact(add)
     @app.get('/v1/plans/{pid}/documents')
     def documents(pid:str,a=Depends(actor)):
         def read(s):
-            access(s,pid,a); return [x for x in s['sources'].values() if x['plan_id']==pid and not x['deleted']]
+            access(s,pid,a); return [x for x in s['sources'].values() if x['plan_id']==pid and not x['deleted'] and x.get('kind','message')=='document']
         return repo.transact(read)
     @app.delete('/v1/plans/{pid}/documents/{sid}')
     def delete_document(pid:str,sid:str,a=Depends(actor)):
         def delete(s):
             access(s,pid,a); item=s['sources'].get(pid+':'+sid)
-            if not item or item['deleted']: fail(404,'Document not found')
+            if not item or item['deleted'] or item.get('kind','message')!='document': fail(404,'Document not found')
             source(s,pid,sid,item['title'],'',True); return {'status':'queued'}
         return repo.transact(delete)
     return app
 
 app=create_app()
+
+
+
+
+
 
 
 

@@ -1,40 +1,67 @@
-import os, json
-from contextlib import contextmanager
-from psycopg_pool import ConnectionPool
+"""Transactional persistence with narrow normalized projection updates."""
+import copy
+from psycopg import Error
+from psycopg_pool import ConnectionPool, PoolTimeout
 from psycopg.types.json import Jsonb
-from .core import MemoryRepository
+from .core import fail
+
 
 class PostgresRepository:
-    """Serialized durable unit of work; lock guarantees membership + revision checks are atomic."""
-    def __init__(self,url):
-        self.pool=ConnectionPool(url,min_size=1,max_size=8,timeout=10,kwargs={'connect_timeout':10,'options':'-c statement_timeout=15000'})
-    def transact(self,fn):
-        from psycopg import Error
-        from .core import fail
-        try: return self._transact(fn)
-        except Error: fail(503,'Database unavailable')
+    """The locked state row serializes authorization and revisions across processes."""
 
-    def _transact(self,fn):
+    def __init__(self, url):
+        self.pool = ConnectionPool(
+            url, min_size=1, max_size=8, timeout=10,
+            kwargs={'connect_timeout':10, 'options':'-c statement_timeout=15000'},
+        )
+
+    def health(self):
+        try:
+            with self.pool.connection(timeout=3) as c:
+                return c.execute('SELECT 1 FROM public.tagalong_state WHERE id=1').fetchone() == (1,)
+        except (Error, PoolTimeout):
+            return False
+
+    def transact(self, fn):
+        try:
+            return self._transact(fn)
+        except (Error, PoolTimeout):
+            fail(503, 'Database unavailable')
+
+    @staticmethod
+    def changed(before, after, key):
+        return (value for item_id, value in after.get(key, {}).items()
+                if before.get(key, {}).get(item_id) != value)
+
+    def _transact(self, fn):
         with self.pool.connection() as c, c.transaction():
-            row=c.execute('SELECT state FROM public.tagalong_state WHERE id=1 FOR UPDATE').fetchone()
-            if not row: raise RuntimeError('Apply Tagalong migration first')
-            state=row[0]
-            result=fn(state)
-            c.execute('UPDATE public.tagalong_state SET state=%s WHERE id=1',(Jsonb(state),))
-            # Normalized membership drives RLS/Realtime invalidation; never public plan content.
-            c.execute('DELETE FROM public.tagalong_memberships')
-            for pid,users in state['members'].items():
-                for user in users: c.execute('INSERT INTO public.tagalong_memberships(plan_id,user_id) VALUES(%s,%s)',(pid,user))
-            for pid,p in state['plans'].items():
-                c.execute('INSERT INTO public.tagalong_revisions(plan_id,revision) VALUES(%s,%s) ON CONFLICT(plan_id) DO UPDATE SET revision=EXCLUDED.revision WHERE tagalong_revisions.revision<>EXCLUDED.revision',(pid,p['revision']))
-            for p in state['plans'].values():
-                c.execute('INSERT INTO public.tagalong_plans VALUES(%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET revision=EXCLUDED.revision,document=EXCLUDED.document',(p['id'],p['owner_id'],p['revision'],Jsonb(p)))
-            for p in state['proposals'].values():
-                c.execute('INSERT INTO public.tagalong_proposals VALUES(%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET status=EXCLUDED.status,document=EXCLUDED.document',(p['id'],p['plan_id'],p['label'],p['status'],Jsonb(p)))
-            for key,p in state['sources'].items():
-                c.execute('INSERT INTO public.tagalong_sources VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(source_key) DO UPDATE SET version=EXCLUDED.version,deleted=EXCLUDED.deleted,document=EXCLUDED.document',(key,p['plan_id'],p['id'],p['version'],p['deleted'],Jsonb(p)))
-            for p in state['jobs'].values():
-                c.execute('INSERT INTO public.tagalong_ingestion_jobs VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET status=EXCLUDED.status,attempts=EXCLUDED.attempts,lease_until=EXCLUDED.lease_until,document=EXCLUDED.document',(p['id'],p['source_key'],p['status'],p['attempts'],p['lease_until'],Jsonb(p)))
-            return result
-
+            row = c.execute('SELECT state FROM public.tagalong_state WHERE id=1 FOR UPDATE').fetchone()
+            if not row:
+                fail(503, 'Database schema is not configured')
+            state = row[0]
+            before = copy.deepcopy(state)
+            result = fn(state)
+            if state == before:
+                return copy.deepcopy(result)
+            c.execute('UPDATE public.tagalong_state SET state=%s WHERE id=1', (Jsonb(state),))
+            # Membership changes are narrow so a read/job poll cannot churn RLS state.
+            old_members = {(pid, user) for pid, users in before['members'].items() for user in users}
+            new_members = {(pid, user) for pid, users in state['members'].items() for user in users}
+            for pair in old_members - new_members:
+                c.execute('DELETE FROM public.tagalong_memberships WHERE plan_id=%s AND user_id=%s', pair)
+            for pair in new_members - old_members:
+                c.execute('INSERT INTO public.tagalong_memberships(plan_id,user_id) VALUES(%s,%s)', pair)
+            for p in self.changed(before, state, 'plans'):
+                previous = before['plans'].get(p['id'])
+                if not previous or previous['revision'] != p['revision']:
+                    c.execute('INSERT INTO public.tagalong_revisions(plan_id,revision) VALUES(%s,%s) ON CONFLICT(plan_id) DO UPDATE SET revision=EXCLUDED.revision', (p['id'], p['revision']))
+                c.execute('INSERT INTO public.tagalong_plans VALUES(%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET revision=EXCLUDED.revision,document=EXCLUDED.document', (p['id'], p['owner_id'], p['revision'], Jsonb(p)))
+            for p in self.changed(before, state, 'proposals'):
+                c.execute('INSERT INTO public.tagalong_proposals VALUES(%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET status=EXCLUDED.status,document=EXCLUDED.document', (p['id'], p['plan_id'], p['label'], p['status'], Jsonb(p)))
+            for key, p in state['sources'].items():
+                if before['sources'].get(key) != p:
+                    c.execute('INSERT INTO public.tagalong_sources VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(source_key) DO UPDATE SET version=EXCLUDED.version,deleted=EXCLUDED.deleted,document=EXCLUDED.document', (key, p['plan_id'], p['id'], p['version'], p['deleted'], Jsonb(p)))
+            for p in self.changed(before, state, 'jobs'):
+                c.execute('INSERT INTO public.tagalong_ingestion_jobs VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET status=EXCLUDED.status,attempts=EXCLUDED.attempts,lease_until=EXCLUDED.lease_until,document=EXCLUDED.document', (p['id'], p['source_key'], p['status'], p['attempts'], p['lease_until'], Jsonb(p)))
+            return copy.deepcopy(result)
 

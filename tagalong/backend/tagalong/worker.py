@@ -32,8 +32,10 @@ def process_one(repo,provider,clock=time.time):
 
 def main():
     repo=PostgresRepository(os.environ['DATABASE_URL']); provider=ConnectedAI()
+    provider.verify_index_dimension()
     while True:
         if not process_one(repo,provider): time.sleep(2)
 if __name__=='__main__': main()
+
 
 

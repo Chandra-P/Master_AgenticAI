@@ -20,4 +20,4 @@ async function proxy(request:NextRequest, context:{params:Promise<{path:string[]
     return new NextResponse(data,{status:result.status,headers:{'Content-Type':result.headers.get('content-type')||'application/json','Cache-Control':'no-store'}});
   } catch {return NextResponse.json({detail:'The shared workspace is unavailable. Please try again.'},{status:503});}
 }
-export {proxy as GET,proxy as POST,proxy as PUT,proxy as DELETE};
+export {proxy as GET,proxy as POST,proxy as PUT,proxy as PATCH,proxy as DELETE};

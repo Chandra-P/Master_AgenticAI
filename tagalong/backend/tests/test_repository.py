@@ -1,0 +1,44 @@
+import copy
+from contextlib import contextmanager
+import pytest
+from tagalong.repository import PostgresRepository
+from tagalong.core import MemoryRepository
+
+class Connection:
+    def __init__(self,state): self.state=state; self.calls=[]
+    @contextmanager
+    def transaction(self): yield self
+    def execute(self,sql,params=None): self.calls.append((sql,params)); return self
+    def fetchone(self): return (copy.deepcopy(self.state),)
+class Pool:
+    def __init__(self,state): self.c=Connection(state)
+    @contextmanager
+    def connection(self): yield self.c
+
+def repository(state):
+    r=PostgresRepository.__new__(PostgresRepository); r.pool=Pool(state); return r
+
+def test_read_only_transactions_do_not_write():
+    r=repository(MemoryRepository().state)
+    assert r.transact(lambda s:len(s['plans']))==0
+    assert len(r.pool.c.calls)==1
+    assert r.pool.c.calls[0][0].startswith('SELECT')
+
+def test_job_change_only_updates_changed_projection():
+    state=MemoryRepository().state
+    state['jobs']['job']={'id':'job','source_key':'p:source','status':'pending','attempts':0,'lease_until':0}
+    state['plans']['p']={'id':'p','owner_id':'u','revision':1}
+    state['members']['p']=['u']
+    r=repository(state)
+    r.transact(lambda s:s['jobs']['job'].update(status='running',attempts=1))
+    writes=[sql for sql,_ in r.pool.c.calls if not sql.startswith('SELECT')]
+    assert len(writes)==2
+    assert any('tagalong_ingestion_jobs' in x for x in writes)
+    assert not any('tagalong_memberships' in x or 'tagalong_plans' in x or 'tagalong_revisions' in x for x in writes)
+
+def test_membership_removal_is_narrow():
+    state=MemoryRepository().state; state['members']['plan']=['alice','bob']
+    r=repository(state)
+    r.transact(lambda s:s['members']['plan'].remove('bob'))
+    deletes=[(sql,args) for sql,args in r.pool.c.calls if sql.startswith('DELETE')]
+    assert deletes==[('DELETE FROM public.tagalong_memberships WHERE plan_id=%s AND user_id=%s',('plan','bob'))]

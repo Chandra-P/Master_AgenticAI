@@ -1,7 +1,7 @@
 from __future__ import annotations
 import copy, uuid, threading, hashlib
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from fastapi import HTTPException
 
 def uid(): return str(uuid.uuid4())
@@ -21,6 +21,7 @@ class MemoryRepository:
     def __init__(self):
         self.state = {'plans':{}, 'members':{}, 'actors':{}, 'proposals':{}, 'sources':{}, 'jobs':{}}
         self.lock = threading.RLock()
+    def health(self): return True
     def transact(self, fn):
         with self.lock:
             snapshot = copy.deepcopy(self.state)
@@ -42,29 +43,33 @@ def view(s,p,a):
             p['preferences'].append({'label':proposal['label'],'confirmed':False}); labels.add(proposal['label'])
     return p
 
-def source(s,pid,sid,title,text,deleted=False):
+def source(s,pid,sid,title,text,deleted=False,kind='message'):
     key=pid+':'+sid
     old=s['sources'].get(key,{})
-    item={'id':sid,'plan_id':pid,'title':title,'text':text,'version':old.get('version',0)+1,'deleted':deleted,'chunks':max(old.get('chunks',1),(len(text)+5999)//6000,1)}
+    item={'id':sid,'plan_id':pid,'title':title,'text':text,'version':old.get('version',0)+1,'deleted':deleted,'kind':old.get('kind','message') if deleted else kind,'chunks':max(old.get('chunks',1),(len(text)+5999)//6000,1)}
     s['sources'][key]=item
     job=uid(); s['jobs'][job]={'id':job,'source_key':key,'version':item['version'],'status':'pending','attempts':0,'lease_until':0}
 
 def create(s,a,b):
     register(s,a); pid=uid()
-    p={'id':pid,'title':b.title,'kind':b.kind,'location':'','date':b.start,'start':b.start,'end':b.end,'budget':0,'image':'','members':[{'name':a.name,'color':'#6366f1','user_id':a.id}], 'messages':[],'preferences':[],'polls':[],'itinerary':[],'tasks':[],'revision':1,'owner_id':a.id}
+    start=date.fromisoformat(b.start); end=date.fromisoformat(b.end)
+    display=lambda d:f'{d:%b} {d.day}'+(f', {d.year}' if start.year!=end.year else '')
+    date_label=display(start) if start==end else display(start)+' - '+display(end)
+    options=[display(start),display(end)] if start!=end else [display(start),'Suggest another date']
+    p={'id':pid,'title':b.title,'kind':b.kind,'location':'Location to decide','date':date_label,'start':b.start,'end':b.end,'budget':0,'image':'/images/coast.jpg' if b.kind=='trip' else '/images/restaurant.jpg','members':[{'name':a.name,'color':'#6366f1','user_id':a.id}], 'messages':[],'preferences':[],'polls':[{'id':uid(),'question':'Which date works best?','options':options,'votes':{},'datePoll':True}],'itinerary':[],'tasks':[{'label':'Set a group budget','done':False},{'label':'Choose a meeting place','done':False}],'revision':1,'owner_id':a.id}
     s['plans'][pid]=p; s['members'][pid]=[a.id]
     return view(s,p,a)
 
 def update(s,a,pid,incoming,revision):
     p=access(s,pid,a)
-    from .models import validate_snapshot, ValidationError
-    try: validate_snapshot(incoming)
-    except ValidationError: fail(422,'Invalid plan snapshot')
     if p['revision']!=revision: fail(409,'Plan changed; reload before retrying')
     projected=view(s,p,a)
     if incoming.get('role')!=projected['role']: fail(403,'Invalid role')
     for key in ('id','owner_id','members','preferences'):
         if incoming.get(key)!=projected[key]: fail(403,'Server-controlled field: '+key)
+    from .models import validate_snapshot, ValidationError
+    try: validate_snapshot(incoming)
+    except ValidationError: fail(422,'Invalid plan snapshot')
     old={m['id']:m for m in p['messages']}; proposed=incoming.get('messages',[])
     if len({m.get('id') for m in proposed})!=len(proposed): fail(422,'Duplicate message IDs')
     for mid,m in old.items():
@@ -76,9 +81,11 @@ def update(s,a,pid,incoming,revision):
             source(s,pid,m['id'],'Chat: '+a.name,m['text'])
     oldpoll={x['id']:x for x in p['polls']}
     polls=incoming.get('polls',[])
+    if len({x['id'] for x in polls})!=len(polls): fail(422,'Duplicate poll IDs')
     for poll in polls:
         prev=oldpoll.get(poll.get('id'),{'votes':{}})
         votes=poll.get('votes',{})
+        if prev['votes'] and poll.get('options')!=prev.get('options'): fail(409,'Cannot change options after votes have been cast')
         if any(k!=a.name and votes.get(k)!=v for k,v in prev['votes'].items()) or any(k!=a.name and k not in prev['votes'] for k in votes): fail(403,'Cannot change another member vote')
         if any(type(v)!=int or v<0 or v>=len(poll.get('options',[])) for v in votes.values()): fail(422,'Invalid vote')
     for poll in p['polls']:
@@ -91,3 +98,69 @@ def update(s,a,pid,incoming,revision):
 
 
 
+
+
+
+
+
+
+MUTABLE_PLAN_FIELDS = frozenset(('title','location','date','start','end','budget','image','messages','polls','itinerary','tasks'))
+
+
+def patch_plan(s, actor, plan_id, patches, expected_revision):
+    """Apply bounded data-only patches, then run the same invariants as PUT."""
+    plan = access(s, plan_id, actor)
+    if plan['revision'] != expected_revision:
+        fail(409, 'Plan changed; reload before retrying')
+    if not isinstance(patches, list) or not 1 <= len(patches) <= 200:
+        fail(422, 'Provide between 1 and 200 patches')
+    draft = view(s, plan, actor)
+    for patch in patches:
+        if not isinstance(patch, dict) or set(patch) - {'op','path','value'}:
+            fail(422, 'Invalid patch object')
+        op = patch.get('op')
+        path = patch.get('path')
+        if op not in ('add','replace','remove') or not isinstance(path,list) or not 1 <= len(path) <= 12:
+            fail(422, 'Invalid patch operation or path')
+        if any(type(part) not in (str,int) for part in path) or type(path[0]) is not str:
+            fail(422, 'Patch paths require string keys and integer array indices')
+        if path[0] not in MUTABLE_PLAN_FIELDS:
+            fail(403, 'Server-controlled plan field')
+        if op in ('add','replace') and 'value' not in patch:
+            fail(422, 'Patch value is required')
+        parent = draft
+        for part in path[:-1]:
+            if isinstance(parent, dict):
+                if type(part) is not str or part not in parent:
+                    fail(422, 'Patch object path does not exist')
+                parent = parent[part]
+            elif isinstance(parent, list):
+                if type(part) is not int or not 0 <= part < len(parent):
+                    fail(422, 'Invalid patch array index')
+                parent = parent[part]
+            else:
+                fail(422, 'Patch path cannot traverse a scalar')
+        key = path[-1]
+        if isinstance(parent, dict):
+            if type(key) is not str:
+                fail(422, 'Object paths require string keys')
+            if op == 'add':
+                if key in parent: fail(422, 'Added object key already exists')
+                parent[key] = copy.deepcopy(patch['value'])
+            else:
+                if key not in parent: fail(422, 'Patch object key does not exist')
+                if op == 'replace': parent[key] = copy.deepcopy(patch['value'])
+                else: del parent[key]
+        elif isinstance(parent, list):
+            if type(key) is not int or key < 0:
+                fail(422, 'Array paths require nonnegative integer indices')
+            if op == 'add':
+                if key != len(parent): fail(422, 'Array additions must append at its length')
+                parent.append(copy.deepcopy(patch['value']))
+            else:
+                if key >= len(parent): fail(422, 'Patch array index does not exist')
+                if op == 'replace': parent[key] = copy.deepcopy(patch['value'])
+                else: del parent[key]
+        else:
+            fail(422, 'Patch target parent must be an object or array')
+    return update(s, actor, plan_id, draft, expected_revision)

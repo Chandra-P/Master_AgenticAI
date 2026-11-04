@@ -5,6 +5,7 @@ out/
 !.env.example
 playwright-report/
 test-results/
+test-results-shared/
 *.tsbuildinfo
 backend/.venv/
 __pycache__/

@@ -1,5 +1,5 @@
 export type PlanKind = 'outing' | 'trip';
-export type Tab = 'Chat' | 'Planning board' | 'Polls' | 'Discover' | 'Itinerary';
+export type Tab = 'Chat' | 'Planning board' | 'Polls' | 'Discover' | 'Itinerary' | 'Documents';
 export interface Member { name: string; color: string; user_id?:string }
 export interface Message { id: string; author: string; text: string; time: string; assistant?: boolean; user_id?:string; sources?:{id:string;title:string;text:string}[] }
 export interface Preference { label: string; confirmed: boolean }

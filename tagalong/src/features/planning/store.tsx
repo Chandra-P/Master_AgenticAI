@@ -2,7 +2,7 @@
 import {createContext,useCallback,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
 import type {Plan,CreatePlanInput} from '@/services/types';
 import {mockPlanningService,simulatedAssistant} from '@/services/mock-planning-service';
-import {ApiError,ConnectedService,getAuth,type CurrentUser,type PublicConfig,type Proposal} from '@/services/connected';
+import {ApiError,ConnectedService,getAuth,type CurrentUser,type PublicConfig,type Proposal,type DocumentSource} from '@/services/connected';
 
 interface Store {
  plans:Plan[];ready:boolean;mode:'demo'|'connected';config:PublicConfig|null;user:CurrentUser|null;
@@ -10,6 +10,8 @@ interface Store {
  reload:()=>Promise<void>;create:(input:CreatePlanInput)=>Promise<string>;update:(id:string,fn:(plan:Plan)=>Plan)=>Promise<void>;
  sendMessage:(id:string,message:string)=>Promise<void>;confirmPreference:(id:string,label:string)=>Promise<void>;
  share:(id:string,email:string)=>Promise<void>;signOut:()=>Promise<void>;proposals:(id:string)=>Promise<Proposal[]>;
+ revoke:(id:string,userId:string)=>Promise<void>;documents:(id:string)=>Promise<DocumentSource[]>;
+ addDocument:(id:string,title:string,text:string)=>Promise<void>;removeDocument:(id:string,sourceId:string)=>Promise<void>;
 }
 const Context=createContext<Store|null>(null);
 export function PlanningProvider({children}:{children:ReactNode}) {
@@ -26,7 +28,7 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    catch(e){if(current!==generation.current)return;setError(e instanceof Error?e.message:'Could not load shared plans.');if(e instanceof ApiError&&e.status===401){setUser(null);replace([]);}}
    finally{if(current===generation.current)setReady(true);}
  },[replace]);
- useEffect(()=>{let active=true;void fetch('/api/config',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Could not load app configuration.');return r.json() as Promise<PublicConfig>;}).then(c=>{if(!active)return;setConfig(c);let selected:string|null=null;try{selected=localStorage.getItem('tagalong-workspace-mode');}catch{}setCurrentMode(selected==='connected'||(!selected&&c.connectedReady)?'connected':'demo');}).catch(()=>{if(active){setConfig({supabaseUrl:'',supabaseAnonKey:'',connectedReady:false});setError('Could not load app configuration. Please reload.');}});return()=>{active=false;};},[]);
+ useEffect(()=>{let active=true;void fetch('/api/config',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Could not load app configuration.');return r.json() as Promise<PublicConfig>;}).then(c=>{if(!active)return;setConfig(c);let selected:string|null=null;try{selected=localStorage.getItem('tagalong-workspace-mode');}catch{}setCurrentMode(selected==='connected'||(!selected&&(c.connectedReady||c.requireConnected))?'connected':'demo');}).catch(()=>{if(active){setCurrentMode('connected');replace([]);setUser(null);setReady(true);setError('Could not load app configuration. Please reload.');}});return()=>{active=false;};},[replace]);
  useEffect(()=>{
    if(!config)return;
    ++generation.current;let disposed=false;service.current=null;
@@ -58,13 +60,13 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  }
  async function create(input:CreatePlanInput){return execute(async valid=>{const plan=mode==='demo'?mockPlanningService.create(input):await service.current!.create(input);if(!valid())throw new Error('Workspace changed.');replace([plan,...plansRef.current]);setError('');return plan.id;});}
  async function update(id:string,fn:(plan:Plan)=>Plan){
-   try{await execute(async valid=>{const old=plansRef.current.find(p=>p.id===id);if(!old)throw new Error('This plan is unavailable.');const next=fn(old);const saved=mode==='demo'?next:await service.current!.save(next,old.revision??0);if(!valid())return;replace(plansRef.current.map(p=>p.id===id?saved:p));setError('');});}catch{/* The shared error banner retains failures for the user. */}
+   try{await execute(async valid=>{const old=plansRef.current.find(p=>p.id===id);if(!old)throw new Error('This plan is unavailable.');const next=fn(old);const saved=mode==='demo'?next:await service.current!.save(next,old.revision??0,old);if(!valid())return;replace(plansRef.current.map(p=>p.id===id?saved:p));setError('');});}catch{/* The shared error banner retains failures for the user. */}
  }
  async function sendMessage(id:string,message:string){await execute(async valid=>{
    const old=plansRef.current.find(p=>p.id===id);if(!old)throw new Error('This plan is unavailable.');
    const time=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
    let next:Plan={...old,messages:[...old.messages,{id:crypto.randomUUID(),author:user?.name||'Alex',user_id:user?.id,text:message,time}]};
-   if(mode==='connected')next=await service.current!.save(next,old.revision??0);
+   if(mode==='connected')next=await service.current!.save(next,old.revision??0,old);
    if(!valid())return;replace(plansRef.current.map(p=>p.id===id?next:p));
    if(/@tagalong/i.test(message)){
      if(mode==='demo'){const answer=simulatedAssistant.reply(message);next={...next,messages:[...next.messages,{id:crypto.randomUUID(),author:'Tagalong',assistant:true,text:answer.text,time}],preferences:[...next.preferences,...answer.preferences.filter(pref=>!next.preferences.some(x=>x.label===pref.label))]};}
@@ -75,6 +77,10 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  async function confirmPreference(id:string,label:string){if(mode==='demo'){await update(id,p=>({...p,preferences:p.preferences.map(x=>x.label===label?{...x,confirmed:true}:x)}));return;}await execute(async valid=>{const api=service.current!;const proposals=await api.proposals(id);if(!valid())return;const proposal=proposals.find(p=>p.label===label&&p.status==='pending');if(!proposal)throw new Error('This proposal changed. Refresh the plan before confirming.');const saved=await api.confirm(id,proposal.id);if(valid())replace(plansRef.current.map(p=>p.id===id?saved:p));});}
  async function share(id:string,email:string){await execute(async valid=>{const api=service.current!;await api.share(id,email);if(!valid())return;const plan=await api.plan(id);if(!valid())return;replace(plansRef.current.map(p=>p.id===id?plan:p));setNotice('Member added. No email was sent.');});}
  async function signOut(){generation.current++;identity.current=null;setUser(null);replace([]);setError('');if(config?.connectedReady)await getAuth(config).auth.signOut();}
- return <Context.Provider value={{plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
+ const documents=useCallback((id:string)=>service.current?.documents(id)??Promise.resolve([]),[]);
+ async function addDocument(id:string,title:string,text:string){await execute(async valid=>{await service.current!.addDocument(id,title,text);if(valid())setNotice('Document saved. It will be searchable after indexing.');});}
+ async function removeDocument(id:string,sourceId:string){await execute(async valid=>{await service.current!.removeDocument(id,sourceId);if(valid())setNotice('Document removed from retrieval.');});}
+ async function revoke(id:string,userId:string){await execute(async valid=>{const api=service.current!;await api.revoke(id,userId);if(!valid())return;const plan=await api.plan(id);if(valid())replace(plansRef.current.map(p=>p.id===id?plan:p));});}
+ return <Context.Provider value={{plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
 }
 export function usePlanning(){const store=useContext(Context);if(!store)throw new Error('PlanningProvider is required');return store;}

@@ -1,11 +1,39 @@
-# Connected application work in progress
+# Tagalong verification and release status
 
-Snapshot requested by the user on 2026-11-04. This is not a public release.
+Updated 2026-11-04. The connected application is implemented and locally tested. It has **not been publicly deployed**, and production Supabase/email/database configuration has not been verified.
 
-Implemented: Supabase sign-in/account UI; server-side FastAPI proxy; shared plan adapter with revision conflicts; member sharing; assistant responses and evidence UI; proposal confirmation; authenticated FastAPI services; Postgres migration; OpenAI/LangGraph/Pinecone adapters; durable source ingestion worker. The browser demo remains available separately.
+## Implemented
 
-Verification in this session: frontend lint, TypeScript and production build passed. Backend suite: 14 tests passed. Connected-mode browser tests for configuration isolation and authentication/service failures passed on desktop. Existing demo browser tests are failing and remain under investigation. The full browser suite is not passing. Real Supabase/Postgres, OpenAI/Pinecone calls and public deployment have not been verified.
+- Supabase account/sign-in UI and explicit separation of shared and browser-demo workspaces.
+- Authenticated FastAPI services, membership checks, revision conflicts and durable Postgres persistence.
+- Group chat, one-current-vote-per-member polls, shared documents, explicit preference proposals/confirmation, and owner-controlled membership revocation.
+- LangGraph conditional retrieval, OpenAI structured responses/embeddings, plan-isolated Pinecone namespaces, source/version validation, and leased ingestion retries.
+- Production Next.js standalone packaging, frontend/API/worker Dockerfiles, Render Blueprint and scoped GitHub Actions checks.
 
-Pending: finish browser regression fixes; run real two-account integration tests; configure Supabase database/auth and hosted frontend/API/worker; verify external provider access, ingestion, RLS and public URL; finish deployment configuration and operational documentation. Places and Calendar are disabled. No live reservation or calendar action is available. Do not present this snapshot as production ready.
+## Verification performed
 
-Secrets remain excluded. Existing project keys may be reused only through local/server environment configuration. Never place server credentials in NEXT_PUBLIC_ variables.
+| Check | Result |
+| --- | --- |
+| Frontend lint | Passed |
+| TypeScript | Passed |
+| Production build and standalone asset packaging | Passed |
+| Demo/configuration and narrow-update suite | 18 passed, desktop and mobile |
+| Shared HTTP/browser suite | 4 passed, desktop and mobile |
+| Backend tests | 60 passed, 1 live SQL test skipped |
+| Existing OpenAI account | Live embedding and Responses requests passed |
+| Existing Pinecone account | Read-only index configuration check passed |
+| Real provider RAG smoke | Synthetic vector ingestion/query, LangGraph retrieval, current-budget grounding and source citation passed; only the created test vectors were removed |
+| Render Blueprint | Validated against the current official JSON schema |
+
+Shared browser tests use the real local FastAPI HTTP server with explicit test-only authentication, transactional in-memory persistence and a deterministic assistant. They exercise sharing, denied cross-plan access, documents/citations, chat deduplication, voting, preference confirmation, refresh, membership revocation and delayed-response sign-out isolation. Small shared edits use bounded PATCH operations instead of resending private conversation history; regressions cover histories exceeding the proxy's single-request limit. Configuration-fetch failures stop at an unavailable state rather than loading demo data. These tests do **not** exercise live Supabase Auth, production persistence or Realtime. Provider smoke checks use synthetic content and reused credentials stored only in ignored local environment files. The existing Pinecone index has 768 dimensions; embeddings were explicitly reduced to match, with separate Tagalong plan namespaces.
+
+## Remaining public-release work
+
+1. Connect/provision Supabase and hosting; apply and verify the schema in a disposable test project and then the production project.
+2. Configure production email delivery, confirmation URLs and external-account signup. Verify two real accounts, real database persistence, membership RLS and Realtime invalidations.
+3. Run Docker builds in CI or on a Docker-enabled host; local Docker is unavailable in this workspace. A successful standalone build does not substitute for a container build.
+4. Deploy the reviewed branch's frontend, API and ingestion worker; configure server secrets and spend controls; verify the public HTTPS URL and real flows on desktop/mobile.
+
+The dedicated SQL/RLS test is explicitly skipped without `TAGALONG_TEST_DATABASE_URL`; see `backend/TESTING.md`. Local test adapters are never imported by the production entrypoint. Calendar writes, bookings and live venue search remain disabled. Shared discovery never presents synthetic demo venues as live inventory. The current serialized state aggregate is intended for a small initial rollout; load testing and row-level transaction work are required before large-scale use.
+
+See [deployment instructions](DEPLOYMENT.md). No public-release or production-readiness claim follows from this document.

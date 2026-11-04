@@ -1,0 +1,75 @@
+# Select this file as the Blueprint path. Review provider pricing before provisioning.
+envVarGroups:
+  - name: tagalong-backend-secrets
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: OPENAI_EMBEDDING_DIMENSIONS
+        value: '768'
+services:
+  - type: web
+    name: tagalong-api
+    runtime: docker
+    region: ohio
+    plan: starter
+    dockerfilePath: ./tagalong/backend/Dockerfile
+    dockerContext: ./tagalong/backend
+    healthCheckPath: /health
+    autoDeployTrigger: 'off'
+    envVars:
+      - fromGroup: tagalong-backend-secrets
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_HOST
+        sync: false
+  - type: worker
+    name: tagalong-ingestion
+    runtime: docker
+    region: ohio
+    plan: starter
+    dockerfilePath: ./tagalong/backend/Dockerfile
+    dockerContext: ./tagalong/backend
+    dockerCommand: python -m tagalong.worker
+    autoDeployTrigger: 'off'
+    envVars:
+      - fromGroup: tagalong-backend-secrets
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_HOST
+        sync: false
+  - type: web
+    name: tagalong-web
+    runtime: docker
+    region: ohio
+    plan: starter
+    dockerfilePath: ./tagalong/Dockerfile
+    dockerContext: ./tagalong
+    healthCheckPath: /api/health
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: FASTAPI_BASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: TAGALONG_REQUIRE_CONNECTED
+        value: 'true'

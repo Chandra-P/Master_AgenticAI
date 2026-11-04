@@ -1,5 +1,14 @@
 import {test, expect} from '@playwright/test';
 
+test('configuration fetch failure never substitutes demo data for a shared workspace',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
+ await page.route('**/api/config',route=>route.fulfill({status:503,json:{detail:'Unavailable'}}));
+ await page.goto('/');
+ await expect(page.getByText('Could not load app configuration. Please reload.',{exact:true})).toBeVisible();
+ await expect(page.getByRole('link',{name:'Open Coastal weekend'})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Explore the demo'})).toHaveCount(0);
+});
+
 test('connected mode explains missing setup and never shows demo plans as shared data', async ({page}) => {
   await page.route('**/api/config', route => route.fulfill({json:{supabaseUrl:'',supabaseAnonKey:'',connectedReady:false}}));
   await page.goto('/account');
