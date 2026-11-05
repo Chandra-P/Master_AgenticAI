@@ -1,5 +1,18 @@
 import {test, expect} from '@playwright/test';
 
+test('home greeting uses preferred display name instead of internal identity',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
+ const user={id:'greeting-test',email:'person@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{display_name:'Chandra'},created_at:'2026-01-01T00:00:00Z'};
+ await page.route('**/api/config',route=>route.fulfill({json:{supabaseUrl:'https://tagalong-test.supabase.co',supabaseAnonKey:'test-publishable-key',connectedReady:true}}));
+ await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-greeting',refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,user}}));
+ await page.route('**/api/backend/v1/me',route=>route.fulfill({json:{id:user.id,email:user.email,name:'internal-identity-123',display_name:'Chandra',workspace_mode:'member'}}));
+ await page.route('**/api/backend/v1/plans',route=>route.fulfill({json:[{id:'greeting-plan',title:'Personal plan',kind:'outing',location:'To decide',date:'Dec 12',start:'2026-12-12',end:'2026-12-12',budget:0,image:'/images/restaurant.jpg',members:[{name:'Chandra',color:'#6366f1',user_id:user.id}],messages:[],preferences:[],polls:[],itinerary:[],tasks:[],revision:1,owner_id:user.id,role:'owner'}]}));
+ await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();await page.goto('/');
+ await expect(page.getByRole('heading',{name:/Hey Chandra, let/})).toBeVisible();
+ await expect(page.getByRole('heading',{name:/internal-identity/})).toHaveCount(0);
+});
+
 test('sign out wins over a delayed admin-mode switch',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
  const user={id:'role-test',email:'role@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:'2026-01-01T00:00:00Z'};
