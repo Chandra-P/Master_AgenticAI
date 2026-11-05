@@ -74,6 +74,7 @@ def test_evidence_stale_and_namespace(env):
     assert response.status_code==502 and 'secret' not in response.text
     assert 'AI_INTERNAL; reference ' in response.json()['detail']
     assert c.get('/health').json()['assistant_diagnostics']==1
+    assert c.get('/health').json()['assistant_citation_policy']=='evidence-only'
 
 def test_jobs_retries_and_delete(env):
     c,r,ai,a,b,p=env; url='/v1/plans/'+p['id']
@@ -284,6 +285,23 @@ def test_generation_bounds_context_and_preserves_budget():
     assert sent['plan']['budget']==321 and len(calls[0]['input'])<41000
     assert calls[0]['max_output_tokens']==2000
     assert calls[0]['store'] is False
+
+
+@pytest.mark.parametrize('sources', [[],[{'id':'verified-document','title':'Notes','text':'Synthetic evidence'}],[{'id':'chat-message','title':'Verified chat','text':'Synthetic evidence'}]])
+def test_generation_citation_schema_excludes_plan_and_message_ids(sources):
+    from types import SimpleNamespace
+    from tagalong.providers import ConnectedAI
+    ai=ConnectedAI.__new__(ConnectedAI); ai.model='test-model'; calls=[]
+    ai.client=SimpleNamespace(responses=SimpleNamespace(create=lambda **kw:calls.append(kw) or SimpleNamespace(output_text='{"text":"Flying is a proposal","preferences":[],"source_ids":[]}')))
+    ai.generate({'plan':{'id':'private-plan','messages':[{'id':'chat-message','author':'Member','text':'I will fly instead','time':'now'}]},'message':'I will fly instead','sources':sources})
+    citations=calls[0]['text']['format']['schema']['properties']['source_ids']
+    if sources:
+        assert citations['items']['enum']==[source['id'] for source in sources]
+        assert citations['maxItems']==6
+    else:
+        assert citations['maxItems']==0
+    assert 'plan or message IDs' in calls[0]['instructions']
+    assert 'unless explicitly included in evidence' in calls[0]['instructions']
 
 def test_document_routes_exclude_and_protect_chat_sources(env):
     c,r,ai,a,b,p=env; url='/v1/plans/'+p['id']
