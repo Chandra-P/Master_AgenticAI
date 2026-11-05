@@ -107,3 +107,38 @@ test('sign out ignores a delayed private response and keeps demo storage isolate
  await expect(page.getByRole('link',{name:'Open Private delayed plan'})).toHaveCount(0);
  expect(await page.evaluate(()=>localStorage.getItem('tagalong-demo-v1'))).not.toContain('Private delayed plan');
 });
+
+test('app admin reviews saved QA plans and audits private access while normal members are denied',async({page:alice,browser})=>{
+ await login(alice,'alice');await alice.goto('/admin');
+ await expect(alice.getByRole('heading',{name:'Admin dashboard'})).toBeVisible();
+ await alice.getByRole('button',{name:'Create QA review plans'}).click();
+ await expect(alice.getByRole('heading',{name:'[QA Review] Chicago dinner',exact:true})).toBeVisible();
+ await alice.getByRole('button',{name:'Create QA review plans'}).click();
+ await expect(alice.getByRole('heading',{name:'[QA Review] Chicago dinner',exact:true})).toHaveCount(1);
+ const review=alice.getByRole('button',{name:'Review private plan: [QA Review] Chicago dinner',exact:true});
+ await expect(review).toBeDisabled();
+ await alice.getByLabel('Reason for admin action').fill('Review synthetic dinner scenario');
+ await review.click();
+ await expect(alice.getByRole('region',{name:'Private plan review'})).toContainText('Budget: $65');
+  await expect(alice.getByText('inspect_plan',{exact:true}).first()).toBeVisible();
+ await alice.getByRole('button',{name:'Close private review'}).click();
+ const context=await browser.newContext();const bob=await context.newPage();
+ try{
+  await login(bob,'bob');await bob.goto('/admin');
+  await expect(bob.getByRole('heading',{name:'Admin access required'})).toBeVisible();
+  await expect(bob.getByRole('link',{name:'Admin',exact:true})).toHaveCount(0);
+  const status=await bob.evaluate(async()=>{const r=await fetch('/api/backend/v1/admin/overview',{headers:{Authorization:'Bearer test-bob'}});return r.status;});
+  expect(status).toBe(403);
+  await alice.reload();
+  await alice.getByLabel('Reason for admin action').fill('QA suspension and restoration');
+  await alice.getByRole('button',{name:'Suspend bob',exact:true}).click();
+  await expect(alice.getByRole('button',{name:'Restore bob',exact:true})).toBeVisible();
+  const denied=await bob.evaluate(async()=>{const r=await fetch('/api/backend/v1/me',{headers:{Authorization:'Bearer test-bob'}});return r.status;});
+  expect(denied).toBe(403);
+  await bob.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await expect(bob.getByLabel('Email address')).toBeVisible();
+  await expect(bob.getByRole('heading',{name:'Admin access required'})).toHaveCount(0);
+  await alice.getByRole('button',{name:'Restore bob',exact:true}).click();
+  await expect(alice.getByRole('button',{name:'Suspend bob',exact:true})).toBeVisible();
+ }finally{await alice.evaluate(async()=>{await fetch('/api/backend/v1/admin/accounts/bob/suspension',{method:'POST',headers:{Authorization:'Bearer test-alice','Content-Type':'application/json'},body:JSON.stringify({suspended:false,reason:'QA cleanup restore test member'})});});await context.close();}
+});

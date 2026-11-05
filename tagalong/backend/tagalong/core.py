@@ -33,8 +33,11 @@ class MemoryRepository:
                 self.state = snapshot
                 raise
 
-def register(s,a): s['actors'][a.id] = vars(a)
+def register(s,a):
+    if s.get('suspended_users',{}).get(a.id): fail(403,'Account suspended. Contact the app administrator.')
+    s['actors'][a.id] = vars(a)
 def access(s,pid,a):
+    if s.get('suspended_users',{}).get(a.id): fail(403,'Account suspended. Contact the app administrator.')
     if pid not in s['plans'] or a.id not in s['members'].get(pid,[]): fail(404,'Plan not found')
     return s['plans'][pid]
 def view(s,p,a):

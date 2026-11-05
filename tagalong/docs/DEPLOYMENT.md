@@ -16,6 +16,16 @@ In Supabase Authentication → URL Configuration, set Site URL to `https://tagal
 
 ## Local verification
 
+### App administration
+
+Deploy both frontend and API for `/admin`. App-admin grants are stored in the server-owned aggregate and are independent of plan ownership/membership. Supabase user metadata never grants permissions. The initial user grant has been provisioned in the selected project; no new environment variable or schema migration is needed for it.
+
+For a future explicitly approved administrator, an operator can run `python -m tagalong.bootstrap_admin --user-id UUID` from the backend with its existing secret environment configured. The utility checks that the selected Supabase account exists and is confirmed, adds the grant, and audits it. It never auto-promotes the first signup. Do not expose this operator command or service credentials through the frontend.
+
+The dashboard provides account suspension/restoration, metadata summaries, job counts, QA plan creation and audited read-only private inspection. A reason is required for private inspection and account changes. Admins cannot suspend themselves or another admin through this UI. All normal plan endpoints continue to require membership. Suspended sessions are rejected by the backend and client refresh clears loaded private state.
+
+Audit records currently share the transactionally locked aggregate. They are not deletable through the app, but a database operator can modify the database; this is not an externally immutable compliance archive. The aggregate has an explicit audit-capacity limit and remains intended for a small pilot.
+
 ### Private invitations and preferred names
 
 Deploy both API and frontend for invitation links. No new secret, email invitation service, or schema migration is needed: invitation digests and expiration are stored in the existing server-owned aggregate. In a plan, owners open **Add member → Create invitation link**, then copy and share the link themselves. Replacing or disabling a link invalidates the outstanding token; existing members keep access. Removing a member alone does not invalidate the link.

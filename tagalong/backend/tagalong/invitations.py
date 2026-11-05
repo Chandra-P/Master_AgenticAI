@@ -31,6 +31,7 @@ def revoke(state, pid, actor):
 
 
 def accept(state, token, actor):
+    register(state, actor)
     digest = hashlib.sha256(token.encode()).hexdigest()
     pid = next((pid for pid, link in state.get('invitations', {}).items()
                 if secrets.compare_digest(link['digest'], digest) and link['expires_at'] > time.time()), None)

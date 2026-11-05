@@ -1,5 +1,20 @@
 import {test, expect} from '@playwright/test';
 
+test('suspension clears an already loaded account when refresh denies access',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
+ const user={id:'suspended-test',email:'account@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:'2026-01-01T00:00:00Z'};
+ await page.route('**/api/config',route=>route.fulfill({json:{supabaseUrl:'https://tagalong-test.supabase.co',supabaseAnonKey:'test-publishable-key',connectedReady:true}}));
+ await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-suspension',refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,user}}));
+ let suspended=false;
+ await page.route('**/api/backend/v1/me',route=>suspended?route.fulfill({status:403,json:{detail:'Account suspended. Contact the app administrator.'}}):route.fulfill({json:{id:user.id,email:user.email,name:'account'}}));
+ await page.route('**/api/backend/v1/plans',route=>route.fulfill({json:[]}));
+ await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();
+ suspended=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+ await expect(page.getByLabel('Email address')).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toHaveCount(0);
+});
+
 test('signup asks for a preferred display name and sends it as profile metadata',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
  await page.route('**/api/config',route=>route.fulfill({json:{supabaseUrl:'https://tagalong-test.supabase.co',supabaseAnonKey:'test-publishable-key',connectedReady:true}}));

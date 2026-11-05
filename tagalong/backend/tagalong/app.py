@@ -62,7 +62,9 @@ def create_app(repo=None,authenticate=None,ai=None):
         runner=app.state.ingestion_worker
         return JSONResponse(status_code=200 if ready else 503,content={'status':status,'mode':'connected','indexing_mode':'embedded' if embedded_enabled else 'external','indexing_worker_running':bool(runner and runner.is_alive()),'capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':False,'calendar':False}})
     @app.get('/v1/me')
-    def me(a=Depends(actor)): return vars(a)
+    def me(a=Depends(actor)):
+        from .admin import is_admin
+        return {**vars(a),'app_admin':repo.transact(lambda s:is_admin(s,a))}
     @app.get('/v1/plans')
     def plans(a=Depends(actor)): return repo.transact(lambda s:[view(s,p,a) for pid,p in s['plans'].items() if a.id in s['members'].get(pid,[])])
     @app.post('/v1/plans')
@@ -205,6 +207,8 @@ def create_app(repo=None,authenticate=None,ai=None):
             if not item or item['deleted'] or item.get('kind','message')!='document': fail(404,'Document not found')
             source(s,pid,sid,item['title'],'',True); return {'status':'queued'}
         return repo.transact(delete)
+    from .admin import install_admin
+    install_admin(app,repo,actor)
     return app
 
 app=create_app()

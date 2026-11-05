@@ -3,7 +3,7 @@ import type {Plan,CreatePlanInput,Preference} from './types';
 import {createPlanPatches} from './plan-patches';
 
 export interface PublicConfig {supabaseUrl:string;supabaseAnonKey:string;connectedReady:boolean;requireConnected?:boolean}
-export interface CurrentUser {id:string;email:string;name:string;display_name?:string}
+export interface CurrentUser {id:string;email:string;name:string;display_name?:string;app_admin?:boolean}
 export interface Source {id:string;title:string;text:string}
 export interface DocumentSource extends Source {version:number;deleted:boolean;kind?:string}
 export interface Proposal {id:string;label?:string;status:string;kind?:string;payload?:Record<string,unknown>;[key:string]:unknown}

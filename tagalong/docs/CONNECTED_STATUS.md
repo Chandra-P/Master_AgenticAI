@@ -21,9 +21,9 @@ Frontend: https://tagalong-web-clbe.onrender.com · API: https://tagalong-api-7p
 | Frontend lint | Passed |
 | TypeScript | Passed |
 | Production build and standalone asset packaging | Passed |
-| Demo/configuration and narrow-update suite | 24 passed, desktop and mobile, including signup names and relevant demo-assistant responses |
-| Shared HTTP/browser suite | 6 passed, desktop and mobile, including signed-out invitation return and explicit joining |
-| Backend tests | 73 passed; one live SQL test skipped without explicit test database configuration |
+| Demo/configuration and narrow-update suite | 26 passed, desktop and mobile, including suspension clearing, signup names and relevant demo-assistant responses |
+| Shared HTTP/browser suite | 8 passed, desktop and mobile, including app administration, QA review, suspension/restore and invitation return |
+| Backend tests | 77 passed; one live SQL test skipped without explicit test database configuration |
 | Existing OpenAI account | Live embedding and Responses requests passed |
 | Existing Pinecone account | Read-only index configuration check passed |
 | Real provider RAG smoke | Synthetic vector ingestion/query, LangGraph retrieval, current-budget grounding and source citation passed; only the created test vectors were removed |
@@ -49,6 +49,6 @@ The user explicitly approved background indexing of shared messages/documents to
 
 See [deployment instructions](DEPLOYMENT.md). No public-release or production-readiness claim follows from this document.
 
-## Pending requested work
+## App administration and stored QA review
 
-The user requested a separate app-admin role that can coexist with plan ownership or membership, plus multiple persisted QA plans for admin review. These have been discussed but are not implemented or provisioned in this checkpoint. No QA accounts or review plans were created. The existing signed-in account remains the only confirmed application account in the last read-only check.
+App administration is implemented with server-owned grants, independent plan membership, reason-required audited private inspection, and account suspension/restoration. The existing confirmed user was explicitly granted admin access. Three synthetic QA plans and real OpenAI/Pinecone responses are saved for that user; all three live budget/citation/isolation checks passed. No new auth accounts or real invitations were created. See [saved review plans and verification limits](QA_REVIEW.md). Deployment of this latest admin code is still required before the public `/admin` dashboard can be used.

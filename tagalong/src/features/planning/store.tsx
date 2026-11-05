@@ -25,7 +25,7 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    const current=generation.current;
    if(!service.current)return;
    try {const me=await service.current.me();if(current!==generation.current)return;setUser(me);const next=await service.current.plans();if(current!==generation.current)return;replace(next);setError('');}
-   catch(e){if(current!==generation.current)return;setError(e instanceof Error?e.message:'Could not load shared plans.');if(e instanceof ApiError&&e.status===401){setUser(null);replace([]);}}
+   catch(e){if(current!==generation.current)return;setError(e instanceof Error?e.message:'Could not load shared plans.');if(e instanceof ApiError&&(e.status===401||e.status===403)){generation.current++;identity.current=null;setUser(null);replace([]);setReady(true);}}
    finally{if(current===generation.current)setReady(true);}
  },[replace]);
  useEffect(()=>{let active=true;void fetch('/api/config',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Could not load app configuration.');return r.json() as Promise<PublicConfig>;}).then(c=>{if(!active)return;setConfig(c);let selected:string|null=null;try{selected=localStorage.getItem('tagalong-workspace-mode');}catch{}setCurrentMode(selected==='connected'||(!selected&&(c.connectedReady||c.requireConnected))?'connected':'demo');}).catch(()=>{if(active){setCurrentMode('connected');replace([]);setUser(null);setReady(true);setError('Could not load app configuration. Please reload.');}});return()=>{active=false;};},[replace]);
