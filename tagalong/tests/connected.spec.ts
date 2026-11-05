@@ -1,5 +1,25 @@
 import {test, expect} from '@playwright/test';
 
+test('revoked plan is removed from coordination cards and insights even if overview refresh fails',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
+ const user={id:'overview-test',email:'overview@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:'2026-01-01T00:00:00Z'};
+ await page.route('**/api/config',route=>route.fulfill({json:{supabaseUrl:'https://tagalong-test.supabase.co',supabaseAnonKey:'test-publishable-key',connectedReady:true}}));
+ await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-overview',refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,user}}));
+ await page.route('**/api/backend/v1/me',route=>route.fulfill({json:{id:user.id,email:user.email,name:'overview',workspace_mode:'member'}}));
+ let revoked=false;
+ const plan={id:'private-overview',title:'Revoked private weekend',kind:'trip',location:'Private location',date:'May 14',start:'2027-05-14',end:'2027-05-16',budget:350,image:'/images/coast.jpg',members:[{name:'overview',color:'#6366f1',user_id:user.id}],messages:[],preferences:[{label:'Private confirmed preference',confirmed:true}],polls:[],itinerary:[],tasks:[],revision:1,owner_id:user.id,role:'owner'};
+ await page.route('**/api/backend/v1/plans',route=>route.fulfill({json:revoked?[]:[plan]}));
+ await page.route('**/api/backend/v1/coordination/overview',route=>revoked?route.fulfill({status:503,json:{detail:'Unavailable'}}):route.fulfill({json:{plans:[{plan_id:plan.id,plan_revision:1,title:plan.title,status:'STALLED',health:30,next_step:'Private next action',reason:'Private reason',target_tab:'Chat',activity_ideas:[],provider_status:'live'}],group_insights:[{label:'Private confirmed preference',plan_count:1}],notice:''}}));
+ await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();await page.goto('/');
+ await expect(page.getByText('Private next action',{exact:true}).first()).toBeVisible();
+ await expect(page.getByText('Private confirmed preference',{exact:true})).toBeVisible();
+ revoked=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+ await expect(page.getByText('Private next action',{exact:true})).toHaveCount(0);
+ await expect(page.getByText('Private confirmed preference',{exact:true})).toHaveCount(0);
+ await expect(page.getByText('Revoked private weekend',{exact:true})).toHaveCount(0);
+});
+
 test('home greeting uses preferred display name instead of internal identity',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
  const user={id:'greeting-test',email:'person@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{display_name:'Chandra'},created_at:'2026-01-01T00:00:00Z'};
@@ -9,7 +29,7 @@ test('home greeting uses preferred display name instead of internal identity',as
  await page.route('**/api/backend/v1/plans',route=>route.fulfill({json:[{id:'greeting-plan',title:'Personal plan',kind:'outing',location:'To decide',date:'Dec 12',start:'2026-12-12',end:'2026-12-12',budget:0,image:'/images/restaurant.jpg',members:[{name:'Chandra',color:'#6366f1',user_id:user.id}],messages:[],preferences:[],polls:[],itinerary:[],tasks:[],revision:1,owner_id:user.id,role:'owner'}]}));
  await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();await page.goto('/');
- await expect(page.getByRole('heading',{name:/Hey Chandra, let/})).toBeVisible();
+ await expect(page.getByText(/Hey Chandra, let/)).toBeVisible();
  await expect(page.getByRole('heading',{name:/internal-identity/})).toHaveCount(0);
 });
 

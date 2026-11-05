@@ -1,6 +1,6 @@
 # Tagalong verification and release status
 
-Updated 2026-11-04. The frontend and API are publicly hosted on Render. Public readiness and signed-out desktop/mobile checks passed; the user reports receiving confirmation email and successfully signing in. Private join links, preferred display names, and optional embedded indexing are implemented locally; deployment of these latest changes still needs verification. Unrestricted public email delivery and two-real-account collaboration remain unverified.
+Updated 2026-11-05. The frontend and API are publicly hosted on Render. Public readiness and signed-out desktop/mobile checks passed; the user reports receiving confirmation email and successfully signing in. Private join links, preferred display names, and optional embedded indexing are implemented locally; deployment of these latest changes still needs verification. Unrestricted public email delivery and two-real-account collaboration remain unverified.
 
 Frontend: https://tagalong-web-clbe.onrender.com · API: https://tagalong-api-7pdn.onrender.com
 
@@ -21,9 +21,9 @@ Frontend: https://tagalong-web-clbe.onrender.com · API: https://tagalong-api-7p
 | Frontend lint | Passed |
 | TypeScript | Passed |
 | Production build and standalone asset packaging | Passed |
-| Demo/configuration and narrow-update suite | 30 passed, desktop/mobile, including suspension clearing and the role-switch/sign-out race |
-| Shared HTTP/browser suite | 14 passed, desktop/mobile, including all three replays, Admin/Member switching, direct-link QA isolation and existing collaboration flows |
-| Backend tests | 86 passed; one live SQL test skipped without explicit test database configuration |
+| Demo/configuration and narrow-update suite | 32 passed, desktop/mobile, including suspension clearing and the role-switch/sign-out race |
+| Shared HTTP/browser suite | 16 passed, desktop/mobile, including all three replays, Admin/Member switching, direct-link QA isolation and existing collaboration flows |
+| Backend tests | 97 passed; one live SQL test skipped without explicit test database configuration |
 | Existing OpenAI account | Live embedding and Responses requests passed |
 | Existing Pinecone account | Read-only index configuration check passed |
 | Real provider RAG smoke | Synthetic vector ingestion/query, LangGraph retrieval, current-budget grounding and source citation passed; only the created test vectors were removed |
@@ -58,3 +58,7 @@ Sign-in now explicitly asks **Member** or **Admin**. Admin mode requires an exis
 Three admin-only fictional storyboards illustrate Christmas in San Francisco, a four-person three-day Yosemite trip and a San Francisco date night. They have step-by-step replay and evolving plan snapshots, and do not create real user accounts or member plans. Their scripted AI illustrations are explicitly labeled. See the [presentation narrative](DEMO_PRESENTATION.md).
 
 Owner controls now support confirmed transfer to an existing active member and confirmed access deletion for all plan members. Deleted records are retained and marked for audited admin review; source/vector removal is queued. No existing live user plan was deleted or transferred for testing.
+
+The proactive coordination demo is implemented: natural-language reviewed drafts; the redesigned homepage; stored summaries, explicit decisions and open questions; derived health and stalled detection; next actions; preference-grounded activity ideas; four-node LangGraph dispatch. Live synthetic OpenAI checks passed. The additive coordination projection migration is applied. Local checks passed and independent review found no remaining important issues; deployment of this latest update must still be checked. See [architecture, endpoints and rollout](PROACTIVE_COORDINATION.md).
+
+The real Postgres coordination projection was additionally tested with a synthetic plan inside a transaction that was fully rolled back. No auth account was created and no plan content persisted from that test. Desktop/mobile visual checks reported no horizontal overflow or page errors.

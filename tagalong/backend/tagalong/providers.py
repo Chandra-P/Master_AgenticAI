@@ -83,6 +83,15 @@ class ConnectedAI:
     def answer(self,plan,message,resolve_sources):
         result=self.graph.invoke({'plan':plan,'message':message,'sources':[],'resolve_sources':resolve_sources})
         return result['output'],result['sources']
+    def coordination_graph(self):
+        from .coordination_ai import CoordinationGraph
+        if not hasattr(self,'_coordination_graph'):self._coordination_graph=CoordinationGraph(self)
+        return self._coordination_graph
+    def generate_plan(self,prompt,today):return self.coordination_graph().generate_plan(prompt,today)
+    def coordinate(self,context):return self.coordination_graph().coordinate(context)
+    def dispatch_assistant(self,plan,message,resolve_sources):
+        result=self.coordination_graph().graph.invoke({'operation':'assistant','plan':plan,'message':message,'resolve_sources':resolve_sources})['output']
+        return result['response'],result['sources']
     def upsert(self,source):
         # Bounded chunks avoid embedding token overflow, including dense non-English text.
         self.delete(source)

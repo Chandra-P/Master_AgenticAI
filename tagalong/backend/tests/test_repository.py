@@ -54,3 +54,13 @@ def test_owner_transfer_updates_normalized_owner_column():
     assert len(writes)==1
     assert 'owner_id=EXCLUDED.owner_id' in writes[0][0]
     assert writes[0][1][1]=='bob'
+
+
+def test_coordination_change_updates_only_its_projection():
+    state=MemoryRepository().state;state['plans']['p']={'id':'p','owner_id':'alice','revision':1};state['members']['p']=['alice'];state['plan_activity']={'p':'2026-11-05T00:00:00+00:00'}
+    r=repository(state)
+    r.transact(lambda s:s.setdefault('coordination',{}).update(p={'plan_revision':1,'status':'ACTIVE','health':50,'summary':'Current facts','last_activity_at':'2026-11-05T00:00:00+00:00'}))
+    writes=[sql for sql,_ in r.pool.c.calls if not sql.startswith('SELECT')]
+    assert len(writes)==2
+    assert any('tagalong_coordination' in sql for sql in writes)
+    assert not any('INSERT INTO public.tagalong_plans' in sql for sql in writes)

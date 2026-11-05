@@ -1,5 +1,11 @@
 # Tagalong: from scattered conversation to an agreed plan
 
+Tagalong is an **AI-powered group coordination platform**: idea → decision → itinerary → experience. The current demo adds proactive in-app summaries, blockers and next actions on top of the existing shared-planning foundation.
+
+## First minute: demonstrate the new product
+
+Start on **Good company starts here.** Describe a weekend for four near Austin with a USD350 per-person budget, and choose **Generate Plan**. Review the structured title, destination, suggested tasks and itinerary ideas; supply or confirm dates, then create the reviewed plan. Point out that the initial description becomes the first message and the plan summary/next-action card appears without an `@Tagalong` mention. Show **Continue Planning**, **AI Recommendations** and **Group Insights** on the homepage. Insights require explicitly confirmed preferences; an empty state is honest when none have been confirmed. Plan health is rule-based progress, not model confidence. Full implementation/API/migration details are in [PROACTIVE_COORDINATION.md](PROACTIVE_COORDINATION.md).
+
 ## Opening: the problem people recognize
 
 “Everyone wants the trip. Nobody wants to coordinate it.”

@@ -16,6 +16,12 @@ In Supabase Authentication → URL Configuration, set Site URL to `https://tagal
 
 ## Local verification
 
+### Proactive demo rollout
+
+The seven-phase demo upgrade keeps the existing services and stack. Apply `supabase/migrations/202611050001_coordination.sql` before deploying the backend; the additive projection table has already been created in the selected Tagalong project, with RLS and no direct authenticated read access verified. Deploy both services from the current review branch. No new secret, package or paid worker is needed for proactive in-app refresh. `docs/PROACTIVE_COORDINATION.md` lists endpoints, node routing, limits, health rules, safety boundaries and rollout order.
+
+The homepage generates structured drafts; people review and confirm creation. Plan summaries and next actions are refreshed in bounded background tasks during active app use. Group Insights use only confirmed preferences. Existing `@Tagalong` chat/RAG, Admin/Member isolation, invitations, discovery and owner controls remain. Free-host sleep still pauses app execution; no offline reminders or notification delivery is claimed.
+
 ### Place search and owner controls
 
 Connected Discover now accepts a destination, category and search terms, calls Keenable on the backend and renders clickable external source links. This reuses the CONVENE integration protocol. The public endpoint was checked with a generic restaurant query and returned five HTTPS links. `KEENABLE_API_KEY` is optional; if absent, public endpoint quotas apply. Only explicitly entered search terms/category/destination are sent, not plan conversations. Search is limited to ten attempts per account per minute. Results are web snippets, not verified venue inventory, ratings, prices or reservation availability. The live assistant does not automatically call this search tool.

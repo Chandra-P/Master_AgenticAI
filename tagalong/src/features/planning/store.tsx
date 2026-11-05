@@ -6,7 +6,10 @@ import {ApiError,ConnectedService,getAuth,type CurrentUser,type PublicConfig,typ
 
 import {clearWorkspaceRole,writeWorkspaceRole,type WorkspaceRole} from '@/services/workspace-role';
 
+import type {AcceptDraft} from '@/services/coordination';
+
 interface Store {
+ createGeneratedPlan:(draft:AcceptDraft)=>Promise<string>;
  deletePlan:(id:string,confirmation:string)=>Promise<void>;transferOwner:(id:string,userId:string)=>Promise<void>;
  workspaceRole:WorkspaceRole;chooseWorkspaceRole:(role:WorkspaceRole)=>Promise<void>;
  plans:Plan[];ready:boolean;mode:'demo'|'connected';config:PublicConfig|null;user:CurrentUser|null;
@@ -63,6 +66,7 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    const task=serial.current.catch(()=>undefined).then(async()=>{if(!valid())throw new Error('Workspace changed. Please try again.');return action(valid);});serial.current=task;
    try{return await task;}catch(e){if(!valid())throw e;const message=e instanceof ApiError&&e.status===409?'Someone changed this plan. We refreshed it; please retry your change.':e instanceof Error?e.message:'Your change could not be saved.';setError(message);setNotice(message);if(service.current){try{const next=await service.current.plans();if(valid())replace(next);}catch{}}throw e;}finally{setPending(n=>n-1);}
  }
+ async function createGeneratedPlan(draft:AcceptDraft){return execute(async valid=>{const plan=await service.current!.request<Plan>('/v1/plans/from-draft',{method:'POST',body:JSON.stringify(draft)});if(!valid())throw new Error('Workspace changed.');replace([plan,...plansRef.current.filter(p=>p.id!==plan.id)]);setError('');setNotice('Your reviewed plan is ready.');return plan.id;});}
  async function create(input:CreatePlanInput){return execute(async valid=>{const plan=mode==='demo'?mockPlanningService.create(input):await service.current!.create(input);if(!valid())throw new Error('Workspace changed.');replace([plan,...plansRef.current]);setError('');return plan.id;});}
  async function update(id:string,fn:(plan:Plan)=>Plan){
    try{await execute(async valid=>{const old=plansRef.current.find(p=>p.id===id);if(!old)throw new Error('This plan is unavailable.');const next=fn(old);const saved=mode==='demo'?next:await service.current!.save(next,old.revision??0,old);if(!valid())return;replace(plansRef.current.map(p=>p.id===id?saved:p));setError('');});}catch{/* The shared error banner retains failures for the user. */}
@@ -99,6 +103,6 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  async function addDocument(id:string,title:string,text:string){await execute(async valid=>{await service.current!.addDocument(id,title,text);if(valid())setNotice('Document saved. It will be searchable after indexing.');});}
  async function removeDocument(id:string,sourceId:string){await execute(async valid=>{await service.current!.removeDocument(id,sourceId);if(valid())setNotice('Document removed from retrieval.');});}
  async function revoke(id:string,userId:string){await execute(async valid=>{const api=service.current!;await api.revoke(id,userId);if(!valid())return;const plan=await api.plan(id);if(valid())replace(plansRef.current.map(p=>p.id===id?plan:p));});}
- return <Context.Provider value={{deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
+ return <Context.Provider value={{createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
 }
 export function usePlanning(){const store=useContext(Context);if(!store)throw new Error('PlanningProvider is required');return store;}

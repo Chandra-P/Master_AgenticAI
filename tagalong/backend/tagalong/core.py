@@ -29,7 +29,11 @@ class MemoryRepository:
     def transact(self, fn):
         with self.lock:
             snapshot = copy.deepcopy(self.state)
-            try: return copy.deepcopy(fn(self.state))
+            try:
+                result=fn(self.state)
+                from .coordination import track_activity
+                track_activity(snapshot,self.state)
+                return copy.deepcopy(result)
             except Exception:
                 self.state = snapshot
                 raise

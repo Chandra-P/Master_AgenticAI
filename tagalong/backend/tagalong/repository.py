@@ -41,6 +41,8 @@ class PostgresRepository:
             state = row[0]
             before = copy.deepcopy(state)
             result = fn(state)
+            from .coordination import track_activity
+            track_activity(before,state)
             if state == before:
                 return copy.deepcopy(result)
             c.execute('UPDATE public.tagalong_state SET state=%s WHERE id=1', (Jsonb(state),))
@@ -63,5 +65,8 @@ class PostgresRepository:
                     c.execute('INSERT INTO public.tagalong_sources VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(source_key) DO UPDATE SET version=EXCLUDED.version,deleted=EXCLUDED.deleted,document=EXCLUDED.document', (key, p['plan_id'], p['id'], p['version'], p['deleted'], Jsonb(p)))
             for p in self.changed(before, state, 'jobs'):
                 c.execute('INSERT INTO public.tagalong_ingestion_jobs VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET status=EXCLUDED.status,attempts=EXCLUDED.attempts,lease_until=EXCLUDED.lease_until,document=EXCLUDED.document', (p['id'], p['source_key'], p['status'], p['attempts'], p['lease_until'], Jsonb(p)))
+            for pid,record in state.get('coordination',{}).items():
+                if before.get('coordination',{}).get(pid)!=record:
+                    c.execute('INSERT INTO public.tagalong_coordination(plan_id,plan_revision,status,health,last_activity_at,document) VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(plan_id) DO UPDATE SET plan_revision=EXCLUDED.plan_revision,status=EXCLUDED.status,health=EXCLUDED.health,last_activity_at=EXCLUDED.last_activity_at,document=EXCLUDED.document', (pid,record['plan_revision'],record['status'],record['health'],record.get('last_activity_at') or state.get('plan_activity',{}).get(pid),Jsonb(record)))
             return copy.deepcopy(result)
 

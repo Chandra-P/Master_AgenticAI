@@ -10,7 +10,29 @@ async function login(page:Page,name:'alice'|'bob',role:'member'|'admin'='member'
  await page.getByLabel('Password',{exact:true}).fill('test-password-123');
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();
+ await expect(page.getByText('Current role: '+(role==='admin'?'Admin':'Member'),{exact:true})).toBeVisible();
 }
+
+test('natural-language generation creates a reviewed plan and proactively summarizes it',async({page})=>{
+ const title='Reviewed proactive weekend '+crypto.randomUUID().slice(0,8);
+ await login(page,'alice');await page.goto('/');
+ await expect(page.getByRole('heading',{name:'Good company starts here.',exact:true})).toBeVisible();
+ await page.getByLabel('Describe your plan').fill('Weekend trip for four friends near Austin under $350 per person');
+ await page.getByRole('button',{name:'Generate Plan',exact:true}).click();
+ const review=page.getByRole('region',{name:'Review AI plan draft'});
+ await expect(review).toBeVisible();
+ await expect(review.getByLabel('Confirmed start date')).toHaveValue('');
+ await review.getByLabel('Generated plan name').fill(title);
+ await review.getByLabel('Confirmed start date').fill('2027-05-14');await review.getByLabel('Confirmed end date').fill('2027-05-16');
+ await review.getByRole('button',{name:'Create reviewed plan',exact:true}).click();
+ await expect(page.getByRole('heading',{name:title+'.',exact:true,level:1})).toBeVisible();
+ const coordination=page.getByRole('region',{name:'Plan coordination'});
+ await expect(coordination.getByText('Waiting for votes',{exact:true})).toBeVisible();
+ await expect(coordination).toContainText('The group is planning '+title+'.',{timeout:20000});
+ await expect(page.getByText('Planning idea: Weekend trip for four friends near Austin under $350 per person',{exact:true})).toBeVisible();
+ await page.goto('/');await expect(page.getByRole('heading',{name:'Continue Planning',exact:true})).toBeVisible();
+ await expect(page.locator('.continue-card').filter({hasText:title})).toBeVisible();
+});
 
 test('live discovery shows a clickable external source link',async({page})=>{
  await login(page,'alice');
@@ -85,6 +107,7 @@ test('two members share a plan, chat, vote, confirm an AI proposal and preserve 
   await login(alice,'alice');await login(bob,'bob');
   await alice.goto('/');
   await alice.getByRole('button',{name:'Create a plan',exact:true}).first().click();
+  await alice.getByRole('button',{name:'Create a plan manually',exact:true}).click();
   await alice.getByRole('button',{name:'Trip',exact:true}).click();
   await alice.getByLabel('Plan name').fill('Shared coast '+crypto.randomUUID().slice(0,8));
   await alice.getByLabel('Start date').fill('2026-12-04');await alice.getByLabel('End date').fill('2026-12-06');

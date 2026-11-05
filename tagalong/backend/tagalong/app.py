@@ -168,7 +168,8 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
                             item['text']=item['text'][chunk*6000:(chunk+1)*6000]; verified.append(item)
                     return verified
                 return repo.transact(evidence)
-            output,sources=ai.answer(plan,b.message,resolve_sources)
+            answer=ai.dispatch_assistant if hasattr(ai,'dispatch_assistant') else ai.answer
+            output,sources=answer(plan,b.message,resolve_sources)
             output=AssistantOutput.model_validate(output).model_dump()
             if not set(output['source_ids']).issubset({src['id'] for src in sources}): raise ValueError('Unverified citation')
             cited=[src for src in sources if src['id'] in output.get('source_ids',[])]
@@ -219,6 +220,8 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
     install_places(app,repo,actor,places)
     from .plan_management import install_plan_management
     install_plan_management(app,repo,actor)
+    from .coordination_routes import install_coordination
+    install_coordination(app,repo,actor,ai)
     return app
 
 app=create_app()
