@@ -66,7 +66,7 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
         ready=bool(repo and authenticate and repo.health())
         status='ok' if ready else ('unavailable' if repo and authenticate else 'unconfigured')
         runner=app.state.ingestion_worker
-        return JSONResponse(status_code=200 if ready else 503,content={'status':status,'mode':'connected','indexing_mode':'embedded' if embedded_enabled else 'external','indexing_worker_running':bool(runner and runner.is_alive()),'capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':bool(places and ready),'calendar':False}})
+        return JSONResponse(status_code=200 if ready else 503,content={'assistant_diagnostics':1,'status':status,'mode':'connected','indexing_mode':'embedded' if embedded_enabled else 'external','indexing_worker_running':bool(runner and runner.is_alive()),'capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':bool(places and ready),'calendar':False}})
     @app.get('/v1/me')
     def me(a=Depends(actor)):
         from .admin import is_admin
@@ -174,7 +174,9 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
             if not set(output['source_ids']).issubset({src['id'] for src in sources}): raise ValueError('Unverified citation')
             cited=[src for src in sources if src['id'] in output.get('source_ids',[])]
         except HTTPException: raise
-        except Exception: fail(502,'AI provider unavailable or returned invalid output')
+        except Exception as error:
+            from .ai_failures import assistant_failure
+            fail(502,assistant_failure(error))
         def save(s):
             p=access(s,pid,a)
             if p['revision']!=plan['revision']: fail(409,'Plan changed during assistant response; retry')

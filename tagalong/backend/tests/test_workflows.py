@@ -72,6 +72,8 @@ def test_evidence_stale_and_namespace(env):
     ai.fail=True
     response=c.post(url+'/assistant',headers=a,json={'message':'Help'})
     assert response.status_code==502 and 'secret' not in response.text
+    assert 'AI_INTERNAL; reference ' in response.json()['detail']
+    assert c.get('/health').json()['assistant_diagnostics']==1
 
 def test_jobs_retries_and_delete(env):
     c,r,ai,a,b,p=env; url='/v1/plans/'+p['id']
