@@ -1,6 +1,6 @@
 'use client';
 import {createContext,useCallback,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
-import type {Plan,CreatePlanInput} from '@/services/types';
+import type {Plan,CreatePlanInput,Activity} from '@/services/types';
 import {mockPlanningService,simulatedAssistant} from '@/services/mock-planning-service';
 import {ApiError,ConnectedService,getAuth,type CurrentUser,type PublicConfig,type Proposal,type DocumentSource} from '@/services/connected';
 
@@ -11,6 +11,7 @@ import type {AcceptDraft} from '@/services/coordination';
 import {captureRecoveryLocation,clearRecovery,recoveryContext} from '@/services/password-recovery';
 
 interface Store {
+ addDiscoveredPlace:(planId:string,activity:Activity)=>Promise<void>;
  passwordRecovery:boolean;
  createGeneratedPlan:(draft:AcceptDraft)=>Promise<string>;
  deletePlan:(id:string,confirmation:string)=>Promise<void>;transferOwner:(id:string,userId:string)=>Promise<void>;
@@ -72,6 +73,7 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  }
  async function createGeneratedPlan(draft:AcceptDraft){return execute(async valid=>{const plan=await service.current!.request<Plan>('/v1/plans/from-draft',{method:'POST',body:JSON.stringify(draft)});if(!valid())throw new Error('Workspace changed.');replace([plan,...plansRef.current.filter(p=>p.id!==plan.id)]);setError('');setNotice('Your reviewed plan is ready.');return plan.id;});}
  async function create(input:CreatePlanInput){return execute(async valid=>{const plan=mode==='demo'?mockPlanningService.create(input):await service.current!.create(input);if(!valid())throw new Error('Workspace changed.');replace([plan,...plansRef.current]);setError('');return plan.id;});}
+ async function addDiscoveredPlace(id:string,activity:Activity){await execute(async valid=>{const old=plansRef.current.find(p=>p.id===id);if(!old)throw new Error('This plan is unavailable.');if(old.itinerary.some(a=>a.id===activity.id||a.source_url===activity.source_url&&a.title===activity.title&&a.location===activity.location&&a.day===activity.day))throw new Error('This place is already in the draft for that day.');const next={...old,itinerary:[...old.itinerary,activity]};const saved=mode==='demo'?next:await service.current!.save(next,old.revision??0,old);if(!valid())throw new Error('Workspace changed.');replace(plansRef.current.map(p=>p.id===id?saved:p));setError('');setNotice('Place added to your draft itinerary. Nothing is booked.');});}
  async function update(id:string,fn:(plan:Plan)=>Plan){
    try{await execute(async valid=>{const old=plansRef.current.find(p=>p.id===id);if(!old)throw new Error('This plan is unavailable.');const next=fn(old);const saved=mode==='demo'?next:await service.current!.save(next,old.revision??0,old);if(!valid())return;replace(plansRef.current.map(p=>p.id===id?saved:p));setError('');});}catch{/* The shared error banner retains failures for the user. */}
  }
@@ -104,9 +106,9 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  }
  async function signOut(scope:'local'|'global'='global'){clearRecovery();setPasswordRecovery(false);clearWorkspaceRole();setWorkspaceRole('member');generation.current++;identity.current=null;setUser(null);replace([]);setError('');if(config?.connectedReady)await getAuth(config).auth.signOut({scope});}
  const documents=useCallback((id:string)=>service.current?.documents(id)??Promise.resolve([]),[]);
- async function addDocument(id:string,title:string,text:string){await execute(async valid=>{await service.current!.addDocument(id,title,text);if(valid())setNotice('Document saved. It will be searchable after indexing.');});}
+ async function addDocument(id:string,title:string,text:string){await execute(async valid=>{await service.current!.addDocument(id,title,text);if(valid())setNotice('Saved to Notes. Available to the assistant now; historical search indexing continues in the background.');});}
  async function removeDocument(id:string,sourceId:string){await execute(async valid=>{await service.current!.removeDocument(id,sourceId);if(valid())setNotice('Document removed from retrieval.');});}
  async function revoke(id:string,userId:string){await execute(async valid=>{const api=service.current!;await api.revoke(id,userId);if(!valid())return;const plan=await api.plan(id);if(valid())replace(plansRef.current.map(p=>p.id===id?plan:p));});}
- return <Context.Provider value={{passwordRecovery,createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
+ return <Context.Provider value={{addDiscoveredPlace,passwordRecovery,createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
 }
 export function usePlanning(){const store=useContext(Context);if(!store)throw new Error('PlanningProvider is required');return store;}

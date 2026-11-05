@@ -98,6 +98,31 @@ class Activity(Item):
 
 
     image: str | None = Field(default=None, max_length=2048)
+    source_url: str | None = Field(default=None,max_length=2048)
+    map_url: str | None = Field(default=None,max_length=2048)
+    image_source_url: str | None = Field(default=None,max_length=2048)
+    day: str | None = None
+
+    @field_validator('image')
+    @classmethod
+    def safe_image(cls,value):
+        if value is None:return value
+        if value.startswith('/images/') and '..' not in value and all(c.isalnum() or c in '/._-' for c in value):return value
+        from .places import safe_source_url
+        if not value.startswith('https://') or not safe_source_url(value):raise ValueError('Use a public HTTPS photo or a local image asset')
+        return value
+
+    @field_validator('source_url','map_url','image_source_url')
+    @classmethod
+    def public_link(cls,value):
+        if value is not None:
+            from .places import safe_source_url
+            if not safe_source_url(value):raise ValueError('Use a public HTTP or HTTPS link')
+        return value
+
+    @field_validator('day')
+    @classmethod
+    def activity_day(cls,value):return iso_date(value) if value is not None else None
 
 
 class Task(Item):
@@ -122,6 +147,13 @@ class Snapshot(DateFields):
     revision: int
     owner_id: str
     role: Literal['owner', 'member']
+
+    @model_validator(mode='after')
+    def activity_dates(self):
+        if any(item.day and not self.start<=item.day<=self.end for item in self.itinerary):raise ValueError('Activity date must be within the plan dates')
+        sourced=[(item.source_url,item.title,item.location,item.day) for item in self.itinerary if item.source_url]
+        if len(set(sourced))!=len(sourced):raise ValueError('This place is already in the draft for that day')
+        return self
 
     @field_validator('title', mode='before')
     @classmethod

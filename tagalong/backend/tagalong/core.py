@@ -74,8 +74,8 @@ def create(s,a,b):
     start=date.fromisoformat(b.start); end=date.fromisoformat(b.end)
     display=lambda d:f'{d:%b} {d.day}'+(f', {d.year}' if start.year!=end.year else '')
     date_label=display(start) if start==end else display(start)+' - '+display(end)
-    options=[display(start),display(end)] if start!=end else [display(start),'Suggest another date']
-    p={'id':pid,'title':b.title,'kind':b.kind,'location':'Location to decide','date':date_label,'start':b.start,'end':b.end,'budget':0,'image':'/images/coast.jpg' if b.kind=='trip' else '/images/restaurant.jpg','members':[{'name':a.name,'color':'#6366f1','user_id':a.id}], 'messages':[],'preferences':[],'polls':[{'id':uid(),'question':'Which date works best?','options':options,'votes':{},'datePoll':True}],'itinerary':[],'tasks':[{'label':'Set a group budget','done':False},{'label':'Choose a meeting place','done':False}],'revision':1,'owner_id':a.id}
+    options=[date_label,'Suggest another date range' if start!=end else 'Suggest another date']
+    p={'id':pid,'title':b.title,'kind':b.kind,'location':'Location to decide','date':date_label,'start':b.start,'end':b.end,'budget':0,'image':'/images/coast.jpg' if b.kind=='trip' else '/images/restaurant.jpg','members':[{'name':a.name,'color':'#6366f1','user_id':a.id}], 'messages':[],'preferences':[],'polls':[{'id':uid(),'question':'Which date range works best?' if start!=end else 'Which date works best?','options':options,'votes':{},'datePoll':True}],'itinerary':[],'tasks':[{'label':'Set a group budget','done':False},{'label':'Choose a meeting place','done':False}],'revision':1,'owner_id':a.id}
     s['plans'][pid]=p; s['members'][pid]=[a.id]
     return view(s,p,a)
 

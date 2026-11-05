@@ -33,7 +33,24 @@ def safe_source_url(raw):
 
 
 class KeenableSearch:
-    def __init__(self,transport=None): self.transport=transport
+    def __init__(self,transport=None,extractor=None): self.transport=transport;self.extractor=extractor
+
+    def venues(self,query,location,category):
+        from .discovery import discover
+        return discover(self,query,location,category,self.extractor)
+
+    def fetch_page(self,row):
+        key=os.getenv('KEENABLE_API_KEY');headers={'Accept':'application/json','X-Keenable-Title':'Tagalong'}
+        if key:headers['X-API-Key']=key
+        try:
+            with httpx.Client(timeout=12,trust_env=False,follow_redirects=False,transport=self.transport) as client:
+                result=client.get('https://api.keenable.ai/v1/fetch'+('' if key else '/public'),headers=headers,params={'url':row['url'],'max_chars':14000,'live':'true'})
+                result.raise_for_status()
+                if len(result.content)>500000:return None
+                data=result.json();content=data.get('content')
+                if not isinstance(content,str) or not content.strip():return None
+                return {'url':row['url'],'title':row['title'][:200],'content':content[:14000]}
+        except (httpx.HTTPError,ValueError,TypeError):return None
 
     def search(self,query,location,category):
         key=os.getenv('KEENABLE_API_KEY')
@@ -41,7 +58,7 @@ class KeenableSearch:
         if key:headers['X-API-Key']=key
         try:
             with httpx.Client(timeout=12,trust_env=False,follow_redirects=False,transport=self.transport) as client:
-                result=client.post('https://api.keenable.ai/v1/search'+('' if key else '/public'),headers=headers,json={'query':f'{category} in {location}: {query}', 'max_results':5})
+                result=client.post('https://api.keenable.ai/v1/search'+('' if key else '/public'),headers=headers,json={'query':f'{category} in {location}: {query}', 'max_results':8})
                 result.raise_for_status()
                 if len(result.content)>2_000_000: raise ValueError('Oversized response')
                 rows=result.json()['results']
@@ -54,7 +71,7 @@ class KeenableSearch:
                     seen.add(url)
                     title=row.get('title');snippet=row.get('snippet',row.get('description',''))
                     output.append({'title':title[:200] if isinstance(title,str) and title.strip() else urlsplit(url).hostname,'url':url,'snippet':snippet[:1500] if isinstance(snippet,str) else ''})
-                    if len(output)==5:break
+                    if len(output)==8:break
                 return output
         except (httpx.HTTPError,ValueError,TypeError,KeyError):
             fail(502,'Place search is temporarily unavailable or rate limited. Please try again later.')
@@ -72,7 +89,7 @@ class SearchRequest(BaseModel):
 
 
 def install_places(app,repo,actor,provider):
-    @app.post('/v1/places/search')
+    @app.post('/v1/places/search',summary='Find individual venue cards with source-backed photos')
     def search(b:SearchRequest,a=Depends(actor)):
         def reserve(s):
             register(s,a);bucket=int(time.time()//60);limits=s.setdefault('places_limits',{})
@@ -82,6 +99,6 @@ def install_places(app,repo,actor,provider):
             if record['count']>=10:fail(429,'Search limit reached. Please retry next minute.')
             record['count']+=1;limits[a.id]=record
         repo.transact(reserve)
-        results=provider.search(b.query,b.location,b.category)
+        results=provider.venues(b.query,b.location,b.category) if hasattr(provider,'venues') else provider.search(b.query,b.location,b.category)
         repo.transact(lambda s:register(s,a))
-        return JSONResponse({'provider':'Keenable','results':results,'notice':'Web search results. Check the source for current details; hours, prices and availability are not verified.'},headers={'Cache-Control':'no-store'})
+        return JSONResponse({'provider':'Keenable','results':results,'notice':'Individual venues identified from public websites. Photos are supplied by the linked source; details, hours and availability need your review. Adding a place creates a draft, not a booking.'},headers={'Cache-Control':'no-store'})

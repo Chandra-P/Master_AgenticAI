@@ -155,7 +155,7 @@ def test_langgraph_routes_exact_facts_without_retrieval():
     ai.retrieve=lambda pid,message: calls.append(pid) or [{'id':'source','version':1}]
     ai.generate=lambda s:{'output':{'text':'Budget is 100','preferences':[],'source_ids':[]}}
     ai.graph=ai.build_graph()
-    resolve=lambda matches:[{'id':'source','text':'Verified'}]
+    resolve=lambda matches:[{'id':'source','text':'Verified'}] if matches else []
     output,sources=ai.answer({'id':'plan','budget':100},'What is our budget?',resolve)
     assert calls==[] and sources==[]
     output,sources=ai.answer({'id':'plan','budget':100},'What did the document say?',resolve)

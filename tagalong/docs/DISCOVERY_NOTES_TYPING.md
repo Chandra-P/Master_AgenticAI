@@ -1,0 +1,17 @@
+# Place discovery, Notes grounding, and typing suggestions
+
+Connected Discover returns individual places extracted from public venue pages through the existing Keenable and OpenAI configuration. It excludes article/directory results and known publisher sites. Names and addresses are checked against source text; images must appear on the same venue page. Some venue websites do not expose a suitable image: those cards show “Photo unavailable.” We do not fabricate ratings, prices, photos, opening hours, availability, or reservations. Photos and links retain their source attribution.
+
+Choose **Add to plan**, select the plan, activity date and time, and save. The shared draft retains the address, website, Maps search link, available photo, and photo source. Saves use existing membership checks and expected revisions, reject duplicate place/day entries, validate dates against the plan, and show failure rather than a false success. Refresh or another member's view retains the activity. No database migration or new paid provider account is required.
+
+Every connected assistant request resolves current saved Notes directly before generation, without waiting for Pinecone ingestion. Relevant excerpts are bounded to 3,000 characters per document and at most six evidence items. When verified historical hits are available, up to two evidence slots are reserved for them; remaining slots contain Notes. If historical retrieval fails, current Notes still ground the answer. Inclusion and truncation metadata instruct the model to disclose limited context. Authorization, source versions, deletion status, and plan revision are checked before an answer is saved. Evidence is untrusted data, never instructions. Only verified supplied evidence IDs can be cited.
+
+Typing suggestions run locally using common planning language, destination, member names, and a bounded portion of the current plan conversation. They are optional phrase and next-token suggestions, not a remote generative model. Accept with Tab at the end of the draft or the visible button; Escape dismisses. Enter sends only outside IME composition. Accepting never sends a message. Plan/account switches reset the composer. No unsent draft is sent to Keenable, OpenAI, or the backend.
+
+Verification uses pytest, desktop/mobile Playwright, shared HTTP integration tests, and public synthetic provider checks. Mocked account tests do not establish live Supabase email delivery. Deployment still needs checking against the public frontend and API after each push.
+
+Multi-day date polls offer complete date ranges, including the year when a trip crosses years. Legacy unvoted date polls adopt the correct range when someone first votes. If a legacy poll already has votes, the original choices and vote meanings remain visible; a prefilled **Create a full-range poll** action lets the group confirm the range explicitly without deleting old votes.
+
+At **Ready to finalize**, **View final itinerary** opens “Here is your final itinerary,” with recorded activities grouped by assigned date, times, locations, venue links, working budget per person, votes, tasks, and practical next steps. It navigates to the full itinerary. Finishing the review acknowledges the outline; it does not make bookings, infer unanimous agreement, or record a new shared finalization state.
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for clone/pull, local setup, feature branches, validation and pull requests.

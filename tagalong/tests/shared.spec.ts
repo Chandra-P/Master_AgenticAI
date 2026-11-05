@@ -34,16 +34,31 @@ test('natural-language generation creates a reviewed plan and proactively summar
  await expect(page.locator('.continue-card').filter({hasText:title})).toBeVisible();
 });
 
-test('live discovery shows a clickable external source link',async({page})=>{
+test('live discovery shows a clickable external source link and saves a dated venue',async({page})=>{
+ test.setTimeout(90000);
  await login(page,'alice');
+ await page.context().route('https://places.example.test/restaurant.jpg',async route=>route.fulfill({response:await page.request.get('/images/restaurant.jpg')}));
  await page.context().route('https://places.example.test/restaurant',route=>route.fulfill({contentType:'text/html',body:'<h1>Synthetic restaurant source</h1>'}));
  await page.goto('/discover');await page.getByLabel('Destination',{exact:true}).fill('San Francisco');await page.getByLabel('What are you looking for?').fill('vegetarian dinner');
  await page.getByRole('button',{name:'Search places',exact:true}).click();
  const link=page.getByRole('link',{name:'Explore Synthetic vegetarian restaurant',exact:true});
+ await expect(page.locator('.place-card')).toBeVisible();await page.locator('.place-card').screenshot({path:'test-results-shared/place-card-'+test.info().project.name+'.png'});
  await expect(link).toHaveAttribute('href','https://places.example.test/restaurant');
  await expect(link).toHaveAttribute('rel','noopener noreferrer');
  const opened=page.waitForEvent('popup');await link.click();const source=await opened;
  await expect(source.getByRole('heading',{name:'Synthetic restaurant source'})).toBeVisible();await source.close();
+ const token='Bearer test-alice';
+ const created=await page.request.post('/api/backend/v1/plans',{headers:{Authorization:token},data:{title:'Discovery saved place '+crypto.randomUUID().slice(0,8),kind:'trip',start:'2027-05-14',end:'2027-05-16'}});
+ expect(created.ok()).toBeTruthy();const plan=await created.json();
+ await page.reload();await page.getByLabel('Destination',{exact:true}).fill('San Francisco');await page.getByLabel('What are you looking for?').fill('vegetarian dinner');await page.getByRole('button',{name:'Search places',exact:true}).click();
+ await page.getByRole('button',{name:'Add Synthetic vegetarian restaurant to plan',exact:true}).click();
+ await page.getByRole('combobox',{name:'Choose plan',exact:true}).selectOption(plan.id);await page.getByLabel('Activity date',{exact:true}).fill('2027-05-15');await page.getByLabel('Activity time',{exact:true}).fill('19:00');
+ await page.getByRole('button',{name:'Save to draft itinerary',exact:true}).click();await expect(page.getByRole('dialog')).toHaveCount(0);
+ await page.goto('/plans/'+plan.id+'?tab=Itinerary');await expect(page.getByRole('heading',{name:'Synthetic vegetarian restaurant',exact:true})).toBeVisible();
+ await expect(page.getByRole('link',{name:'Venue website',exact:true})).toHaveAttribute('href','https://places.example.test/restaurant');
+ await page.reload();await expect(page.getByText('2027-05-15 · Food & drink',{exact:true})).toBeVisible();
+ const persisted=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers:{Authorization:token}})).json();
+ expect(persisted.itinerary[0]).toMatchObject({day:'2027-05-15',time:'19:00',source_url:'https://places.example.test/restaurant',image_source_url:'https://places.example.test/restaurant'});
 });
 
 test('owner can transfer a shared plan and the new owner can delete it after confirmation',async({page:alice,browser})=>{

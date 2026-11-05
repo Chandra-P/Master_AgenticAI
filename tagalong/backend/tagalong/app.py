@@ -144,7 +144,7 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
                 proposal['status']='confirmed'; proposal['confirmed_by']=a.id; p['revision']+=1
             return view(s,p,a)
         return repo.transact(apply)
-    @app.post('/v1/plans/{pid}/assistant')
+    @app.post('/v1/plans/{pid}/assistant',summary='Ask the assistant using current Notes and optional history')
     def assistant(pid:str,b:Chat,a=Depends(actor)):
         plan=repo.transact(lambda s:copy.deepcopy(access(s,pid,a)))
         if not ai: fail(503,'AI providers are not configured')
@@ -157,17 +157,33 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
             record['count']+=1; limits[a.id]=record
         repo.transact(charge)
         try:
+            from .notes_context import notes_context, merge_evidence
+            def snapshot_notes(s):
+                access(s,pid,a)
+                return notes_context([src for src in s['sources'].values() if src['plan_id']==pid and not src['deleted'] and src.get('kind')=='document'],b.message)
+            notes,notes_status=repo.transact(snapshot_notes)
             def resolve_sources(matches):
                 def evidence(s):
                     access(s,pid,a)
                     verified=[]
+                    historical=[]
+                    for note in notes:
+                        current=s['sources'].get(pid+':'+note['id'])
+                        if current and current['plan_id']==pid and not current['deleted'] and current['version']==note['version']:
+                            verified.append(copy.deepcopy(note))
                     for hit in matches[:6]:
+                        if any(item['id']==hit['id'] for item in verified+historical): continue
                         src=s['sources'].get(pid+':'+hit['id'])
                         if src and not src['deleted'] and src['version']==hit.get('version') and src['plan_id']==pid:
                             item=copy.deepcopy(src); chunk=max(0,int(hit.get('chunk',0)))
-                            item['text']=item['text'][chunk*6000:(chunk+1)*6000]; verified.append(item)
-                    return verified
+                            item['text']=item['text'][chunk*6000:(chunk+1)*6000]
+                            item['excerpt_truncated']=len(item['text'])<len(src['text'])
+                            historical.append(item)
+                    selected,status=merge_evidence(verified,historical,notes_status['documents_total'])
+                    resolve_sources.notes_status=status
+                    return selected
                 return repo.transact(evidence)
+            resolve_sources.notes_status=notes_status
             answer=ai.dispatch_assistant if hasattr(ai,'dispatch_assistant') else ai.answer
             output,sources=answer(plan,b.message,resolve_sources)
             output=AssistantOutput.model_validate(output).model_dump()
@@ -180,9 +196,9 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
         def save(s):
             p=access(s,pid,a)
             if p['revision']!=plan['revision']: fail(409,'Plan changed during assistant response; retry')
-            for src in cited:
+            for src in sources:
                 current=s['sources'].get(pid+':'+src['id'])
-                if not current or current['deleted'] or current['version']!=src['version']: fail(409,'Evidence changed; retry')
+                if not current or current['plan_id']!=pid or current['deleted'] or current['version']!=src['version']: fail(409,'Evidence changed; retry')
             if len(p['messages'])>MAX_MESSAGES-2: fail(409,'Plan message limit reached')
             labels={x['label'] for x in view(s,p,a)['preferences']}
             if len(labels | set(output['preferences']))>MAX_PREFERENCES: fail(409,'Plan preference limit reached')
