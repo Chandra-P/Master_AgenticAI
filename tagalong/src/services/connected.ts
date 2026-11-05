@@ -1,9 +1,10 @@
 import {createClient,type SupabaseClient} from '@supabase/supabase-js';
 import type {Plan,CreatePlanInput,Preference} from './types';
 import {createPlanPatches} from './plan-patches';
+import {readWorkspaceRole} from './workspace-role';
 
 export interface PublicConfig {supabaseUrl:string;supabaseAnonKey:string;connectedReady:boolean;requireConnected?:boolean}
-export interface CurrentUser {id:string;email:string;name:string;display_name?:string;app_admin?:boolean}
+export interface CurrentUser {id:string;email:string;name:string;display_name?:string;app_admin?:boolean;workspace_mode?:'member'|'admin'}
 export interface Source {id:string;title:string;text:string}
 export interface DocumentSource extends Source {version:number;deleted:boolean;kind?:string}
 export interface Proposal {id:string;label?:string;status:string;kind?:string;payload?:Record<string,unknown>;[key:string]:unknown}
@@ -19,7 +20,7 @@ export class ConnectedService {
   async request<T>(path:string,options:RequestInit={}):Promise<T> {
     const {data:{session},error}=await this.auth.auth.getSession();
     if(error || !session) throw new ApiError('Your session ended. Please sign in again.',401);
-    const result=await fetch('/api/backend'+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,...options.headers},signal:AbortSignal.timeout(65_000)});
+    const result=await fetch('/api/backend'+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,'X-Workspace-Mode':readWorkspaceRole(session.user.id),...options.headers},signal:AbortSignal.timeout(65_000)});
     const data=await result.json().catch(()=>({detail:'Unexpected response from the shared workspace.'}));
     if(!result.ok) throw new ApiError(typeof data.detail==='string'?data.detail:'This change could not be saved. Please check your input.',result.status);
     return data as T;

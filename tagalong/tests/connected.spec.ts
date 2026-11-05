@@ -1,5 +1,25 @@
 import {test, expect} from '@playwright/test';
 
+test('sign out wins over a delayed admin-mode switch',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
+ const user={id:'role-test',email:'role@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:'2026-01-01T00:00:00Z'};
+ await page.route('**/api/config',route=>route.fulfill({json:{supabaseUrl:'https://tagalong-test.supabase.co',supabaseAnonKey:'test-publishable-key',connectedReady:true}}));
+ await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-role',refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,user}}));
+ const me={id:user.id,email:user.email,name:'role',app_admin:true,workspace_mode:'member'};
+ await page.route('**/api/backend/v1/me',route=>route.fulfill({json:me}));
+ await page.route('**/api/backend/v1/plans',route=>route.fulfill({json:[]}));
+ await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Switch to Admin',exact:true})).toBeVisible();
+ let release:()=>void=()=>{};let started:()=>void=()=>{};
+ const blocked=new Promise<void>(resolve=>{release=resolve;});const waiting=new Promise<void>(resolve=>{started=resolve;});
+ await page.route('**/api/backend/v1/me',async route=>{started();await blocked;await route.fulfill({json:me});});
+ await page.getByRole('button',{name:'Switch to Admin',exact:true}).click();await waiting;
+ await page.getByRole('button',{name:'Sign out',exact:true}).click();release();
+ await page.waitForLoadState('networkidle');
+ await expect(page.getByLabel('Email address')).toBeVisible();
+ expect(await page.evaluate(()=>sessionStorage.getItem('tagalong-access-mode'))).toBeNull();
+});
+
 test('suspension clears an already loaded account when refresh denies access',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
  const user={id:'suspended-test',email:'account@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:'2026-01-01T00:00:00Z'};

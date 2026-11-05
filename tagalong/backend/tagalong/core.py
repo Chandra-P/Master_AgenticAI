@@ -13,6 +13,7 @@ class Actor:
     email: str
     name: str
     display_name: str | None = None
+    workspace_mode: str = 'member'
 
 def identity(data):
     email = data.get('email') or ''
@@ -35,10 +36,14 @@ class MemoryRepository:
 
 def register(s,a):
     if s.get('suspended_users',{}).get(a.id): fail(403,'Account suspended. Contact the app administrator.')
-    s['actors'][a.id] = vars(a)
+    s['actors'][a.id] = {key:value for key,value in vars(a).items() if key!='workspace_mode'}
+
+def visible(s,pid,a):
+    qa=any(pid in run['plan_ids'] for run in s.get('qa_runs',{}).values())
+    return a.id in s['members'].get(pid,[]) and (not qa or (a.workspace_mode=='admin' and a.id in s.get('app_admins',{})))
 def access(s,pid,a):
     if s.get('suspended_users',{}).get(a.id): fail(403,'Account suspended. Contact the app administrator.')
-    if pid not in s['plans'] or a.id not in s['members'].get(pid,[]): fail(404,'Plan not found')
+    if pid not in s['plans'] or not visible(s,pid,a): fail(404,'Plan not found')
     return s['plans'][pid]
 def view(s,p,a):
     p = copy.deepcopy(p)

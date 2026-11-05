@@ -7,7 +7,7 @@ def setup():
     repo=MemoryRepository()
     repo.state['app_admins']={'admin':{'granted_by':'bootstrap'}}
     c=TestClient(create_app(repo,lambda t:Actor(t,t+'@test.com',t)))
-    return repo,c,{'Authorization':'Bearer admin'},{'Authorization':'Bearer member'}
+    return repo,c,{'Authorization':'Bearer admin','X-Workspace-Mode':'admin'},{'Authorization':'Bearer member'}
 
 
 def make(c,who):

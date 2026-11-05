@@ -21,9 +21,9 @@ Frontend: https://tagalong-web-clbe.onrender.com · API: https://tagalong-api-7p
 | Frontend lint | Passed |
 | TypeScript | Passed |
 | Production build and standalone asset packaging | Passed |
-| Demo/configuration and narrow-update suite | 26 passed, desktop and mobile, including suspension clearing, signup names and relevant demo-assistant responses |
-| Shared HTTP/browser suite | 8 passed, desktop and mobile, including app administration, QA review, suspension/restore and invitation return |
-| Backend tests | 77 passed; one live SQL test skipped without explicit test database configuration |
+| Demo/configuration and narrow-update suite | 28 passed, desktop/mobile, including suspension clearing and the role-switch/sign-out race |
+| Shared HTTP/browser suite | 10 passed, desktop/mobile, including all three replays, Admin/Member switching, direct-link QA isolation and existing collaboration flows |
+| Backend tests | 79 passed; one live SQL test skipped without explicit test database configuration |
 | Existing OpenAI account | Live embedding and Responses requests passed |
 | Existing Pinecone account | Read-only index configuration check passed |
 | Real provider RAG smoke | Synthetic vector ingestion/query, LangGraph retrieval, current-budget grounding and source citation passed; only the created test vectors were removed |
@@ -52,3 +52,7 @@ See [deployment instructions](DEPLOYMENT.md). No public-release or production-re
 ## App administration and stored QA review
 
 App administration is implemented with server-owned grants, independent plan membership, reason-required audited private inspection, and account suspension/restoration. The existing confirmed user was explicitly granted admin access. Three synthetic QA plans and real OpenAI/Pinecone responses are saved for that user; all three live budget/citation/isolation checks passed. No new auth accounts or real invitations were created. See [saved review plans and verification limits](QA_REVIEW.md). Deployment of this latest admin code is still required before the public `/admin` dashboard can be used.
+
+Sign-in now explicitly asks **Member** or **Admin**. Admin mode requires an existing server grant; Member mode hides QA plans and denies their direct URLs. The dashboard, navigation and storyboard APIs require Admin mode. Mode choice is tab-scoped, tied to the account, and cleared on sign-out. Role changes invalidate pending private responses.
+
+Three admin-only fictional storyboards illustrate Christmas in San Francisco, a four-person three-day Yosemite trip and a San Francisco date night. They have step-by-step replay and evolving plan snapshots, and do not create real user accounts or member plans. Their scripted AI illustrations are explicitly labeled. See the [presentation narrative](DEMO_PRESENTATION.md).

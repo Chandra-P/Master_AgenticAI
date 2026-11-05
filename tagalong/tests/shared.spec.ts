@@ -1,10 +1,11 @@
 import {test,expect,type Page,type BrowserContext} from '@playwright/test';
 
-async function login(page:Page,name:'alice'|'bob'){
+async function login(page:Page,name:'alice'|'bob',role:'member'|'admin'='member'){
  const config=await (await page.request.get('/api/config')).json();
  expect(config.supabaseUrl).toBe('https://tagalong-test.supabase.co');
  await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-'+name,refresh_token:'refresh-'+name,token_type:'bearer',expires_in:3600,user:{id:name,email:name+'@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:'2026-01-01T00:00:00Z'}}}));
  await page.goto('/account');
+ await page.getByRole('radio',{name:role==='admin'?'Admin':'Member',exact:true}).check();
  await page.getByLabel('Email address').fill(name+'@example.test');
  await page.getByLabel('Password',{exact:true}).fill('test-password-123');
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
@@ -109,7 +110,7 @@ test('sign out ignores a delayed private response and keeps demo storage isolate
 });
 
 test('app admin reviews saved QA plans and audits private access while normal members are denied',async({page:alice,browser})=>{
- await login(alice,'alice');await alice.goto('/admin');
+ await login(alice,'alice','admin');await alice.goto('/admin');
  await expect(alice.getByRole('heading',{name:'Admin dashboard'})).toBeVisible();
  await alice.getByRole('button',{name:'Create QA review plans'}).click();
  await expect(alice.getByRole('heading',{name:'[QA Review] Chicago dinner',exact:true})).toBeVisible();
@@ -140,5 +141,30 @@ test('app admin reviews saved QA plans and audits private access while normal me
   await expect(bob.getByRole('heading',{name:'Admin access required'})).toHaveCount(0);
   await alice.getByRole('button',{name:'Restore bob',exact:true}).click();
   await expect(alice.getByRole('button',{name:'Suspend bob',exact:true})).toBeVisible();
- }finally{await alice.evaluate(async()=>{await fetch('/api/backend/v1/admin/accounts/bob/suspension',{method:'POST',headers:{Authorization:'Bearer test-alice','Content-Type':'application/json'},body:JSON.stringify({suspended:false,reason:'QA cleanup restore test member'})});});await context.close();}
+ }finally{await alice.evaluate(async()=>{await fetch('/api/backend/v1/admin/accounts/bob/suspension',{method:'POST',headers:{Authorization:'Bearer test-alice','X-Workspace-Mode':'admin','Content-Type':'application/json'},body:JSON.stringify({suspended:false,reason:'QA cleanup restore test member'})});});await context.close();}
+});
+
+test('admin can replay all demo stories then switch to member with no scenarios or dashboard access',async({page})=>{
+ await login(page,'alice','admin');await page.goto('/admin');
+ const titles=['Christmas weekend in San Francisco','Three days in Yosemite','A San Francisco date night'];
+ for(const title of titles){
+  await page.getByRole('button',{name:'Open story: '+title,exact:true}).click();
+  const replay=page.getByRole('region',{name:'Demo story replay'});
+  await expect(replay).toContainText('Fictional people and conversation');
+  await expect(replay.getByRole('heading',{name:'Planning in progress'})).toBeVisible();
+  await replay.getByRole('button',{name:'Show complete conversation'}).click();
+  await expect(replay.getByRole('heading',{name:'Agreed planning outline'})).toBeVisible();
+  await expect(replay).toContainText('No bookings have been made.');
+  await replay.getByRole('button',{name:'Replay from start'}).click();
+  await expect(replay).toContainText('Step 1 of');
+ }
+ const qa=await page.evaluate(async()=>{const response=await fetch('/api/backend/v1/admin/qa-plans',{method:'POST',headers:{Authorization:'Bearer test-alice','X-Workspace-Mode':'admin','Content-Type':'application/json'},body:'{}'});return response.json();});
+ await page.goto('/account');await page.getByRole('button',{name:'Switch to Member',exact:true}).click();
+ await expect(page.getByText('Current role: Member',{exact:true})).toBeVisible();
+ await expect(page.getByRole('link',{name:'Admin',exact:true})).toHaveCount(0);
+ await page.goto('/');await expect(page.getByRole('link',{name:/Open \[QA Review\]/})).toHaveCount(0);
+ await page.goto('/plans/'+qa.plan_ids[0]);await expect(page.getByRole('heading',{name:'This plan wandered off.'})).toBeVisible();
+ await page.goto('/admin');await expect(page.getByRole('heading',{name:'Admin access required'})).toBeVisible();
+ const status=await page.evaluate(async()=>{const response=await fetch('/api/backend/v1/admin/demo-stories',{headers:{Authorization:'Bearer test-alice'}});return response.status;});
+ expect(status).toBe(403);
 });

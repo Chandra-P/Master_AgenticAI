@@ -12,7 +12,7 @@ def is_admin(state, actor):
 
 def require_admin(state, actor):
     if state.get('suspended_users', {}).get(actor.id): fail(403, 'Account suspended. Contact the app administrator.')
-    if not is_admin(state, actor): fail(403, 'App administrator access required')
+    if not is_admin(state, actor) or actor.workspace_mode!='admin': fail(403, 'Select Admin mode with an authorized account')
 
 
 def audit(state, actor, action, target, reason):
@@ -38,6 +38,23 @@ class Suspension(Reason):
 
 
 def install_admin(app, repo, actor):
+    @app.get('/v1/admin/demo-stories')
+    def stories(a=Depends(actor)):
+        from .demo_stories import STORIES
+        def read(s):
+            require_admin(s,a)
+            return [{'id':x['id'],'title':x['title'],'people':x['people'],'summary':x['summary']} for x in STORIES]
+        return JSONResponse(repo.transact(read),headers={'Cache-Control':'no-store'})
+
+    @app.get('/v1/admin/demo-stories/{story_id}')
+    def story(story_id:str,a=Depends(actor)):
+        from .demo_stories import STORIES
+        def read(s):
+            require_admin(s,a)
+            result=next((x for x in STORIES if x['id']==story_id),None)
+            if result is None: fail(404,'Demo story not found')
+            return result
+        return JSONResponse(repo.transact(read),headers={'Cache-Control':'no-store'})
     @app.get('/v1/admin/overview')
     def overview(offset:int=Query(0,ge=0),limit:int=Query(50,ge=1,le=100),a=Depends(actor)):
         def read(s):

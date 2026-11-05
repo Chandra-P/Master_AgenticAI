@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, StrictInt
 from typing import Literal
+from dataclasses import replace
 from .core import *
 
 from .models import Create, AssistantOutput, MAX_MESSAGES, MAX_PREFERENCES, MAX_MEMBERS
@@ -39,7 +40,7 @@ def create_app(repo=None,authenticate=None,ai=None):
                 runner.stop()
     app=FastAPI(title='Tagalong API',lifespan=lifespan)
     app.state.ingestion_worker=None
-    app.add_middleware(CORSMiddleware,allow_origins=[x for x in os.getenv('CORS_ORIGINS','http://localhost:3000').split(',') if x],allow_methods=['GET','POST','PUT','PATCH','DELETE'],allow_headers=['Authorization','Content-Type'])
+    app.add_middleware(CORSMiddleware,allow_origins=[x for x in os.getenv('CORS_ORIGINS','http://localhost:3000').split(',') if x],allow_methods=['GET','POST','PUT','PATCH','DELETE'],allow_headers=['Authorization','Content-Type','X-Workspace-Mode'])
     if repo is None and os.getenv('DATABASE_URL'):
         from .repository import PostgresRepository
         repo=PostgresRepository(os.environ['DATABASE_URL'])
@@ -49,11 +50,14 @@ def create_app(repo=None,authenticate=None,ai=None):
     if ai is None and all(os.getenv(k) for k in ('OPENAI_API_KEY','PINECONE_API_KEY','PINECONE_INDEX_HOST')):
         from .providers import ConnectedAI
         ai=ConnectedAI()
-    def actor(authorization:str|None=Header(default=None)):
+    def actor(authorization:str|None=Header(default=None),workspace_mode:Literal['member','admin']=Header(default='member',alias='X-Workspace-Mode')):
         if not authorization or not authorization.startswith('Bearer '): fail(401,'Bearer session required')
         if not authenticate or not repo: fail(503,'Connected service is not configured')
-        a=authenticate(authorization[7:])
-        repo.transact(lambda s:register(s,a))
+        a=replace(authenticate(authorization[7:]),workspace_mode=workspace_mode)
+        def authorize(s):
+            register(s,a)
+            if workspace_mode=='admin' and a.id not in s.get('app_admins',{}): fail(403,'App administrator access required')
+        repo.transact(authorize)
         return a
     @app.get('/health')
     def health():
@@ -66,7 +70,7 @@ def create_app(repo=None,authenticate=None,ai=None):
         from .admin import is_admin
         return {**vars(a),'app_admin':repo.transact(lambda s:is_admin(s,a))}
     @app.get('/v1/plans')
-    def plans(a=Depends(actor)): return repo.transact(lambda s:[view(s,p,a) for pid,p in s['plans'].items() if a.id in s['members'].get(pid,[])])
+    def plans(a=Depends(actor)): return repo.transact(lambda s:[view(s,p,a) for pid,p in s['plans'].items() if visible(s,pid,a)])
     @app.post('/v1/plans')
     def make(b:Create,a=Depends(actor)): return repo.transact(lambda s:create(s,a,b))
     @app.get('/v1/plans/{pid}')

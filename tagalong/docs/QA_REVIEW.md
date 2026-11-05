@@ -12,6 +12,8 @@ Each plan includes a QA brief document, synthetic conversation, voted poll, draf
 
 The authenticated admin dashboard is `/admin`. It lists summaries, accounts, ingestion job counts and the most recent audit entries. Private plan inspection requires a reason and is logged. Ordinary plan participation still requires membership, even for an admin. The QA creation button is idempotent for each admin and reuses their saved review plans.
 
+Sign in as **Admin** to review these QA plans. When signed in as **Member**, even their owner cannot list or open them. Normal member plans remain separate. The new **Planning demo stories** library contains the presentation-focused San Francisco Christmas, Yosemite and San Francisco date-night conversations; these are distinct from the retained live-provider QA records above. Storyboards are scripted fictional illustrations and explicitly labeled as such.
+
 ## Verification limits
 
 Backend and desktop/mobile browser tests cover authorization, admin/member separation, account suspension/restoration, stale-state clearing, invitations, documents, chat, voting, preference confirmation, and plan refresh. Browser multi-account tests use explicit test-only auth and in-memory storage. Live provider checks used only these synthetic QA scenarios against real Postgres, OpenAI and Pinecone; they did not create or impersonate a second real Supabase account.
