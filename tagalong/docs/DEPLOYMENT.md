@@ -2,7 +2,25 @@
 
 The connected app runs as a Next.js web service, a FastAPI web service, and an ingestion worker. Supabase supplies Auth/Postgres/Realtime. OpenAI and Pinecone stay server-side. `render.yaml` describes the three hosting services; it has not been provisioned merely by committing it.
 
+## Free pilot on existing Render services
+
+The deployed frontend is https://tagalong-web-clbe.onrender.com and the API is https://tagalong-api-7pdn.onrender.com. Both endpoints passed public readiness checks; the frontend sign-in UI also passed read-only desktop/mobile browser checks. This does not prove real signup email delivery or authenticated end-to-end use.
+
+For the existing free API service, deploy the current reviewed branch and add `TAGALONG_EMBEDDED_WORKER=true` in Render's Environment settings. Save and redeploy. The API then runs ingestion in a managed background thread using the same durable Postgres jobs and leases as the standalone worker. `/health` reports `indexing_mode` and `indexing_worker_running` so the running deployment can be verified. Missing providers disable ingestion; transient provider failures retry without taking down ordinary planning services. Embedding work still sends the approved shared source text to OpenAI and stores vectors in Pinecone.
+
+Free Render services sleep when idle. The embedded worker stops during sleep; pending jobs remain in Postgres and resume after the API wakes and any abandoned lease expires. This is a low-traffic pilot, not always-on indexing. No artificial keepalive traffic is generated. The standalone worker remains an option for a paid always-on deployment; do not create that paid service for the free pilot.
+
+`render.free.yaml` documents a new two-service free installation. Do not create a second Blueprint over the existing manual services just to enable the worker. Use `render.yaml` only if intentionally choosing the three paid services after reviewing pricing.
+
+In Supabase Authentication → URL Configuration, set Site URL to `https://tagalong-web-clbe.onrender.com` and allow the exact `/account` redirect URL for this origin. Test confirmation email delivery before public signup is advertised as verified. Supabase's default SMTP does not provide unrestricted public email delivery; configure a production email provider when opening registration beyond permitted test addresses.
+
 ## Local verification
+
+### Private invitations and preferred names
+
+Deploy both API and frontend for invitation links. No new secret, email invitation service, or schema migration is needed: invitation digests and expiration are stored in the existing server-owned aggregate. In a plan, owners open **Add member → Create invitation link**, then copy and share the link themselves. Replacing or disabling a link invalidates the outstanding token; existing members keep access. Removing a member alone does not invalidate the link.
+
+Recipients register or sign in, return through **Continue to invitation**, enter their preferred display name, and explicitly select **Join plan**. The token stays in the URL fragment or tab-scoped session storage during authentication and is cleared on success/cancel. Opening email confirmation in another browser requires reopening the original link. Owners' links expire after seven days. Names can also be edited on the account page; internal identity and voting keys remain stable.
 
 ```text
 npm ci

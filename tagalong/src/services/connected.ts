@@ -3,7 +3,7 @@ import type {Plan,CreatePlanInput,Preference} from './types';
 import {createPlanPatches} from './plan-patches';
 
 export interface PublicConfig {supabaseUrl:string;supabaseAnonKey:string;connectedReady:boolean;requireConnected?:boolean}
-export interface CurrentUser {id:string;email:string;name:string}
+export interface CurrentUser {id:string;email:string;name:string;display_name?:string}
 export interface Source {id:string;title:string;text:string}
 export interface DocumentSource extends Source {version:number;deleted:boolean;kind?:string}
 export interface Proposal {id:string;label?:string;status:string;kind?:string;payload?:Record<string,unknown>;[key:string]:unknown}
@@ -33,6 +33,9 @@ export class ConnectedService {
   proposals(id:string){return this.request<Proposal[]>('/v1/plans/'+encodeURIComponent(id)+'/proposals');}
   confirm(id:string,proposal:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id)+'/proposals/'+encodeURIComponent(proposal)+'/confirm',{method:'POST',body:'{}'});}
   share(id:string,email:string){return this.request<{status:string}>('/v1/plans/'+encodeURIComponent(id)+'/members',{method:'POST',body:JSON.stringify({email})});}
+  invitation(id:string){return this.request<{token:string;expires_at:string}>('/v1/plans/'+encodeURIComponent(id)+'/invitation',{method:'POST',body:'{}'});}
+  disableInvitation(id:string){return this.request<{status:string}>('/v1/plans/'+encodeURIComponent(id)+'/invitation',{method:'DELETE'});}
+  acceptInvitation(token:string){return this.request<{plan_id:string}>('/v1/invitations/accept',{method:'POST',body:JSON.stringify({token})});}
   revoke(id:string,userId:string){return this.request<{status:string}>('/v1/plans/'+encodeURIComponent(id)+'/members/'+encodeURIComponent(userId),{method:'DELETE'});}
   documents(id:string){return this.request<DocumentSource[]>('/v1/plans/'+encodeURIComponent(id)+'/documents');}
   addDocument(id:string,title:string,text:string){return this.request<{id:string;status:string}>('/v1/plans/'+encodeURIComponent(id)+'/documents',{method:'POST',body:JSON.stringify({title,text,content_type:'text/plain'})});}

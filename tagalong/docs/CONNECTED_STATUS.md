@@ -1,12 +1,16 @@
 # Tagalong verification and release status
 
-Updated 2026-11-04. The connected application is implemented and locally tested, including the real Supabase database bootstrap and access policies. It has **not been publicly deployed**; production email delivery, full live-account signup and hosting remain unverified.
+Updated 2026-11-04. The frontend and API are publicly hosted on Render. Public readiness and signed-out desktop/mobile checks passed; the user reports receiving confirmation email and successfully signing in. Private join links, preferred display names, and optional embedded indexing are implemented locally; deployment of these latest changes still needs verification. Unrestricted public email delivery and two-real-account collaboration remain unverified.
+
+Frontend: https://tagalong-web-clbe.onrender.com · API: https://tagalong-api-7pdn.onrender.com
 
 ## Implemented
 
 - Supabase account/sign-in UI and explicit separation of shared and browser-demo workspaces.
 - Authenticated FastAPI services, membership checks, revision conflicts and durable Postgres persistence.
 - Group chat, one-current-vote-per-member polls, shared documents, explicit preference proposals/confirmation, and owner-controlled membership revocation.
+- Owner-created private seven-day invitation links with replacement/disabling and explicit authenticated acceptance. Preferred names are requested during signup/join and editable on the account page; permissions retain stable account identity.
+- Optional embedded ingestion worker for the free Render API pilot; jobs pause while the service sleeps.
 - LangGraph conditional retrieval, OpenAI structured responses/embeddings, plan-isolated Pinecone namespaces, source/version validation, and leased ingestion retries.
 - Production Next.js standalone packaging, frontend/API/worker Dockerfiles, Render Blueprint and scoped GitHub Actions checks.
 
@@ -17,9 +21,9 @@ Updated 2026-11-04. The connected application is implemented and locally tested,
 | Frontend lint | Passed |
 | TypeScript | Passed |
 | Production build and standalone asset packaging | Passed |
-| Demo/configuration and narrow-update suite | 18 passed, desktop and mobile |
-| Shared HTTP/browser suite | 4 passed, desktop and mobile |
-| Backend tests | 60 credential-free checks passed; the previously skipped live SQL test also passed during project bootstrap |
+| Demo/configuration and narrow-update suite | 24 passed, desktop and mobile, including signup names and relevant demo-assistant responses |
+| Shared HTTP/browser suite | 6 passed, desktop and mobile, including signed-out invitation return and explicit joining |
+| Backend tests | 73 passed; one live SQL test skipped without explicit test database configuration |
 | Existing OpenAI account | Live embedding and Responses requests passed |
 | Existing Pinecone account | Read-only index configuration check passed |
 | Real provider RAG smoke | Synthetic vector ingestion/query, LangGraph retrieval, current-budget grounding and source citation passed; only the created test vectors were removed |
@@ -34,13 +38,17 @@ Shared browser tests use the real local FastAPI HTTP server with explicit test-o
 
 ## Remaining public-release work
 
-1. Provision hosting. The Supabase project is now connected and its schema is installed; bootstrap persistence/RLS checks passed before application data existed.
-2. Configure production email delivery, confirmation URLs and external-account signup. Verify two real accounts and Realtime invalidations through the deployed app. The rollback-only database/RLS test has passed, but it does not prove email delivery or the full production signup flow.
-3. Verify hosted container startup and readiness after provisioning. Both Docker builds passed in GitHub Actions; local Docker remains unavailable in this workspace.
-4. Deploy the reviewed branch's frontend, API and ingestion worker; configure server secrets and spend controls; verify the public HTTPS URL and real flows on desktop/mobile.
+1. Deploy the latest reviewed branch to both existing Render services. Verify the private join link and preferred-name flow using two real accounts.
+2. Confirm production email delivery to external addresses and Realtime invalidations. The user's successful signup is evidence for that account, not unrestricted delivery.
+3. Enable `TAGALONG_EMBEDDED_WORKER=true` on the existing API service and confirm its health metadata. Free services pause indexing during sleep.
+4. Verify new CI/container checks for the latest commit and hosted document indexing with approved data.
 
 The dedicated SQL/RLS test is skipped in credential-free CI without `TAGALONG_TEST_DATABASE_URL`; see `backend/TESTING.md`. It was separately run successfully against the selected empty Tagalong project during bootstrap, with all synthetic rows rolled back. Local test adapters are never imported by the production entrypoint. Calendar writes, bookings and live venue search remain disabled. Shared discovery never presents synthetic demo venues as live inventory. The current serialized state aggregate is intended for a small initial rollout; load testing and row-level transaction work are required before large-scale use.
 
-The user explicitly approved background indexing of shared messages/documents to OpenAI embeddings and Pinecone vectors on 2026-11-04. The local ingestion worker is now running; the connected API and frontend readiness checks remain healthy. This approval covers the named indexing data flow; it does not mean the app has been publicly deployed. All connection credentials remain in ignored local environment files.
+The user explicitly approved background indexing of shared messages/documents to OpenAI embeddings and Pinecone vectors on 2026-11-04. The local ingestion worker was started with that approval; hosted worker status remains to be verified. All connection credentials remain in ignored local environment files or hosting secrets.
 
 See [deployment instructions](DEPLOYMENT.md). No public-release or production-readiness claim follows from this document.
+
+## Pending requested work
+
+The user requested a separate app-admin role that can coexist with plan ownership or membership, plus multiple persisted QA plans for admin review. These have been discussed but are not implemented or provisioned in this checkpoint. No QA accounts or review plans were created. The existing signed-in account remains the only confirmed application account in the last read-only check.

@@ -1,5 +1,7 @@
 import {test,expect} from '@playwright/test';
 
+test.beforeEach(async({page})=>{await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));});
+
 test('create a trip, chat with simulated AI, vote and review the live board',async({page})=>{
  await page.goto('/');
  await page.getByRole('button',{name:'Create a plan',exact:true}).first().click();

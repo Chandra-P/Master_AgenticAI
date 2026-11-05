@@ -1,6 +1,8 @@
 import {test,expect,type Page,type BrowserContext} from '@playwright/test';
 
 async function login(page:Page,name:'alice'|'bob'){
+ const config=await (await page.request.get('/api/config')).json();
+ expect(config.supabaseUrl).toBe('https://tagalong-test.supabase.co');
  await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-'+name,refresh_token:'refresh-'+name,token_type:'bearer',expires_in:3600,user:{id:name,email:name+'@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:'2026-01-01T00:00:00Z'}}}));
  await page.goto('/account');
  await page.getByLabel('Email address').fill(name+'@example.test');
@@ -8,6 +10,38 @@ async function login(page:Page,name:'alice'|'bob'){
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();
 }
+
+test('private link returns through sign-in and joins only after confirmation',async({page:alice,browser})=>{
+ await login(alice,'alice');
+ const plan=await alice.evaluate(async()=>{const r=await fetch('/api/backend/v1/plans',{method:'POST',headers:{Authorization:'Bearer test-alice','Content-Type':'application/json'},body:JSON.stringify({title:'Invitation-only weekend',kind:'trip',start:'2026-11-05',end:'2026-11-07',participants:''})});return r.json();});
+ await alice.goto('/plans/'+plan.id);
+ await alice.getByRole('button',{name:'Add member',exact:true}).click();
+ await alice.getByRole('button',{name:'Create invitation link'}).click();
+ const link=await alice.getByLabel('Private join link',{exact:true}).inputValue();
+ expect(link).toContain('/join#');
+ const context=await browser.newContext();const bob=await context.newPage();
+ try{
+  await bob.goto(link);
+  await expect(bob.getByRole('link',{name:'Sign in or create account'})).toBeVisible();
+  await expect(bob.getByText('Invitation-only weekend',{exact:true})).toHaveCount(0);
+  await bob.getByRole('link',{name:'Sign in or create account'}).click();
+  await login(bob,'bob');
+  await expect(bob.getByRole('link',{name:'Continue to invitation'})).toBeVisible();
+  await bob.getByRole('link',{name:'Continue to invitation'}).click();
+  await expect(bob.getByRole('button',{name:'Join plan',exact:true})).toBeVisible();
+  const before=await bob.evaluate(async()=>{const r=await fetch('/api/backend/v1/plans',{headers:{Authorization:'Bearer test-bob'}});return r.json();});
+  expect(before.some((p:{id:string})=>p.id===plan.id)).toBe(false);
+  await bob.getByLabel('Preferred display name').fill('Bobby');
+  await bob.getByRole('button',{name:'Join plan',exact:true}).click();
+  await expect(bob.getByRole('heading',{name:'Invitation-only weekend.'})).toBeVisible();
+  expect(await bob.evaluate(()=>sessionStorage.getItem('tagalong-pending-invitation'))).toBeNull();
+  await alice.getByRole('button',{name:'Disable invitation link'}).click();
+  await bob.goto(link);
+  await bob.getByLabel('Preferred display name').fill('Bobby');
+  await bob.getByRole('button',{name:'Join plan',exact:true}).click();
+  await expect(bob.getByRole('alert').filter({hasText:'unavailable or expired'})).toBeVisible();
+ }finally{await context.close();}
+});
 
 test('two members share a plan, chat, vote, confirm an AI proposal and preserve it on refresh',async({page:alice,browser,isMobile})=>{
  const bobContext:BrowserContext=await browser.newContext({viewport:isMobile?{width:390,height:844}:{width:1280,height:720},isMobile});

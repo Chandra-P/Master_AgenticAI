@@ -1,4 +1,5 @@
 import os, copy, time
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -16,11 +17,28 @@ class Chat(BaseModel):
     message:str=Field(min_length=1,max_length=10000)
 class Share(BaseModel):
     email:str=Field(min_length=3,max_length=320)
+class AcceptInvitation(BaseModel):
+    token:str=Field(pattern=r'^[A-Za-z0-9_-]{43}$')
 class Document(BaseModel):
     title:str=Field(min_length=1,max_length=200); text:str=Field(min_length=1,max_length=100000); content_type:Literal['text/plain']='text/plain'
 
 def create_app(repo=None,authenticate=None,ai=None):
-    app=FastAPI(title='Tagalong API')
+    embedded_enabled=os.getenv('TAGALONG_EMBEDDED_WORKER','false').strip().lower()=='true'
+    @asynccontextmanager
+    async def lifespan(application):
+        runner=None
+        if embedded_enabled and repo is not None and authenticate is not None and ai is not None:
+            from .worker import EmbeddedWorker
+            runner=EmbeddedWorker(repo,ai)
+            application.state.ingestion_worker=runner
+            runner.start()
+        try:
+            yield
+        finally:
+            if runner is not None:
+                runner.stop()
+    app=FastAPI(title='Tagalong API',lifespan=lifespan)
+    app.state.ingestion_worker=None
     app.add_middleware(CORSMiddleware,allow_origins=[x for x in os.getenv('CORS_ORIGINS','http://localhost:3000').split(',') if x],allow_methods=['GET','POST','PUT','PATCH','DELETE'],allow_headers=['Authorization','Content-Type'])
     if repo is None and os.getenv('DATABASE_URL'):
         from .repository import PostgresRepository
@@ -41,7 +59,8 @@ def create_app(repo=None,authenticate=None,ai=None):
     def health():
         ready=bool(repo and authenticate and repo.health())
         status='ok' if ready else ('unavailable' if repo and authenticate else 'unconfigured')
-        return JSONResponse(status_code=200 if ready else 503,content={'status':status,'mode':'connected','capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':False,'calendar':False}})
+        runner=app.state.ingestion_worker
+        return JSONResponse(status_code=200 if ready else 503,content={'status':status,'mode':'connected','indexing_mode':'embedded' if embedded_enabled else 'external','indexing_worker_running':bool(runner and runner.is_alive()),'capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':False,'calendar':False}})
     @app.get('/v1/me')
     def me(a=Depends(actor)): return vars(a)
     @app.get('/v1/plans')
@@ -61,7 +80,7 @@ def create_app(repo=None,authenticate=None,ai=None):
             if access(s,pid,a)['owner_id']!=a.id: fail(403,'Only owner can share')
         repo.transact(check)
         target=authenticate.find(b.email) if hasattr(authenticate,'find') else repo.transact(lambda s:next((Actor(**v) for v in s['actors'].values() if v['email'].casefold()==b.email.casefold()),None))
-        if not target: fail(404,'Existing account not found')
+        if not target: fail(404,'Account not found. Ask them to register, confirm their email, and sign in once, or share a private join link.')
         def add(s):
             check(s); p=access(s,pid,a); register(s,target)
             if target.id not in s['members'][pid]:
@@ -69,6 +88,27 @@ def create_app(repo=None,authenticate=None,ai=None):
                 s['members'][pid].append(target.id); p['members'].append({'name':target.name,'user_id':target.id,'color':'#14b8a6'}); p['revision']+=1
             return {'status':'added'}
         return repo.transact(add)
+    @app.post('/v1/plans/{pid}/invitation')
+    def invitation(pid:str,a=Depends(actor)):
+        from .invitations import issue
+        return JSONResponse(repo.transact(lambda s:issue(s,pid,a)),headers={'Cache-Control':'no-store'})
+    @app.delete('/v1/plans/{pid}/invitation')
+    def disable_invitation(pid:str,a=Depends(actor)):
+        from .invitations import revoke
+        return repo.transact(lambda s:revoke(s,pid,a))
+    @app.post('/v1/invitations/accept')
+    def accept_invitation(b:AcceptInvitation,a=Depends(actor)):
+        from .invitations import accept
+        def throttle(s):
+            bucket=int(time.time()//60)
+            limits=s.setdefault('invitation_limits',{})
+            for key in list(limits):
+                if limits[key]['bucket']!=bucket: del limits[key]
+            record=limits.get(a.id,{'bucket':bucket,'count':0})
+            if record['count']>=20: fail(429,'Too many join attempts. Retry next minute.')
+            record['count']+=1; limits[a.id]=record
+        repo.transact(throttle)
+        return repo.transact(lambda s:accept(s,b.token,a))
     @app.delete('/v1/plans/{pid}/members/{user_id}')
     def remove_member(pid:str,user_id:str,a=Depends(actor)):
         def remove(s):
@@ -168,11 +208,3 @@ def create_app(repo=None,authenticate=None,ai=None):
     return app
 
 app=create_app()
-
-
-
-
-
-
-
-

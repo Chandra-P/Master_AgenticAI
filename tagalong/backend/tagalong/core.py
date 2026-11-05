@@ -12,10 +12,13 @@ class Actor:
     id: str
     email: str
     name: str
+    display_name: str | None = None
 
 def identity(data):
     email = data.get('email') or ''
-    return Actor(data['id'], email, email.split('@')[0][:30]+'-'+hashlib.sha256(data['id'].encode()).hexdigest()[:10])
+    preferred=(data.get('user_metadata') or {}).get('display_name')
+    preferred=' '.join(preferred.split())[:50] if isinstance(preferred,str) else None
+    return Actor(data['id'], email, email.split('@')[0][:30]+'-'+hashlib.sha256(data['id'].encode()).hexdigest()[:10], preferred or None)
 
 class MemoryRepository:
     def __init__(self):
@@ -36,6 +39,9 @@ def access(s,pid,a):
     return s['plans'][pid]
 def view(s,p,a):
     p = copy.deepcopy(p)
+    for member in p['members']:
+        preferred=s['actors'].get(member.get('user_id'),{}).get('display_name')
+        if preferred: member['name']=preferred
     p['role'] = 'owner' if p['owner_id']==a.id else 'member'
     labels={x['label'] for x in p['preferences']}
     for proposal in s['proposals'].values():

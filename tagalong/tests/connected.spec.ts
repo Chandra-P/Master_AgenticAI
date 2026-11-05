@@ -1,5 +1,20 @@
 import {test, expect} from '@playwright/test';
 
+test('signup asks for a preferred display name and sends it as profile metadata',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
+ await page.route('**/api/config',route=>route.fulfill({json:{supabaseUrl:'https://tagalong-test.supabase.co',supabaseAnonKey:'test-publishable-key',connectedReady:true}}));
+ let submitted:Record<string,unknown>={};
+ await page.route('https://tagalong-test.supabase.co/auth/v1/signup',route=>{submitted=route.request().postDataJSON();return route.fulfill({json:{user:{id:'signup-user',email:'new@example.test',user_metadata:{display_name:'Sunny'}},session:null}});});
+ await page.goto('/account');
+ await page.getByRole('button',{name:'New here? Create an account'}).click();
+ await page.getByLabel('Preferred display name').fill('Sunny');
+ await page.getByLabel('Email address').fill('new@example.test');
+ await page.getByLabel('Password',{exact:true}).fill('test-password-123');
+ await page.getByRole('button',{name:'Create account',exact:true}).click();
+ await expect(page.getByRole('status').filter({hasText:'Check your email'})).toBeVisible();
+ expect(submitted.data).toEqual({display_name:'Sunny'});
+});
+
 test('configuration fetch failure never substitutes demo data for a shared workspace',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
  await page.route('**/api/config',route=>route.fulfill({status:503,json:{detail:'Unavailable'}}));

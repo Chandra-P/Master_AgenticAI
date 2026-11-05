@@ -1,0 +1,51 @@
+# New installations only. Existing manual services only need the env flag in docs/DEPLOYMENT.md.
+# Free services sleep while idle and share the workspace's monthly free compute allowance.
+services:
+  - type: web
+    name: tagalong-api
+    runtime: docker
+    region: ohio
+    plan: free
+    dockerfilePath: ./tagalong/backend/Dockerfile
+    dockerContext: ./tagalong/backend
+    healthCheckPath: /health
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: TAGALONG_EMBEDDED_WORKER
+        value: 'true'
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: OPENAI_EMBEDDING_DIMENSIONS
+        value: '768'
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_HOST
+        sync: false
+  - type: web
+    name: tagalong-web
+    runtime: docker
+    region: ohio
+    plan: free
+    dockerfilePath: ./tagalong/Dockerfile
+    dockerContext: ./tagalong
+    healthCheckPath: /api/health
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: FASTAPI_BASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: TAGALONG_REQUIRE_CONNECTED
+        value: 'true'
