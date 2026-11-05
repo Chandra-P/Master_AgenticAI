@@ -1,6 +1,24 @@
 import {test,expect} from '@playwright/test';
 
 const config={supabaseUrl:'https://tagalong-test.supabase.co',supabaseAnonKey:'test-publishable-key',connectedReady:true};
+test('reset rate limits explain when to retry without revealing provider details',async({page})=>{
+ await page.route('**/api/config',route=>route.fulfill({json:config}));
+ await page.route('https://tagalong-test.supabase.co/auth/v1/recover**',route=>route.fulfill({status:429,headers:{'X-Supabase-Api-Version':'2024-01-01','Access-Control-Expose-Headers':'X-Supabase-Api-Version'},json:{code:'over_email_send_rate_limit',msg:'sensitive provider diagnostic'}}));
+ await page.goto('/account');await page.getByRole('button',{name:'Forgot password?',exact:true}).click();
+ await page.getByLabel('Recovery email address').fill('person@example.test');await page.getByRole('button',{name:'Send reset email',exact:true}).click();
+ await expect(page.getByRole('alert').filter({hasText:'The email limit has been reached.'})).toHaveText('The email limit has been reached. Use the most recent reset email if one arrived, or wait an hour before requesting another.');
+ await expect(page.getByText('sensitive provider diagnostic')).toHaveCount(0);
+});
+test('forgot password does not display an unrelated shared workspace failure',async({page})=>{
+ const user={id:'reset-test',email:'person@example.test',aud:'authenticated',role:'authenticated',app_metadata:{},user_metadata:{},created_at:'2026-01-01T00:00:00Z'};
+ await page.route('**/api/config',route=>route.fulfill({json:config}));
+ await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-reset',refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,user}}));
+ await page.route('**/api/backend/**',route=>route.fulfill({status:503,contentType:'text/html',body:'Unavailable'}));
+ await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await expect(page.getByRole('alert').filter({hasText:'Unexpected response from the shared workspace.'})).toBeVisible();
+ await page.getByRole('button',{name:'Forgot password?',exact:true}).click();
+ await expect(page.getByRole('alert').filter({hasText:'Unexpected response from the shared workspace.'})).toHaveCount(0);
+});
 test('forgot password sends a recovery request with the existing account redirect',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));
  await page.route('**/api/config',route=>route.fulfill({json:config}));

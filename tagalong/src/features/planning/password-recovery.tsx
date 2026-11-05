@@ -2,12 +2,12 @@
 import {useEffect,useState} from 'react';
 import {usePlanning} from './store';
 import {getAuth} from '@/services/connected';
-import {clearRecoveryLocation,recoveryContext,updateRecoveredPassword} from '@/services/password-recovery';
+import {clearRecoveryLocation,recoveryContext,recoveryRequestError,updateRecoveredPassword} from '@/services/password-recovery';
 import {Button} from '@/components/ui/button';
 
 export function ResetRequest({initialEmail='',onBack}:{initialEmail?:string;onBack:()=>void}){
  const {config}=usePlanning();const [email,setEmail]=useState(initialEmail);const [pending,setPending]=useState(false);const [message,setMessage]=useState('');const [error,setError]=useState('');
- async function submit(e:React.FormEvent){e.preventDefault();if(!config?.connectedReady)return;setPending(true);setError('');setMessage('');try{const result=await getAuth(config).auth.resetPasswordForEmail(email.trim(),{redirectTo:window.location.origin+'/account'});if(result.error)throw result.error;setMessage('If an account exists for that email, a reset link has been sent. Check your inbox and spam folder.');}catch{setError('Could not send the reset email. Please wait a moment and try again.');}finally{setPending(false);}}
+ async function submit(e:React.FormEvent){e.preventDefault();if(!config?.connectedReady)return;setPending(true);setError('');setMessage('');try{const result=await getAuth(config).auth.resetPasswordForEmail(email.trim(),{redirectTo:window.location.origin+'/account'});if(result.error)throw result.error;setMessage('If an account exists for that email, a reset link has been sent. Check your inbox and spam folder.');}catch(error){setError(recoveryRequestError(error));}finally{setPending(false);}}
  return <><h2>Reset your password</h2><p>Enter the email address you used for Tagalong.</p><form onSubmit={e=>void submit(e)}><label className="field">Recovery email address<input type="email" autoComplete="email" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)}/></label><Button type="submit" disabled={pending||!config?.connectedReady}>{pending?'Sending…':'Send reset email'}</Button></form>{message&&<p role="status">{message}</p>}{error&&<p role="alert">{error}</p>}<Button variant="outline" type="button" disabled={pending} onClick={onBack}>Back to sign in</Button></>;
 }
 

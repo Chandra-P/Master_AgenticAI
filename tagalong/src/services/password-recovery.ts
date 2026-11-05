@@ -3,6 +3,13 @@ import type {PublicConfig} from './connected';
 import {clearWorkspaceRole} from './workspace-role';
 const key='tagalong-password-recovery';
 let captured=false;
+export function recoveryRequestError(error:unknown){
+ const code=typeof error==='object'&&error!==null&&'code' in error?error.code:undefined;
+ if(code==='over_email_send_rate_limit')return 'The email limit has been reached. Use the most recent reset email if one arrived, or wait an hour before requesting another.';
+ if(code==='over_request_rate_limit')return 'Too many requests. Wait at least a minute before trying again, or use the most recent reset email.';
+ if(code==='email_address_not_authorized')return 'The email service cannot send to this address yet. The app administrator needs to configure outgoing email.';
+ return 'Could not send the reset email. If one already arrived, use the most recent link. Otherwise, try again later.';
+}
 interface Recovery {userId:string|null;startedAt:number}
 export function recoveryContext():Recovery|null{try{const value=JSON.parse(sessionStorage.getItem(key)||'null');if(value&&typeof value.startedAt==='number'&&Date.now()-value.startedAt<3600000&&(value.userId===null||typeof value.userId==='string'))return value;sessionStorage.removeItem(key);}catch{}return null;}
 export function clearRecovery(){try{sessionStorage.removeItem(key);}catch{}}
