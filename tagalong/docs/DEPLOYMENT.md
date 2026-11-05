@@ -88,4 +88,6 @@ Set provider spend controls and observe the API's per-account assistant limit. I
 
 ## Release evidence
 
+Password recovery is available from Account → Forgot password. Supabase recovery emails redirect to `/account` on the current frontend origin; keep that full URL in Authentication → URL Configuration → Redirect URLs. The recovery screen verifies the authenticated account, clears Admin selection, blocks workspace loading, and supports requesting a replacement for expired links. Saving a password signs out the recovered local session so the user can sign in again. Browser tests simulate provider responses; real email delivery must be checked separately by the account holder. No new backend secret or database migration is needed.
+
 Record the commit, CI run, migration environment, provider checks, public URL, real-account flow results and remaining limitations in `docs/CONNECTED_STATUS.md`. A successful local build is not evidence that the public deployment exists.

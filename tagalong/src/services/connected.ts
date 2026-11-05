@@ -2,6 +2,7 @@ import {createClient,type SupabaseClient} from '@supabase/supabase-js';
 import type {Plan,CreatePlanInput,Preference} from './types';
 import {createPlanPatches} from './plan-patches';
 import {readWorkspaceRole} from './workspace-role';
+import {captureRecoveryLocation,markRecovery} from './password-recovery';
 
 export interface PublicConfig {supabaseUrl:string;supabaseAnonKey:string;connectedReady:boolean;requireConnected?:boolean}
 export interface CurrentUser {id:string;email:string;name:string;display_name?:string;app_admin?:boolean;workspace_mode?:'member'|'admin'}
@@ -12,7 +13,8 @@ export interface AssistantReply {text:string;preferences:Preference[];sources:So
 let client:SupabaseClient|undefined;
 export function getAuth(config:PublicConfig) {
   if(!config.supabaseUrl || !config.supabaseAnonKey) throw new Error('Shared workspace needs Supabase and the API configuration.');
-  return client ||= createClient(config.supabaseUrl,config.supabaseAnonKey);
+  if(!client){captureRecoveryLocation();client=createClient(config.supabaseUrl,config.supabaseAnonKey);client.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY')markRecovery(session?.user.id||null);});}
+  return client;
 }
 export class ApiError extends Error {constructor(message:string,public status:number){super(message);}}
 export class ConnectedService {

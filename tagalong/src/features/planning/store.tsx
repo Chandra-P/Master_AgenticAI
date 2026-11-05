@@ -8,7 +8,10 @@ import {clearWorkspaceRole,writeWorkspaceRole,type WorkspaceRole} from '@/servic
 
 import type {AcceptDraft} from '@/services/coordination';
 
+import {captureRecoveryLocation,clearRecovery,recoveryContext} from '@/services/password-recovery';
+
 interface Store {
+ passwordRecovery:boolean;
  createGeneratedPlan:(draft:AcceptDraft)=>Promise<string>;
  deletePlan:(id:string,confirmation:string)=>Promise<void>;transferOwner:(id:string,userId:string)=>Promise<void>;
  workspaceRole:WorkspaceRole;chooseWorkspaceRole:(role:WorkspaceRole)=>Promise<void>;
@@ -16,7 +19,7 @@ interface Store {
  error:string;busy:boolean;notice:string;notify:(text:string)=>void;setMode:(mode:'demo'|'connected')=>void;
  reload:()=>Promise<void>;create:(input:CreatePlanInput)=>Promise<string>;update:(id:string,fn:(plan:Plan)=>Plan)=>Promise<void>;
  sendMessage:(id:string,message:string)=>Promise<void>;confirmPreference:(id:string,label:string)=>Promise<void>;
- share:(id:string,email:string)=>Promise<void>;signOut:()=>Promise<void>;proposals:(id:string)=>Promise<Proposal[]>;
+ share:(id:string,email:string)=>Promise<void>;signOut:(scope?:'local'|'global')=>Promise<void>;proposals:(id:string)=>Promise<Proposal[]>;
  revoke:(id:string,userId:string)=>Promise<void>;documents:(id:string)=>Promise<DocumentSource[]>;
  addDocument:(id:string,title:string,text:string)=>Promise<void>;removeDocument:(id:string,sourceId:string)=>Promise<void>;
 }
@@ -24,6 +27,7 @@ const Context=createContext<Store|null>(null);
 export function PlanningProvider({children}:{children:ReactNode}) {
  const [plans,setPlans]=useState<Plan[]>([]);const plansRef=useRef<Plan[]>([]);
  const [mode,setCurrentMode]=useState<'demo'|'connected'>('demo');const [config,setConfig]=useState<PublicConfig|null>(null);
+ const [passwordRecovery,setPasswordRecovery]=useState(false);
  const [workspaceRole,setWorkspaceRole]=useState<WorkspaceRole>('member');
  const [user,setUser]=useState<CurrentUser|null>(null);const [ready,setReady]=useState(false);
  const [error,setError]=useState('');const [pending,setPending]=useState(0);const [notice,setNotice]=useState('');
@@ -31,21 +35,21 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  const replace=useCallback((next:Plan[])=>{plansRef.current=next;setPlans(next);},[]);
  const reload=useCallback(async()=>{
    const current=generation.current;
-   if(!service.current)return;
+   if(!service.current||recoveryContext())return;
    try {const me=await service.current.me();if(current!==generation.current)return;setUser(me);setWorkspaceRole(me.workspace_mode||'member');const next=await service.current.plans();if(current!==generation.current)return;replace(next);setError('');}
    catch(e){if(current!==generation.current)return;setError(e instanceof Error?e.message:'Could not load shared plans.');if(e instanceof ApiError&&(e.status===401||e.status===403)){generation.current++;identity.current=null;setUser(null);replace([]);setReady(true);}}
    finally{if(current===generation.current)setReady(true);}
  },[replace]);
- useEffect(()=>{let active=true;void fetch('/api/config',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Could not load app configuration.');return r.json() as Promise<PublicConfig>;}).then(c=>{if(!active)return;setConfig(c);let selected:string|null=null;try{selected=localStorage.getItem('tagalong-workspace-mode');}catch{}setCurrentMode(selected==='connected'||(!selected&&(c.connectedReady||c.requireConnected))?'connected':'demo');}).catch(()=>{if(active){setCurrentMode('connected');replace([]);setUser(null);setReady(true);setError('Could not load app configuration. Please reload.');}});return()=>{active=false;};},[replace]);
+ useEffect(()=>{let active=true;void fetch('/api/config',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Could not load app configuration.');return r.json() as Promise<PublicConfig>;}).then(c=>{if(!active)return;setConfig(c);const recovering=captureRecoveryLocation();setPasswordRecovery(recovering);let selected:string|null=null;try{selected=localStorage.getItem('tagalong-workspace-mode');}catch{}setCurrentMode(recovering||selected==='connected'||(!selected&&(c.connectedReady||c.requireConnected))?'connected':'demo');}).catch(()=>{if(active){setCurrentMode('connected');replace([]);setUser(null);setReady(true);setError('Could not load app configuration. Please reload.');}});return()=>{active=false;};},[replace]);
  useEffect(()=>{
    if(!config)return;
    ++generation.current;let disposed=false;service.current=null;
    if(mode==='demo'){void mockPlanningService.load().then(next=>{if(!disposed){replace(next);setUser(null);setReady(true);}});return()=>{disposed=true;};}
    if(!config.connectedReady){queueMicrotask(()=>{if(!disposed){replace([]);setUser(null);setError('Shared workspace needs Supabase and the API configuration.');setReady(true);}});return()=>{disposed=true;};}
    const auth=getAuth(config);service.current=new ConnectedService(auth);
-   const load=async()=>{const current=generation.current;const {data:{session}}=await auth.auth.getSession();if(disposed||current!==generation.current)return;if(session)await reload();else{setUser(null);replace([]);setReady(true);}};
+   const load=async()=>{const current=generation.current;const {data:{session}}=await auth.auth.getSession();if(disposed||current!==generation.current)return;const recovery=recoveryContext();if(recovery){if(recovery.userId&&session?.user.id&&recovery.userId!==session.user.id){clearRecovery();setPasswordRecovery(false);}else{setPasswordRecovery(true);setUser(null);replace([]);setReady(true);return;}}if(session)await reload();else{setUser(null);replace([]);setReady(true);}};
    void load();
-   const {data:{subscription}}=auth.auth.onAuthStateChange((_event,session)=>{if(disposed)return;const next=session?.user.id??null;if(identity.current!==next){identity.current=next;generation.current++;replace([]);setUser(null);}setTimeout(()=>{if(!disposed)void load();},0);});
+   const {data:{subscription}}=auth.auth.onAuthStateChange((_event,session)=>{if(disposed)return;if(_event==='PASSWORD_RECOVERY'){generation.current++;identity.current=session?.user.id??null;setPasswordRecovery(true);setWorkspaceRole('member');replace([]);setUser(null);setReady(true);return;}if(_event==='SIGNED_OUT'){clearRecovery();setPasswordRecovery(false);}const next=session?.user.id??null;if(identity.current!==next){identity.current=next;generation.current++;replace([]);setUser(null);}setTimeout(()=>{if(!disposed)void load();},0);});
    return()=>{disposed=true;subscription.unsubscribe();};
  },[config,mode,reload,replace]);
  useEffect(()=>{if(mode==='demo'&&ready)mockPlanningService.save(plans);},[mode,plans,ready]);
@@ -59,7 +63,7 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    window.addEventListener('focus',refresh);
    return()=>{clearTimeout(timer);clearInterval(poll);window.removeEventListener('focus',refresh);void auth.removeChannel(channel);};
  },[config,mode,user,pending,reload]);
- function setMode(next:'demo'|'connected'){generation.current++;try{localStorage.setItem('tagalong-workspace-mode',next);}catch{}replace([]);setUser(null);setError('');setReady(false);setCurrentMode(next);}
+ function setMode(next:'demo'|'connected'){clearRecovery();setPasswordRecovery(false);generation.current++;try{localStorage.setItem('tagalong-workspace-mode',next);}catch{}replace([]);setUser(null);setError('');setReady(false);setCurrentMode(next);}
  async function execute<T>(action:(valid:()=>boolean)=>Promise<T>):Promise<T>{
    const current=generation.current;setPending(n=>n+1);
    const valid=()=>current===generation.current;
@@ -98,11 +102,11 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    if(role==='admin'&&!me.app_admin)throw new Error('This account does not have app administrator access.');
    writeWorkspaceRole(me.id,role);generation.current++;replace([]);setWorkspaceRole(role);setUser(null);setReady(false);await reload();
  }
- async function signOut(){clearWorkspaceRole();setWorkspaceRole('member');generation.current++;identity.current=null;setUser(null);replace([]);setError('');if(config?.connectedReady)await getAuth(config).auth.signOut();}
+ async function signOut(scope:'local'|'global'='global'){clearRecovery();setPasswordRecovery(false);clearWorkspaceRole();setWorkspaceRole('member');generation.current++;identity.current=null;setUser(null);replace([]);setError('');if(config?.connectedReady)await getAuth(config).auth.signOut({scope});}
  const documents=useCallback((id:string)=>service.current?.documents(id)??Promise.resolve([]),[]);
  async function addDocument(id:string,title:string,text:string){await execute(async valid=>{await service.current!.addDocument(id,title,text);if(valid())setNotice('Document saved. It will be searchable after indexing.');});}
  async function removeDocument(id:string,sourceId:string){await execute(async valid=>{await service.current!.removeDocument(id,sourceId);if(valid())setNotice('Document removed from retrieval.');});}
  async function revoke(id:string,userId:string){await execute(async valid=>{const api=service.current!;await api.revoke(id,userId);if(!valid())return;const plan=await api.plan(id);if(valid())replace(plansRef.current.map(p=>p.id===id?plan:p));});}
- return <Context.Provider value={{createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
+ return <Context.Provider value={{passwordRecovery,createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
 }
 export function usePlanning(){const store=useContext(Context);if(!store)throw new Error('PlanningProvider is required');return store;}
