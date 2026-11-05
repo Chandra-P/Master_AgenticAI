@@ -16,6 +16,12 @@ In Supabase Authentication → URL Configuration, set Site URL to `https://tagal
 
 ## Local verification
 
+### Place search and owner controls
+
+Connected Discover now accepts a destination, category and search terms, calls Keenable on the backend and renders clickable external source links. This reuses the CONVENE integration protocol. The public endpoint was checked with a generic restaurant query and returned five HTTPS links. `KEENABLE_API_KEY` is optional; if absent, public endpoint quotas apply. Only explicitly entered search terms/category/destination are sent, not plan conversations. Search is limited to ten attempts per account per minute. Results are web snippets, not verified venue inventory, ratings, prices or reservation availability. The live assistant does not automatically call this search tool.
+
+Owners can use **Transfer ownership** or **Delete plan** in a connected plan header. Transfer requires another active existing member and a current revision, preserves the former owner as a member and disables the prior invitation link. Deletion requires the exact plan name and current revision, hides the plan from all member access, disables invitations and queues source/vector removal. It retains records for audited admin review, explicitly disclosed in the dialog; it is not permanent data erasure. No live user plans were deleted or transferred during implementation. The existing serialized state and normalized owner projection support these operations without a schema migration.
+
 ### App administration
 
 Deploy both frontend and API for `/admin`. App-admin grants are stored in the server-owned aggregate and are independent of plan ownership/membership. Supabase user metadata never grants permissions. The initial user grant has been provisioned in the selected project; no new environment variable or schema migration is needed for it.

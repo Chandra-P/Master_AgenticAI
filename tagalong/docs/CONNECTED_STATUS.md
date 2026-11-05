@@ -21,9 +21,9 @@ Frontend: https://tagalong-web-clbe.onrender.com · API: https://tagalong-api-7p
 | Frontend lint | Passed |
 | TypeScript | Passed |
 | Production build and standalone asset packaging | Passed |
-| Demo/configuration and narrow-update suite | 28 passed, desktop/mobile, including suspension clearing and the role-switch/sign-out race |
-| Shared HTTP/browser suite | 10 passed, desktop/mobile, including all three replays, Admin/Member switching, direct-link QA isolation and existing collaboration flows |
-| Backend tests | 79 passed; one live SQL test skipped without explicit test database configuration |
+| Demo/configuration and narrow-update suite | 30 passed, desktop/mobile, including suspension clearing and the role-switch/sign-out race |
+| Shared HTTP/browser suite | 14 passed, desktop/mobile, including all three replays, Admin/Member switching, direct-link QA isolation and existing collaboration flows |
+| Backend tests | 86 passed; one live SQL test skipped without explicit test database configuration |
 | Existing OpenAI account | Live embedding and Responses requests passed |
 | Existing Pinecone account | Read-only index configuration check passed |
 | Real provider RAG smoke | Synthetic vector ingestion/query, LangGraph retrieval, current-budget grounding and source citation passed; only the created test vectors were removed |
@@ -43,7 +43,7 @@ Shared browser tests use the real local FastAPI HTTP server with explicit test-o
 3. Enable `TAGALONG_EMBEDDED_WORKER=true` on the existing API service and confirm its health metadata. Free services pause indexing during sleep.
 4. Verify new CI/container checks for the latest commit and hosted document indexing with approved data.
 
-The dedicated SQL/RLS test is skipped in credential-free CI without `TAGALONG_TEST_DATABASE_URL`; see `backend/TESTING.md`. It was separately run successfully against the selected empty Tagalong project during bootstrap, with all synthetic rows rolled back. Local test adapters are never imported by the production entrypoint. Calendar writes, bookings and live venue search remain disabled. Shared discovery never presents synthetic demo venues as live inventory. The current serialized state aggregate is intended for a small initial rollout; load testing and row-level transaction work are required before large-scale use.
+The dedicated SQL/RLS test is skipped in credential-free CI without `TAGALONG_TEST_DATABASE_URL`; see `backend/TESTING.md`. It was separately run successfully against the selected empty Tagalong project during bootstrap, with all synthetic rows rolled back. Local test adapters are never imported by the production entrypoint. Calendar writes and bookings remain disabled. Connected Discover now supports authenticated Keenable web search with external source links; snippets are not verified venue inventory. Shared discovery never presents synthetic demo venues as live inventory. The current serialized state aggregate is intended for a small initial rollout; load testing and row-level transaction work are required before large-scale use.
 
 The user explicitly approved background indexing of shared messages/documents to OpenAI embeddings and Pinecone vectors on 2026-11-04. The local ingestion worker was started with that approval; hosted worker status remains to be verified. All connection credentials remain in ignored local environment files or hosting secrets.
 
@@ -56,3 +56,5 @@ App administration is implemented with server-owned grants, independent plan mem
 Sign-in now explicitly asks **Member** or **Admin**. Admin mode requires an existing server grant; Member mode hides QA plans and denies their direct URLs. The dashboard, navigation and storyboard APIs require Admin mode. Mode choice is tab-scoped, tied to the account, and cleared on sign-out. Role changes invalidate pending private responses.
 
 Three admin-only fictional storyboards illustrate Christmas in San Francisco, a four-person three-day Yosemite trip and a San Francisco date night. They have step-by-step replay and evolving plan snapshots, and do not create real user accounts or member plans. Their scripted AI illustrations are explicitly labeled. See the [presentation narrative](DEMO_PRESENTATION.md).
+
+Owner controls now support confirmed transfer to an existing active member and confirmed access deletion for all plan members. Deleted records are retained and marked for audited admin review; source/vector removal is queued. No existing live user plan was deleted or transferred for testing.

@@ -39,6 +39,7 @@ def register(s,a):
     s['actors'][a.id] = {key:value for key,value in vars(a).items() if key!='workspace_mode'}
 
 def visible(s,pid,a):
+    if pid in s.get('deleted_plans',{}): return False
     qa=any(pid in run['plan_ids'] for run in s.get('qa_runs',{}).values())
     return a.id in s['members'].get(pid,[]) and (not qa or (a.workspace_mode=='admin' and a.id in s.get('app_admins',{})))
 def access(s,pid,a):

@@ -12,6 +12,40 @@ async function login(page:Page,name:'alice'|'bob',role:'member'|'admin'='member'
  await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();
 }
 
+test('live discovery shows a clickable external source link',async({page})=>{
+ await login(page,'alice');
+ await page.context().route('https://places.example.test/restaurant',route=>route.fulfill({contentType:'text/html',body:'<h1>Synthetic restaurant source</h1>'}));
+ await page.goto('/discover');await page.getByLabel('Destination',{exact:true}).fill('San Francisco');await page.getByLabel('What are you looking for?').fill('vegetarian dinner');
+ await page.getByRole('button',{name:'Search places',exact:true}).click();
+ const link=page.getByRole('link',{name:'Explore Synthetic vegetarian restaurant',exact:true});
+ await expect(link).toHaveAttribute('href','https://places.example.test/restaurant');
+ await expect(link).toHaveAttribute('rel','noopener noreferrer');
+ const opened=page.waitForEvent('popup');await link.click();const source=await opened;
+ await expect(source.getByRole('heading',{name:'Synthetic restaurant source'})).toBeVisible();await source.close();
+});
+
+test('owner can transfer a shared plan and the new owner can delete it after confirmation',async({page:alice,browser})=>{
+ await login(alice,'alice');
+ const context=await browser.newContext();const bob=await context.newPage();
+ try{
+ await login(bob,'bob');
+ const title='Lifecycle review '+crypto.randomUUID().slice(0,8);
+ const plan=await alice.evaluate(async title=>{const r=await fetch('/api/backend/v1/plans',{method:'POST',headers:{Authorization:'Bearer test-alice','Content-Type':'application/json'},body:JSON.stringify({title,kind:'outing',start:'2026-12-12',end:'2026-12-12'})});return r.json();},title);
+ await alice.goto('/plans/'+plan.id);await alice.getByRole('button',{name:'Add member',exact:true}).click();await alice.getByLabel('Member email').fill('bob@example.test');await alice.getByRole('button',{name:'Add member',exact:true}).last().click();
+  await bob.goto('/plans/'+plan.id);
+  await expect(bob.getByRole('button',{name:'Delete plan',exact:true})).toHaveCount(0);
+  await alice.getByRole('button',{name:'Transfer ownership',exact:true}).click();await alice.getByLabel('New plan owner').selectOption('bob');await alice.getByRole('button',{name:'Confirm transfer ownership',exact:true}).click();
+  await expect(alice.getByRole('button',{name:'Delete plan',exact:true})).toHaveCount(0);
+  await bob.reload();await bob.getByRole('button',{name:'Delete plan',exact:true}).click();
+  await expect(bob.getByRole('button',{name:'Confirm delete plan',exact:true})).toBeDisabled();
+  await bob.getByLabel('Plan name confirmation').fill(title);await bob.getByRole('button',{name:'Cancel',exact:true}).click();
+  await expect(bob.getByRole('heading',{name:title+'.',exact:true})).toBeVisible();
+  await bob.getByRole('button',{name:'Delete plan',exact:true}).click();await bob.getByLabel('Plan name confirmation').fill(title);await bob.getByRole('button',{name:'Confirm delete plan',exact:true}).click();
+  await expect(bob).toHaveURL('/');await expect(bob.getByRole('link',{name:'Open '+title,exact:true})).toHaveCount(0);
+  await alice.reload();await expect(alice.getByRole('heading',{name:'This plan wandered off.'})).toBeVisible();
+ }finally{await context.close();}
+});
+
 test('private link returns through sign-in and joins only after confirmation',async({page:alice,browser})=>{
  await login(alice,'alice');
  const plan=await alice.evaluate(async()=>{const r=await fetch('/api/backend/v1/plans',{method:'POST',headers:{Authorization:'Bearer test-alice','Content-Type':'application/json'},body:JSON.stringify({title:'Invitation-only weekend',kind:'trip',start:'2026-11-05',end:'2026-11-07',participants:''})});return r.json();});

@@ -32,7 +32,7 @@ After the curated story, clearly announce a live assistant demonstration using a
 
 ## Explain the architecture briefly
 
-Next.js presents the shared workspace. FastAPI validates Supabase sessions and plan membership. Postgres stores authoritative plan state. LangGraph routes assistant requests, OpenAI generates structured suggestions and embeddings, and Pinecone supplies plan-scoped retrieval. The assistant proposes; people approve decisions. External booking, live venue search and calendar integration remain disabled.
+Next.js presents the shared workspace. FastAPI validates Supabase sessions and plan membership. Postgres stores authoritative plan state. LangGraph routes assistant requests, OpenAI generates structured suggestions and embeddings, and Pinecone supplies plan-scoped retrieval. The assistant proposes; people approve decisions. Discover also supports explicit Keenable web search with clickable source links. These snippets do not establish venue prices, hours or availability; the assistant does not automatically invoke this search. Booking and calendar integration remain disabled.
 
 ## Finish with the outcome
 

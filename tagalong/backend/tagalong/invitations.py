@@ -35,7 +35,7 @@ def accept(state, token, actor):
     digest = hashlib.sha256(token.encode()).hexdigest()
     pid = next((pid for pid, link in state.get('invitations', {}).items()
                 if secrets.compare_digest(link['digest'], digest) and link['expires_at'] > time.time()), None)
-    if not pid or pid not in state['plans']:
+    if not pid or pid not in state['plans'] or pid in state.get('deleted_plans',{}):
         fail(404, 'This invitation is unavailable or expired. Ask the owner for a new link.')
     if actor.id in state['members'][pid]:
         return {'plan_id': pid}

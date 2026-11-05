@@ -23,7 +23,9 @@ class AcceptInvitation(BaseModel):
 class Document(BaseModel):
     title:str=Field(min_length=1,max_length=200); text:str=Field(min_length=1,max_length=100000); content_type:Literal['text/plain']='text/plain'
 
-def create_app(repo=None,authenticate=None,ai=None):
+def create_app(repo=None,authenticate=None,ai=None,places=None):
+    from .places import KeenableSearch
+    if places is None: places=KeenableSearch()
     embedded_enabled=os.getenv('TAGALONG_EMBEDDED_WORKER','false').strip().lower()=='true'
     @asynccontextmanager
     async def lifespan(application):
@@ -64,7 +66,7 @@ def create_app(repo=None,authenticate=None,ai=None):
         ready=bool(repo and authenticate and repo.health())
         status='ok' if ready else ('unavailable' if repo and authenticate else 'unconfigured')
         runner=app.state.ingestion_worker
-        return JSONResponse(status_code=200 if ready else 503,content={'status':status,'mode':'connected','indexing_mode':'embedded' if embedded_enabled else 'external','indexing_worker_running':bool(runner and runner.is_alive()),'capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':False,'calendar':False}})
+        return JSONResponse(status_code=200 if ready else 503,content={'status':status,'mode':'connected','indexing_mode':'embedded' if embedded_enabled else 'external','indexing_worker_running':bool(runner and runner.is_alive()),'capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':bool(places and ready),'calendar':False}})
     @app.get('/v1/me')
     def me(a=Depends(actor)):
         from .admin import is_admin
@@ -213,6 +215,10 @@ def create_app(repo=None,authenticate=None,ai=None):
         return repo.transact(delete)
     from .admin import install_admin
     install_admin(app,repo,actor)
+    from .places import install_places
+    install_places(app,repo,actor,places)
+    from .plan_management import install_plan_management
+    install_plan_management(app,repo,actor)
     return app
 
 app=create_app()

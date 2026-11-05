@@ -15,4 +15,7 @@ def app_factory():
         def answer(self,plan,message,resolve_sources):
             self.matches=repo.transact(lambda state:[{'id':src['id'],'version':src['version']} for src in state['sources'].values() if src['plan_id']==plan['id'] and src.get('kind')=='document' and not src['deleted']])
             return super().answer(plan,message,resolve_sources)
-    return create_app(repo,authenticate,BrowserAI())
+    class BrowserPlaces:
+        def search(self,query,location,category):
+            return [{'title':'Synthetic vegetarian restaurant','url':'https://places.example.test/restaurant','snippet':'Synthetic public source snippet for browser verification.'}]
+    return create_app(repo,authenticate,BrowserAI(),places=BrowserPlaces())

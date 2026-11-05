@@ -42,3 +42,15 @@ def test_membership_removal_is_narrow():
     r.transact(lambda s:s['members']['plan'].remove('bob'))
     deletes=[(sql,args) for sql,args in r.pool.c.calls if sql.startswith('DELETE')]
     assert deletes==[('DELETE FROM public.tagalong_memberships WHERE plan_id=%s AND user_id=%s',('plan','bob'))]
+
+
+def test_owner_transfer_updates_normalized_owner_column():
+    state=MemoryRepository().state
+    state['plans']['p']={'id':'p','owner_id':'alice','revision':1}
+    state['members']['p']=['alice','bob']
+    r=repository(state)
+    r.transact(lambda s:s['plans']['p'].update(owner_id='bob',revision=2))
+    writes=[(sql,args) for sql,args in r.pool.c.calls if 'INSERT INTO public.tagalong_plans' in sql]
+    assert len(writes)==1
+    assert 'owner_id=EXCLUDED.owner_id' in writes[0][0]
+    assert writes[0][1][1]=='bob'

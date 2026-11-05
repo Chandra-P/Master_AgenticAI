@@ -7,6 +7,7 @@ import {ApiError,ConnectedService,getAuth,type CurrentUser,type PublicConfig,typ
 import {clearWorkspaceRole,writeWorkspaceRole,type WorkspaceRole} from '@/services/workspace-role';
 
 interface Store {
+ deletePlan:(id:string,confirmation:string)=>Promise<void>;transferOwner:(id:string,userId:string)=>Promise<void>;
  workspaceRole:WorkspaceRole;chooseWorkspaceRole:(role:WorkspaceRole)=>Promise<void>;
  plans:Plan[];ready:boolean;mode:'demo'|'connected';config:PublicConfig|null;user:CurrentUser|null;
  error:string;busy:boolean;notice:string;notify:(text:string)=>void;setMode:(mode:'demo'|'connected')=>void;
@@ -80,6 +81,8 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  });}
  async function confirmPreference(id:string,label:string){if(mode==='demo'){await update(id,p=>({...p,preferences:p.preferences.map(x=>x.label===label?{...x,confirmed:true}:x)}));return;}await execute(async valid=>{const api=service.current!;const proposals=await api.proposals(id);if(!valid())return;const proposal=proposals.find(p=>p.label===label&&p.status==='pending');if(!proposal)throw new Error('This proposal changed. Refresh the plan before confirming.');const saved=await api.confirm(id,proposal.id);if(valid())replace(plansRef.current.map(p=>p.id===id?saved:p));});}
  async function share(id:string,email:string){await execute(async valid=>{const api=service.current!;await api.share(id,email);if(!valid())return;const plan=await api.plan(id);if(!valid())return;replace(plansRef.current.map(p=>p.id===id?plan:p));setNotice('Member added. No email was sent.');});}
+ async function deletePlan(id:string,confirmation:string){await execute(async valid=>{const plan=plansRef.current.find(p=>p.id===id);if(!plan)throw new Error('Plan is unavailable.');await service.current!.deletePlan(id,plan.revision??0,confirmation);if(valid()){replace(plansRef.current.filter(p=>p.id!==id));setNotice('Plan deleted from member workspaces. Records are retained for admin review.');}});}
+ async function transferOwner(id:string,userId:string){await execute(async valid=>{const plan=plansRef.current.find(p=>p.id===id);if(!plan)throw new Error('Plan is unavailable.');const saved=await service.current!.transferOwner(id,plan.revision??0,userId);if(valid()){replace(plansRef.current.map(p=>p.id===id?saved:p));setNotice('Ownership transferred. You remain a member.');}});}
  async function chooseWorkspaceRole(role:WorkspaceRole){
    if(!config||!service.current)throw new Error('Shared workspace is unavailable.');
    const current=generation.current;const request=++roleRequest.current;const api=service.current;
@@ -96,6 +99,6 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  async function addDocument(id:string,title:string,text:string){await execute(async valid=>{await service.current!.addDocument(id,title,text);if(valid())setNotice('Document saved. It will be searchable after indexing.');});}
  async function removeDocument(id:string,sourceId:string){await execute(async valid=>{await service.current!.removeDocument(id,sourceId);if(valid())setNotice('Document removed from retrieval.');});}
  async function revoke(id:string,userId:string){await execute(async valid=>{const api=service.current!;await api.revoke(id,userId);if(!valid())return;const plan=await api.plan(id);if(valid())replace(plansRef.current.map(p=>p.id===id?plan:p));});}
- return <Context.Provider value={{workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
+ return <Context.Provider value={{deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
 }
 export function usePlanning(){const store=useContext(Context);if(!store)throw new Error('PlanningProvider is required');return store;}

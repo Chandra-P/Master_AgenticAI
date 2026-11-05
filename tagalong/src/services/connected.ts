@@ -29,6 +29,8 @@ export class ConnectedService {
   plans(){return this.request<Plan[]>('/v1/plans');}
   plan(id:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id));}
   create(input:CreatePlanInput){return this.request<Plan>('/v1/plans',{method:'POST',body:JSON.stringify(input)});}
+  deletePlan(id:string,revision:number,confirmation:string){return this.request<{status:string}>('/v1/plans/'+encodeURIComponent(id),{method:'DELETE',body:JSON.stringify({expected_revision:revision,confirmation})});}
+  transferOwner(id:string,revision:number,userId:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id)+'/owner',{method:'POST',body:JSON.stringify({expected_revision:revision,user_id:userId})});}
   save(plan:Plan,revision:number,previous:Plan){const patches=createPlanPatches(previous,plan);return patches.length?this.request<Plan>('/v1/plans/'+encodeURIComponent(plan.id),{method:'PATCH',body:JSON.stringify({patches,expected_revision:revision})}):Promise.resolve(previous);}
   assistant(id:string,message:string){return this.request<AssistantReply>('/v1/plans/'+encodeURIComponent(id)+'/assistant',{method:'POST',body:JSON.stringify({message})});}
   proposals(id:string){return this.request<Proposal[]>('/v1/plans/'+encodeURIComponent(id)+'/proposals');}

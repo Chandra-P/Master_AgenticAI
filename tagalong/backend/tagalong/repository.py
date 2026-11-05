@@ -55,7 +55,7 @@ class PostgresRepository:
                 previous = before['plans'].get(p['id'])
                 if not previous or previous['revision'] != p['revision']:
                     c.execute('INSERT INTO public.tagalong_revisions(plan_id,revision) VALUES(%s,%s) ON CONFLICT(plan_id) DO UPDATE SET revision=EXCLUDED.revision', (p['id'], p['revision']))
-                c.execute('INSERT INTO public.tagalong_plans VALUES(%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET revision=EXCLUDED.revision,document=EXCLUDED.document', (p['id'], p['owner_id'], p['revision'], Jsonb(p)))
+                c.execute('INSERT INTO public.tagalong_plans VALUES(%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET owner_id=EXCLUDED.owner_id,revision=EXCLUDED.revision,document=EXCLUDED.document', (p['id'], p['owner_id'], p['revision'], Jsonb(p)))
             for p in self.changed(before, state, 'proposals'):
                 c.execute('INSERT INTO public.tagalong_proposals VALUES(%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET status=EXCLUDED.status,document=EXCLUDED.document', (p['id'], p['plan_id'], p['label'], p['status'], Jsonb(p)))
             for key, p in state['sources'].items():

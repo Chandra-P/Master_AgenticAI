@@ -64,7 +64,7 @@ def install_admin(app, repo, actor):
             qa_ids={pid for run in s.get('qa_runs',{}).values() for pid in run['plan_ids']}
             return {
                 'counts':{'plans':len(plans),'accounts':len(accounts),'qa_plans':len(qa_ids)},
-                'plans':[{'id':p['id'],'title':p['title'],'owner_id':p['owner_id'],'members':len(s['members'].get(p['id'],[])),'revision':p['revision'],'qa':p['id'] in qa_ids} for p in plans[offset:offset+limit]],
+                'plans':[{'id':p['id'],'title':p['title'],'owner_id':p['owner_id'],'members':len(s['members'].get(p['id'],[])),'revision':p['revision'],'qa':p['id'] in qa_ids,'deleted':p['id'] in s.get('deleted_plans',{})} for p in plans[offset:offset+limit]],
                 'accounts':[{'id':u['id'],'email':u['email'],'display_name':u.get('display_name') or u['name'],'app_admin':u['id'] in s.get('app_admins',{}),'suspended':bool(s.get('suspended_users',{}).get(u['id']))} for u in accounts[offset:offset+limit]],
                 'jobs':dict(Counter(job['status'] for job in s['jobs'].values())),
                 'audit':list(reversed(s.get('admin_audit',[])[-50:])),
@@ -82,7 +82,7 @@ def install_admin(app, repo, actor):
             # Inspection is not a membership grant and has no editable plan role.
             plan['role']='admin_review'
             documents=[{'id':x['id'],'title':x['title'],'text':x['text']} for x in s['sources'].values() if x['plan_id']==pid and x.get('kind')=='document' and not x['deleted']]
-            return {'plan':plan,'documents':documents,'audit_id':event['id']}
+            return {'plan':plan,'documents':documents,'audit_id':event['id'],'deleted':pid in s.get('deleted_plans',{})}
         return JSONResponse(repo.transact(read),headers={'Cache-Control':'no-store'})
 
     @app.post('/v1/admin/accounts/{user_id}/suspension')
