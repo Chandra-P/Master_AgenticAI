@@ -232,6 +232,8 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
             if not item or item['deleted'] or item.get('kind','message')!='document': fail(404,'Document not found')
             source(s,pid,sid,item['title'],'',True); return {'status':'queued'}
         return repo.transact(delete)
+    from .demo_bookings import install_demo_bookings
+    install_demo_bookings(app,repo,actor)
     from .admin import install_admin
     install_admin(app,repo,actor)
     from .places import install_places

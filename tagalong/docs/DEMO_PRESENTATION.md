@@ -38,7 +38,13 @@ After the curated story, clearly announce a live assistant demonstration using a
 
 ## Explain the architecture briefly
 
-Next.js presents the shared workspace. FastAPI validates Supabase sessions and plan membership. Postgres stores authoritative plan state. LangGraph routes assistant requests, OpenAI generates structured suggestions and embeddings, and Pinecone supplies plan-scoped retrieval. The assistant proposes; people approve decisions. Discover also supports explicit Keenable web search with clickable source links. These snippets do not establish venue prices, hours or availability; the assistant does not automatically invoke this search. Booking and calendar integration remain disabled.
+Next.js presents the shared workspace. FastAPI validates Supabase sessions and plan membership. Postgres stores authoritative plan state. LangGraph routes assistant requests, OpenAI generates structured suggestions and embeddings, and Pinecone supplies plan-scoped retrieval. The assistant proposes; people approve decisions. Discover also supports explicit Keenable web search with clickable source links. These snippets do not establish venue prices, hours or availability; the assistant does not automatically invoke this search. Real booking and calendar integrations remain disabled. The optional MCP restaurant demo uses fictional availability and explicit confirmation.
+
+## Optional live MCP booking demonstration
+
+Open **Demo bookings** inside a connected plan, or use **Try demo restaurant booking** in chat. Announce that the catalogue, slots, estimates and confirmations are fictional. Search, select a fictional restaurant/time, review the quote, then explicitly confirm a demo reservation. Show the `DEMO-…` reference and generated fictional itinerary entry. Expand **MCP activity trace** to demonstrate actual initialize, tool discovery and tool-call operations over stdio through the official SDK and LangGraph. Refresh, then cancel with confirmation to show retained history and removal of only the generated activity.
+
+The protocol calls are real; the provider and reservation are simulated. These actions are explicitly initiated by the user through the backend's booking graph, not autonomous real-world booking by OpenAI. No payment, restaurant reservation, email or calendar write occurs. Live restaurant discovery is separate from the fictional booking catalogue. See [DEMO_BOOKING_MCP.md](DEMO_BOOKING_MCP.md) for the complete walkthrough and architecture.
 
 ## Finish with the outcome
 

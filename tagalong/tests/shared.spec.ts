@@ -13,6 +13,38 @@ async function login(page:Page,name:'alice'|'bob',role:'member'|'admin'='member'
  await expect(page.getByText('Current role: '+(role==='admin'?'Admin':'Member'),{exact:true})).toBeVisible();
 }
 
+test('real MCP demo books once, persists to the shared itinerary, and cancels without real reservations',async({page})=>{
+ test.setTimeout(120000);
+ await login(page,'alice');
+ const a={Authorization:'Bearer test-alice'},b={Authorization:'Bearer test-bob'};
+ const created=await page.request.post('/api/backend/v1/plans',{headers:a,data:{title:'MCP restaurant demo '+crypto.randomUUID().slice(0,8),kind:'trip',start:'2027-05-14',end:'2027-05-16'}});expect(created.ok()).toBeTruthy();const plan=await created.json();
+ expect((await page.request.get('/api/backend/v1/me',{headers:b})).ok()).toBeTruthy();
+ expect((await page.request.post('/api/backend/v1/plans/'+plan.id+'/members',{headers:a,data:{email:'bob@example.test'}})).ok()).toBeTruthy();
+ await page.goto('/plans/'+plan.id+'?tab=Demo%20bookings');
+ await expect(page.getByText('Demo reservation—no real booking or charge',{exact:true})).toBeVisible();
+ await page.getByLabel('Demo city',{exact:true}).fill('San Francisco');await page.getByLabel('Demo party size',{exact:true}).fill('4');
+ await page.getByRole('button',{name:'Search fictional restaurants',exact:true}).click();
+ await page.getByRole('combobox',{name:'Restaurant',exact:true}).selectOption('demo-lantern');await page.getByRole('button',{name:'Demo slot 19:00',exact:true}).click();
+ const quoteResponse=page.waitForResponse(r=>r.url().endsWith('/demo-bookings/quote')&&r.request().method()==='POST');
+ await page.getByRole('button',{name:'Review demo reservation',exact:true}).click();const quote=await(await quoteResponse).json();expect(quote.simulation).toBe(true);
+ await expect(page.getByRole('button',{name:'Confirm demo reservation',exact:true})).toBeVisible();
+ const before=await(await page.request.get('/api/backend/v1/plans/'+plan.id+'/demo-bookings',{headers:a})).json();expect(before.bookings).toHaveLength(0);
+ await page.getByRole('button',{name:'Confirm demo reservation',exact:true}).click();
+ await expect(page.getByText(/DEMO-[A-F0-9]+ · confirmed/)).toBeVisible({timeout:30000});
+ const list=await(await page.request.get('/api/backend/v1/plans/'+plan.id+'/demo-bookings',{headers:a})).json();expect(list.bookings).toHaveLength(1);const booking=list.bookings[0];
+ const retry=await page.request.post('/api/backend/v1/plans/'+plan.id+'/demo-bookings/confirm',{headers:a,data:{quote_id:quote.quote.id,confirmed:true}});expect(retry.ok()).toBeTruthy();expect((await retry.json()).booking.id).toBe(booking.id);
+ const saved=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers:a})).json();expect(saved.itinerary.filter((x:{id:string})=>x.id===booking.itinerary_entry_id)).toHaveLength(1);
+ await page.getByText('MCP activity trace',{exact:true}).click();await expect(page.locator('details').filter({hasText:'MCP activity trace'})).toContainText('create_demo_booking');
+ await page.screenshot({path:'test-results-shared/demo-booking-'+test.info().project.name+'.png',fullPage:true});
+ await page.reload();await expect(page.getByText(booking.reference+' · confirmed',{exact:true})).toBeVisible();
+ const shared=await(await page.request.get('/api/backend/v1/plans/'+plan.id+'/demo-bookings',{headers:b})).json();expect(shared.bookings[0].reference).toBe(booking.reference);
+ expect((await page.request.post('/api/backend/v1/plans/'+plan.id+'/demo-bookings/'+booking.id+'/cancel',{headers:b,data:{confirmed:true}})).status()).toBe(403);
+ await page.getByRole('button',{name:'Cancel demo reservation '+booking.reference,exact:true}).click();await page.getByRole('button',{name:'Confirm cancellation',exact:true}).click();
+ await expect(page.getByText(booking.reference+' · cancelled',{exact:true})).toBeVisible({timeout:30000});
+ const cancelled=await(await page.request.get('/api/backend/v1/plans/'+plan.id+'/demo-bookings',{headers:a})).json();expect(cancelled.bookings[0].status).toBe('cancelled');
+ const finalPlan=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers:a})).json();expect(finalPlan.itinerary.some((x:{id:string})=>x.id===booking.itinerary_entry_id)).toBe(false);
+});
+
 test('natural-language generation creates a reviewed plan and proactively summarizes it',async({page})=>{
  const title='Reviewed proactive weekend '+crypto.randomUUID().slice(0,8);
  await login(page,'alice');await page.goto('/');
