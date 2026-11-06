@@ -12,6 +12,6 @@ No database migration, new credential or provider is needed for this integration
 
 ## Team contribution and deployment
 
-The current deployment branch is `checkpoint/all-projects-2026-11-04`. A commit pushed only to `main` does not appear on that deployment. Create feature branches from the current deployment branch and submit pull requests targeting it until the main integration PR is merged. See [CONTRIBUTING.md](../CONTRIBUTING.md).
+The current deployment branch is `checkpoint/all-projects-2026-11-04`. A commit pushed only to `main` does not appear on that deployment. The latest integrated code is also on `main`: create feature branches from `main` and submit pull requests targeting `main`. Render still follows its configured deployment branch until the owner changes that hosting setting. See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 The Groups source originated in ShyamK's `895593a` commit. The integration preserves its history and the newer connected functionality. Earlier audit documents in the repository root remain historical snapshots, not current release claims.

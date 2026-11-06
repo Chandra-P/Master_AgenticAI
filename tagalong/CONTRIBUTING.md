@@ -2,7 +2,7 @@
 
 Repository: https://github.com/Chandra-P/Master_AgenticAI
 
-The current development and Render deployment branch is `checkpoint/all-projects-2026-11-04`. Use it as the base until the reviewed changes are merged into `main`. Tagalong lives in `tagalong/` within the repository. Ask the repository owner for collaborator access to push your own feature branch; otherwise use a fork and pull request.
+The current development branch is `main`. Create feature branches from `main` and target pull requests to `main`. Render currently follows `checkpoint/all-projects-2026-11-04`; the owner must synchronize approved main changes to that branch until hosting is switched to main. Tagalong lives in `tagalong/` within the repository. Ask the repository owner for collaborator access to push your own feature branch; otherwise use a fork and pull request.
 
 ## First checkout
 
@@ -11,8 +11,8 @@ Install Git, Node.js compatible with `package.json`/CI, Python 3.12 and uv. Then
 ```sh
 git clone https://github.com/Chandra-P/Master_AgenticAI.git
 cd Master_AgenticAI
-git switch checkpoint/all-projects-2026-11-04
-git pull --ff-only origin checkpoint/all-projects-2026-11-04
+git switch main
+git pull --ff-only origin main
 git switch -c feat/your-name-your-change
 cd tagalong
 npm ci
@@ -28,10 +28,10 @@ Commit or stash your work first. From the repository root, bring the development
 
 ```sh
 git fetch origin
-git merge origin/checkpoint/all-projects-2026-11-04
+git merge origin/main
 ```
 
-If you are only updating the shared base branch, switch to it and use `git pull --ff-only origin checkpoint/all-projects-2026-11-04`. Create a feature branch before editing; do not push directly to the deployment branch.
+If you are only updating the shared base branch, switch to it and use `git pull --ff-only origin main`. Create a feature branch before editing; submit changes through pull requests.
 
 ## Where to make feature changes
 
@@ -70,4 +70,4 @@ git commit -m "Describe the change"
 git push -u origin feat/your-name-your-change
 ```
 
-On GitHub choose **Compare & pull request**, with base `checkpoint/all-projects-2026-11-04` and compare your feature branch. Describe the user-visible change and checks run. Ask the owner to review and merge; a merge into the deployment branch can trigger Render. Read `AGENTS.md` and preserve plan membership, Admin/Member isolation, source validation, and explicit draft/booking distinctions.
+On GitHub choose **Compare & pull request**, with base `main` and compare your feature branch. Describe the user-visible change and checks run. Ask the owner to review and merge; Render publishes changes only from its configured deployment branch. Read `AGENTS.md` and preserve plan membership, Admin/Member isolation, source validation, and explicit draft/booking distinctions.
