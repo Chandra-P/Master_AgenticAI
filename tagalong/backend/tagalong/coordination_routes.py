@@ -93,7 +93,7 @@ def install_coordination(app,repo,actor,ai):
             if not item or item['owner_id']!=a.id or item['expires_at']<time.time():fail(404,'Draft not found or expired; generate a new one')
             if item['created_plan_id']:return view(s,access(s,item['created_plan_id'],a),a)
             d=PlanDraft.model_validate(item['draft'])
-            p=create(s,a,Create(title=b.title,kind=b.kind,start=b.start,end=b.end))
+            p=create(s,a,Create(title=b.title,kind=b.kind,start=b.start,end=b.end,group_id=b.group_id,expected_group_revision=b.expected_group_revision))
             p['location']=b.location;p['budget']=b.budget_per_person or 0
             p['messages']=[{'id':uid(),'author':a.name,'user_id':a.id,'text':'Planning idea: '+item.get('prompt',b.title),'time':now()}]
             p['tasks']=[{'label':x,'done':False} for x in d.suggested_tasks]

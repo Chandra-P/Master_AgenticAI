@@ -27,7 +27,7 @@ In VS Code, clone `https://github.com/Chandra-P/Master_AgenticAI.git`, then open
 
 ## Demo features
 
-Reusable themed **Groups** are available from navigation in local demo mode. Shared mode offers an explicit switch to the demo rather than treating local contacts as authenticated members. See [Groups behavior and deployment](docs/GROUPS.md).
+Reusable themed **Groups** are available in both modes. Signed-in groups are private reusable rosters saved to your account; demo groups remain local to your browser. Both manual plan creation and reviewed AI drafts can select/create a group. Contacts are intended participants, not authenticated members; invite them explicitly using existing plan controls. Shared Groups rollout requires reviewed frontend/API deployment. See [Groups behavior and deployment](docs/GROUPS.md).
 
 - Create an outing or trip with dates and demo participants.
 - Open a shared workspace with chat and a local planning board.
@@ -48,7 +48,7 @@ For the competition narrative, recorded demo, presentation preflight and measure
 
 ## Demo boundaries
 
-In demo mode, participant, venue, rating, and planning details are synthetic. Photos are illustrative Unsplash images stored locally. Assistant responses are deterministic simulations and demo data stays in one browser. Shared mode persists group data on the backend; all members can read the group's content. Neither mode makes reservations or calendar changes, and adding a member does not send an invitation email.
+In demo mode, participant, venue, rating, and planning details are synthetic. Photos are illustrative Unsplash images stored locally. Assistant responses are deterministic simulations and demo data stays in one browser. Shared mode persists plan data on the backend; plan members can read their shared plan content. Reusable group contact rosters are private to their owner, and only minimal aliases are copied into plans. Neither mode makes reservations or calendar changes, and adding a member does not send an invitation email.
 
 ## Structure
 

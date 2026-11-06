@@ -1,5 +1,5 @@
 import {createClient,type SupabaseClient} from '@supabase/supabase-js';
-import type {Plan,CreatePlanInput,Preference} from './types';
+import type {Plan,CreatePlanInput,Preference,Group,GroupDraft} from './types';
 import {createPlanPatches} from './plan-patches';
 import {readWorkspaceRole} from './workspace-role';
 import {captureRecoveryLocation,markRecovery} from './password-recovery';
@@ -57,7 +57,11 @@ export class ConnectedService {
   me(){return this.request<CurrentUser>('/v1/me');}
   plans(){return this.request<Plan[]>('/v1/plans');}
   plan(id:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id));}
-  create(input:CreatePlanInput){return this.request<Plan>('/v1/plans',{method:'POST',body:JSON.stringify(input)});}
+  groups(){return this.request<Group[]>('/v1/groups');}
+  saveGroup(draft:GroupDraft,group?:Group,revision?:number){return this.request<Group>(group?'/v1/groups/'+encodeURIComponent(group.id):'/v1/groups',{method:group?'PATCH':'POST',body:JSON.stringify(group?{...draft,archived:group.archived,expected_revision:revision??group.revision}:draft)});}
+  archiveGroup(group:Group,archived:boolean,revision?:number){return this.request<Group>('/v1/groups/'+encodeURIComponent(group.id),{method:'PATCH',body:JSON.stringify({name:group.name,theme:group.theme,members:group.members,archived,expected_revision:revision??group.revision})});}
+  removeGroup(group:Group,revision?:number){return this.request<{status:string}>('/v1/groups/'+encodeURIComponent(group.id),{method:'DELETE',body:JSON.stringify({expected_revision:revision??group.revision})});}
+  create(input:CreatePlanInput){const {groupId,expectedGroupRevision,...fields}=input;return this.request<Plan>('/v1/plans',{method:'POST',body:JSON.stringify({...fields,...(groupId?{group_id:groupId,expected_group_revision:expectedGroupRevision}:{})})});}
   deletePlan(id:string,revision:number,confirmation:string){return this.request<{status:string}>('/v1/plans/'+encodeURIComponent(id),{method:'DELETE',body:JSON.stringify({expected_revision:revision,confirmation})});}
   transferOwner(id:string,revision:number,userId:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id)+'/owner',{method:'POST',body:JSON.stringify({expected_revision:revision,user_id:userId})});}
   save(plan:Plan,revision:number,previous:Plan){const patches=createPlanPatches(previous,plan);return patches.length?this.request<Plan>('/v1/plans/'+encodeURIComponent(plan.id),{method:'PATCH',body:JSON.stringify({patches,expected_revision:revision})}):Promise.resolve(previous);}

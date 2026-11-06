@@ -6,21 +6,21 @@ export const groupOwner:GroupMember = {id:'alex',preferredName:'Alex',color:'#ed
 export const normalize = (value:string)=>value.trim().replace(/\s+/g,' ');
 const comparison = (value:string)=>normalize(value).toLowerCase();
 
-export function suggestGroupName(theme:string,groups:Group[]) {
- const base = normalize(theme).slice(0,55)+" · Alex’s circle";
+export function suggestGroupName(theme:string,groups:Group[],ownerName='Alex') {
+ const base = normalize(theme).slice(0,40)+" · "+normalize(ownerName).slice(0,20)+"’s circle";
  let name=base, suffix=2;
  while(groups.some(g=>comparison(g.name)===comparison(name)))name=base+' '+suffix++;
  return name;
 }
 
-export function validateGroup(draft:GroupDraft,groups:Group[],id?:string):string|null {
+export function validateGroup(draft:GroupDraft,groups:Group[],id?:string,expectedOwner=groupOwner):string|null {
  const name=normalize(draft.name),theme=normalize(draft.theme);
  if(!name||name.length>80)return 'Use a group name between 1 and 80 characters.';
  if(groups.some(g=>g.id!==id&&comparison(g.name)===comparison(name)))return 'That group name is already in use. Try another name.';
  if(!theme||theme.length>60)return 'Use a theme between 1 and 60 characters.';
  if(draft.members.length<1||draft.members.length>13)return 'Add up to 12 adults alongside Alex.';
- const owner=draft.members.find(m=>m.id==='alex');
- if(!owner||owner.preferredName!=='Alex')return 'Alex must remain the group owner.';
+ const owner=draft.members.find(m=>m.id===expectedOwner.id);
+ if(!owner||owner.preferredName!==expectedOwner.preferredName)return expectedOwner.id==='alex'?'Alex must remain the group owner.':'Keep your signed-in account as the group owner.';
  const aliases=new Set<string>(),emails=new Set<string>(),ids=new Set<string>();
  for(const member of draft.members){
   const alias=normalize(member.preferredName);

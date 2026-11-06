@@ -61,6 +61,8 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
             if workspace_mode=='admin' and a.id not in s.get('app_admins',{}): fail(403,'App administrator access required')
         repo.transact(authorize)
         return a
+    from .groups import install_groups
+    install_groups(app,repo,actor)
     @app.get('/health')
     def health():
         ready=bool(repo and authenticate and repo.health())

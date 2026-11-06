@@ -1,17 +1,29 @@
 # Reusable Groups
 
-Shyam's reusable Groups feature is integrated with the connected Tagalong app. Open **Groups** from the sidebar or mobile navigation.
+## Signed-in workspace
 
-Groups are currently a **browser-local demo feature**. In shared mode, the Groups page explains that boundary and provides **Explore demo groups**. Choosing it switches to the local demo; it does not create shared members or send invitations. Use Account to return to the shared workspace.
+**Implemented on `feat/shared-groups`; production rollout is pending review and deployment.** Open **Groups** in navigation to manage reusable rosters owned by your signed-in account. The page reuses the demo's cards, palette, typography, editor and theme presets. Real accounts start without fictional groups.
 
-In demo mode you can create a themed group, edit adult aliases and optional contact details, archive/restore or remove a group, and start a demo plan with its members. Alex is the fixed fictional demo owner. A plan copies the selected group name/theme and member aliases/colors; contact details stay in group storage. Later group edits do not rewrite existing plans, chats or votes.
+Create a group with a preset or custom theme and a suggested editable name. Names must be unique within your account, including archived groups. Your signed-in identity is the owner; each additional adult needs a distinct preferred alias. Email and first/last name are optional and private to the owner. Do not enter children's names/photos. Groups save through the authenticated backend and load on navigation/refresh across devices. **Refresh saved groups** reloads the list during plan creation. Group-level collaborative editing and realtime group subscriptions are not included.
 
-Local groups are not synchronized with teammates, other devices or incognito windows. A fresh browser has independent demo data. Corrupt or unavailable storage is reported honestly rather than silently overwriting it. To collaborate on a real shared plan, use its existing membership and private invitation controls with authenticated accounts.
+**Plan with this group** preselects the roster. You can also choose/create a group during manual plan creation or AI-draft review. Inline group creation preserves the plan draft. A saved group remains even if you cancel plan creation. The final review distinguishes the intended roster from actual authenticated members: a newly created plan initially grants access only to you. Invite people explicitly through the existing **Add member** or private join-link controls. Saving or selecting a contact never sends a message or grants access.
 
-No database migration, new credential or provider is needed for this integration. Connected mode does not load local group contacts or use demo groups for plan creation. The implementation lives in the group service, planning provider, group editor/page and create-plan dialog; verification covers both local group behavior and the connected-mode boundary.
+A plan keeps an immutable snapshot of the group name/theme and aliases. Contact IDs, emails and legal-name fields are not copied into the plan or assistant inputs. Later edits, archive/restore or removal of the reusable group leave existing plans, membership, chat and votes unchanged. Archived groups cannot be selected for a new plan. Removing a group removes its private contacts from that account's group list; minimal aliases already captured in existing plans remain part of those plans.
 
-## Team contribution and deployment
+## Storage and access
 
-The current deployment branch is `checkpoint/all-projects-2026-11-04`. A commit pushed only to `main` does not appear on that deployment. Create feature branches from the current deployment branch and submit pull requests targeting it until the main integration PR is merged. See [CONTRIBUTING.md](../CONTRIBUTING.md).
+Owner-private group records are persisted inside the existing transactional PostgreSQL JSON state aggregate (`tagalong_state`), accessed only through authenticated FastAPI endpoints. Owner identity is assigned server-side. Every read/write checks owner access; revisions reject stale edits, including a stale roster selected for a new plan. Existing state without a groups key remains valid, so this change needs no SQL migration or additional credentials.
 
-The Groups source originated in ShyamK's `895593a` commit. The integration preserves its history and the newer connected functionality. Earlier audit documents in the repository root remain historical snapshots, not current release claims.
+API: GET/POST `/v1/groups`, GET/PATCH/DELETE `/v1/groups/{id}`. Updates/deletions require `expected_revision`; manual creation and generated-draft acceptance accept paired `group_id` and `expected_group_revision`. Group audit metadata contains actor/group IDs, action and timestamp, without contact fields. Existing database clients remain unable to read the private state aggregate directly.
+
+Account changes/sign-out clear group state and ignore late responses. A backend failure shows an error instead of silently substituting local demo data. Group operations make no AI calls. There is a limit of 100 saved groups per owner and 12 additional adults per group. No age-detection mechanism is claimed: follow the adult-only instructions and use synthetic data for testing.
+
+## Local demo
+
+The demo stays separate, with fictional Alex and browser-local `tagalong-groups-v1` data. It retains the theme/member/editor/archive/removal flow, synthetic seeds and local plan snapshots. It neither imports into an account automatically nor affects shared plans. To explore it, switch explicitly through **Account → Explore the demo**. Connected groups do not load demo contacts.
+
+## Team contribution and rollout
+
+Deployment baseline: `checkpoint/all-projects-2026-11-04`. The previous `895593a` implementation and `16932ce` integration provided demo-only groups; the new shared implementation is on `feat/shared-groups`. Submit a reviewed PR targeting the checkpoint branch, preserve its newer connected features, then coordinate frontend/API deployment with the service owner. Pushing only to main does not update that service. See [CONTRIBUTING.md](../CONTRIBUTING.md) and [approved plan](SHARED_GROUPS_PLAN.md).
+
+Use the normal locked install and documented frontend/backend test commands. No application/test/deployment requires files inside the root workspace/ directory. Local fixtures simulate auth and providers; their passing results do not establish real Supabase or production database verification.

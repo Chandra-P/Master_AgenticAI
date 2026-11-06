@@ -1,5 +1,12 @@
 # Tagalong verification and release status
 
+## Owner-private shared Groups — pending review/deployment
+
+The `feat/shared-groups` implementation reuses the Groups UI for signed-in owners, persists private rosters through authenticated backend endpoints, and supports group selection/inline creation in both manual and AI-reviewed plan creation. It preserves the independent local demo. Roster contacts do not become authenticated members or receive invitations; existing plan membership controls remain authoritative. Minimal immutable plan snapshots exclude private contact details. See [Groups](GROUPS.md) and [approved plan](SHARED_GROUPS_PLAN.md).
+
+This is not a claim of a new public rollout. Frontend and API deployment require review against the checkpoint branch; no production credentials, migrations or paid calls were used during implementation. Current verification results are recorded in SHARED_GROUPS_PLAN.md. Earlier release records below retain their historical scope.
+
+
 ## Reusable Groups integration — 2026-11-06
 
 ShyamK's `895593a` Groups commit is integrated into the current deployment branch while preserving authenticated planning, admin access, RAG and MCP booking demos. Groups are explicitly browser-local demo data; connected users see an explanation and can choose **Explore demo groups**. They do not create shared memberships or send invitations. See [Groups](GROUPS.md).
