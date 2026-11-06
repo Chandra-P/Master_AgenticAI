@@ -2,6 +2,10 @@
 
 Tagalong is an **AI-powered group coordination platform**: idea → decision → itinerary → experience. The current demo adds proactive in-app summaries, blockers and next actions on top of the existing shared-planning foundation.
 
+## Show why RAG matters
+
+In a shared plan, set a $50-per-person budget and save a synthetic Note stating that the group wants vegetarian dinner and step-free access. Open **Group fit** and evaluate a fictional $75 option with a user-provided vegetarian menu description but no entrance information. Show the budget conflict, the missing accessibility information, and expandable sources for current plan facts and the saved Note. Explain that Pinecone retrieves relevant history while the database supplies current authoritative facts. The result helps the group discuss an option; it does not decide for members or book anything. See [the detailed RAG walkthrough](GROUP_FIT_RAG.md).
+
 ## First minute: demonstrate the new product
 
 Start on **Good company starts here.** Describe a weekend for four near Austin with a USD350 per-person budget, and choose **Generate Plan**. Review the structured title, destination, suggested tasks and itinerary ideas; supply or confirm dates, then create the reviewed plan. Point out that the initial description becomes the first message and the plan summary/next-action card appears without an `@Tagalong` mention. Show **Continue Planning**, **AI Recommendations** and **Group Insights** on the homepage. Insights require explicitly confirmed preferences; an empty state is honest when none have been confirmed. Plan health is rule-based progress, not model confidence. Full implementation/API/migration details are in [PROACTIVE_COORDINATION.md](PROACTIVE_COORDINATION.md).

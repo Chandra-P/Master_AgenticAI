@@ -12,6 +12,11 @@ def app_factory():
         if token not in accounts: fail(401,'Invalid test session')
         return accounts[token]
     class BrowserAI(FakeAI):
+        def retrieve(self,pid,query):
+            return repo.transact(lambda s:[{'id':x['id'],'version':x['version']} for x in s['sources'].values() if x['plan_id']==pid and not x['deleted']])
+        def assess_group_fit(self,option,evidence):
+            note=next((x for x in evidence if '_source_id' in x),None)
+            return {'verdict':'needs_info','summary':'Review the saved group constraints and verify the proposed venue details.','matches':[{'text':'The option can be compared with the saved group notes.','source_ids':[note['id']]}] if note else [],'conflicts':[],'unknowns':['Confirm current menu details directly with the venue.']}
         def generate_plan(self,prompt,today):
             return {'title':'Austin weekend draft','type':'trip','location':'Austin','start':None,'end':None,'participant_count':4,'suggested_tasks':['Confirm attendees','Choose lodging'],'suggested_itinerary':[{'title':'Draft neighborhood walk','time':'Afternoon','category':'Draft idea','location':'Austin — route to decide'}],'suggested_budget':{'amount':350,'basis':'per_person','currency':'USD','notes':'From the test request, not a price quote'},'open_questions':['Confirm travel dates']}
         def coordinate(self,context):

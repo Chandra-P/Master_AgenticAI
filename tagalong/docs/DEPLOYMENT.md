@@ -8,6 +8,8 @@ Connected chat uses the existing server-only `OPENAI_API_KEY` for short draft co
 
 ## Free pilot on existing Render services
 
+**Group fit RAG:** Deploy frontend and API together for `/v1/plans/{pid}/group-fit`. It reuses existing OpenAI, Pinecone and database configuration; no new secrets, migration or worker is required. Existing ingestion improves historical retrieval, while current saved Notes are available immediately. Verify citation visibility, an over-budget conflict, retrieval failure disclosure, and unchanged plan state. See [the feature walkthrough](GROUP_FIT_RAG.md).
+
 The deployed frontend is https://tagalong-web-clbe.onrender.com and the API is https://tagalong-api-7pdn.onrender.com. Both endpoints passed public readiness checks; the frontend sign-in UI also passed read-only desktop/mobile browser checks. This does not prove real signup email delivery or authenticated end-to-end use.
 
 For the existing free API service, deploy the current reviewed branch and add `TAGALONG_EMBEDDED_WORKER=true` in Render's Environment settings. Save and redeploy. The API then runs ingestion in a managed background thread using the same durable Postgres jobs and leases as the standalone worker. `/health` reports `indexing_mode` and `indexing_worker_running` so the running deployment can be verified. Missing providers disable ingestion; transient provider failures retry without taking down ordinary planning services. Embedding work still sends the approved shared source text to OpenAI and stores vectors in Pinecone.

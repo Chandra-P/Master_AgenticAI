@@ -1,10 +1,10 @@
 # Tagalong verification and release status
 
-Updated 2026-11-06. The frontend and API are publicly hosted on Render. The current release adds model-backed typing continuations, local fallback, and a focused chat module. Lint, typecheck, production build, 168 backend tests (one gated SQL skip), 74 frontend tests, and 20 shared-workspace tests passed. Three synthetic drafts also returned valid continuations from the configured OpenAI provider; no private plan was used. The shared suite uses an explicit synthetic typing provider; it proves authenticated integration and no message write, rather than live model quality. Public rollout remains a separate check. Unrestricted public email delivery and real-account production collaboration are not established by mocked browser tests.
+Updated 2026-11-06. This release adds **Group fit**, a read-only RAG assessment with verified sources, explicit uncertainty and deterministic budget conflicts. Lint, typecheck, production build, 195 backend tests (one gated SQL skip), 84 frontend tests, and 22 shared-workspace tests passed. A live synthetic smoke check completed a Pinecone query against a fresh empty namespace and produced a valid cited OpenAI assessment from supplied test evidence; no private plans or index writes were used. The shared suite verifies authenticated flow and unchanged plan state using synthetic retrieval/model adapters. Public rollout remains a separate check from these local results.
 
 Frontend: https://tagalong-web-clbe.onrender.com · API: https://tagalong-api-7pdn.onrender.com
 
-Current typing implementation and configuration: [typing behavior](DISCOVERY_NOTES_TYPING.md), [deployment](DEPLOYMENT.md), and [contributor code map](../CONTRIBUTING.md). This release's public rollout is pending verification. Earlier checkpoint notes below preserve their original test/deployment limits; statements that a historical change still required deployment describe that checkpoint, not the current hosted version.
+Current feature and configuration guides: [Group fit RAG](GROUP_FIT_RAG.md), [typing behavior](DISCOVERY_NOTES_TYPING.md), [deployment](DEPLOYMENT.md), and [contributor code map](../CONTRIBUTING.md). This release's public rollout is pending verification. Earlier checkpoint notes below preserve their original test/deployment limits; statements that a historical change still required deployment describe that checkpoint, not the current hosted version.
 
 ## Implemented
 

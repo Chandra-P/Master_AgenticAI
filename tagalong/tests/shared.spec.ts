@@ -73,6 +73,28 @@ test('connected typing suggests a continuation through the authenticated API wit
  const saved=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers})).json();expect(saved.messages).toHaveLength(0);
 });
 
+test('group fit cites saved preferences and current budget without changing the plan',async({page})=>{
+ await login(page,'alice');
+ const headers={Authorization:'Bearer test-alice'};
+ const created=await page.request.post('/api/backend/v1/plans',{headers,data:{title:'Group fit demo '+crypto.randomUUID().slice(0,8),kind:'outing',start:'2027-05-14',end:'2027-05-14'}});expect(created.ok()).toBeTruthy();const plan=await created.json();
+ const base='/api/backend/v1/plans/'+plan.id;
+ expect((await page.request.patch(base,{headers,data:{expected_revision:plan.revision,patches:[{op:'replace',path:['budget'],value:50},{op:'replace',path:['location'],value:'San Francisco'}]}})).ok()).toBeTruthy();
+ expect((await page.request.post(base+'/documents',{headers,data:{title:'Group dinner preferences',text:'Synthetic group preference: vegetarian dinner and a step-free entrance.',content_type:'text/plain'}})).ok()).toBeTruthy();
+ const before=await(await page.request.get(base,{headers})).json();
+ await page.goto('/plans/'+plan.id+'?tab=Group%20fit');
+ await page.getByLabel('Option name',{exact:true}).fill('Fictional Dinner');
+ await page.getByLabel('Option details or menu',{exact:true}).fill('User-provided menu lists vegetarian dishes. Entrance access is unknown.');
+ await page.getByLabel('Estimated cost per person',{exact:true}).fill('75');
+ await page.getByRole('button',{name:'Check group fit',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Conflicts with the group',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Source: Group dinner preferences',exact:true}).click();
+ await expect(page.getByText('Synthetic group preference: vegetarian dinner and a step-free entrance.',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Source: Current plan facts',exact:true}).click();
+ await page.screenshot({path:'test-results-shared/group-fit-'+test.info().project.name+'.png',fullPage:true});
+ const after=await(await page.request.get(base,{headers})).json();
+ expect(after.revision).toBe(before.revision);expect(after.itinerary).toEqual(before.itinerary);expect(after.messages).toEqual(before.messages);
+});
+
 test('natural-language generation creates a reviewed plan and proactively summarizes it',async({page})=>{
  const title='Reviewed proactive weekend '+crypto.randomUUID().slice(0,8);
  await login(page,'alice');await page.goto('/');

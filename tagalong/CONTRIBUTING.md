@@ -41,6 +41,8 @@ If you are only updating the shared base branch, switch to it and use `git pull 
 - `src/features/planning/typing-suggestions.tsx` and its CSS: suggestion controls and presentation.
 - `src/services/typing-suggestions.ts`: pure on-device matching for demo and immediate fallback. Connected model continuations use the authenticated typing endpoint; preserve its bounds and avoid logging or persisting drafts.
 - `backend/tagalong/typing_suggestions.py`: OpenAI continuation provider, authorization, input/output bounds and usage limits.
+- `src/features/planning/group-fit.tsx` and `src/services/group-fit.ts`: option review, source presentation and typed API client.
+- `backend/tagalong/group_fit.py`: read-only RAG evidence assembly, source verification and group-fit result validation.
 - `src/features/planning/demo-bookings.tsx` and `backend/tagalong/demo_bookings.py`: reservation review UI and authoritative agreement/confirmation rules.
 - `tests`: browser and pure-helper regressions; `backend/tests`: service and authorization tests.
 
