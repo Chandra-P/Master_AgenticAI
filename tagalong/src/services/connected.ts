@@ -24,10 +24,35 @@ export class ConnectedService {
     if(error || !session) throw new ApiError('Your session ended. Please sign in again.',401);
     const timeout=AbortSignal.timeout(65_000);
     const signal=options.signal?AbortSignal.any([options.signal,timeout]):timeout;
-    const result=await fetch('/api/backend'+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,'X-Workspace-Mode':readWorkspaceRole(session.user.id),...options.headers},signal});
-    const data=await result.json().catch(()=>({detail:'Unexpected response from the shared workspace.'}));
-    if(!result.ok) throw new ApiError(typeof data.detail==='string'?data.detail:'This change could not be saved. Please check your input.',result.status);
-    return data as T;
+    const read=(options.method||'GET').toUpperCase()==='GET';
+    const unavailable='Shared workspace is temporarily unavailable. Please wait a moment and try again.';
+    for(let attempt=0;attempt<2;attempt++){
+      signal.throwIfAborted();
+      let result:Response;
+      try{
+        result=await fetch('/api/backend'+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,'X-Workspace-Mode':readWorkspaceRole(session.user.id),...options.headers},signal});
+      }catch(error){
+        if(signal.aborted)throw error;
+        if(read&&attempt===0)continue;
+        throw new ApiError(unavailable,503);
+      }
+      if(read&&attempt===0&&[502,503,504].includes(result.status)){
+        await result.body?.cancel().catch(()=>{});
+        continue;
+      }
+      let data:unknown;
+      try{data=await result.json();}catch{
+        if(signal.aborted)signal.throwIfAborted();
+        if(read&&attempt===0&&result.ok)continue;
+        throw new ApiError(unavailable,result.ok?503:result.status);
+      }
+      if(!result.ok){
+        const detail=data&&typeof data==='object'&&'detail' in data?data.detail:null;
+        throw new ApiError(typeof detail==='string'?detail:'This change could not be saved. Please check your input.',result.status);
+      }
+      return data as T;
+    }
+    throw new ApiError(unavailable,503);
   }
   me(){return this.request<CurrentUser>('/v1/me');}
   plans(){return this.request<Plan[]>('/v1/plans');}

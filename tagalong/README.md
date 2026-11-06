@@ -42,6 +42,8 @@ In a shared plan, **Demo bookings** demonstrates real MCP calls against a fictio
 
 **Group fit** checks an option against the current budget, confirmed preferences, saved Notes and plan-scoped retrieved history. Results separate matches, conflicts and missing information, with sources you can inspect. The check does not change the plan or make a reservation. See [the RAG walkthrough](docs/GROUP_FIT_RAG.md).
 
+For the competition narrative, recorded demo, presentation preflight and measured results, see [the Gen Academy demo guide](docs/GEN_ACADEMY_DEMO.md) and [the four-case live evaluation](docs/evaluations/2026-11-06-group-fit-demo.md).
+
 ## Demo boundaries
 
 In demo mode, participant, venue, rating, and planning details are synthetic. Photos are illustrative Unsplash images stored locally. Assistant responses are deterministic simulations and demo data stays in one browser. Shared mode persists group data on the backend; all members can read the group's content. Neither mode makes reservations or calendar changes, and adding a member does not send an invitation email.

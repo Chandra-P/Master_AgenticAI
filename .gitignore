@@ -23,3 +23,6 @@ __pycache__/
 .python/
 .uv-cache/
 node_modules/
+
+# Generated demo video and narration; source scripts live in Tagalong docs.
+artifacts/tagalong-demo/

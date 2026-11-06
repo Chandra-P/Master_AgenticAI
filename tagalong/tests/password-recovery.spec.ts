@@ -15,9 +15,9 @@ test('forgot password does not display an unrelated shared workspace failure',as
  await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-reset',refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,user}}));
  await page.route('**/api/backend/**',route=>route.fulfill({status:503,contentType:'text/html',body:'Unavailable'}));
  await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
- await expect(page.getByRole('alert').filter({hasText:'Unexpected response from the shared workspace.'})).toBeVisible();
+ await expect(page.getByRole('alert').filter({hasText:'Shared workspace is temporarily unavailable. Please wait a moment and try again.'})).toBeVisible();
  await page.getByRole('button',{name:'Forgot password?',exact:true}).click();
- await expect(page.getByRole('alert').filter({hasText:'Unexpected response from the shared workspace.'})).toHaveCount(0);
+ await expect(page.getByRole('alert').filter({hasText:'Shared workspace is temporarily unavailable. Please wait a moment and try again.'})).toHaveCount(0);
 });
 test('forgot password sends a recovery request with the existing account redirect',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','connected'));

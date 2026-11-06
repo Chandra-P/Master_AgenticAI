@@ -43,7 +43,13 @@ export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
     setText(next);
     setCaretAtEnd(true);
     input.focus();
-    requestAnimationFrame(() => input.setSelectionRange(next.length, next.length));
+    requestAnimationFrame(() => {
+      // A later edit, focus change, or plan switch owns the caret now.
+      if (inputRef.current !== input || !input.isConnected || input.value !== next ||
+          document.activeElement !== input || input.selectionStart !== next.length ||
+          input.selectionEnd !== next.length) return;
+      input.setSelectionRange(next.length, next.length);
+    });
   }
 
   async function send() {

@@ -8,6 +8,8 @@ Connected chat uses the existing server-only `OPENAI_API_KEY` for short draft co
 
 ## Free pilot on existing Render services
 
+Before a presentation, run `node scripts/demo-preflight.mjs` from `tagalong`. It warms services and checks frontend connected configuration plus required API plan/assistant capabilities. It cannot keep a free service awake indefinitely. The [recorded demo guide](GEN_ACADEMY_DEMO.md) describes the local video backup and current measured evaluation. Safe connected GET requests retry at most once on transient failures; mutations never retry automatically.
+
 **Group fit RAG:** Deploy frontend and API together for `/v1/plans/{pid}/group-fit`. It reuses existing OpenAI, Pinecone and database configuration; no new secrets, migration or worker is required. Existing ingestion improves historical retrieval, while current saved Notes are available immediately. Verify citation visibility, an over-budget conflict, retrieval failure disclosure, and unchanged plan state. See [the feature walkthrough](GROUP_FIT_RAG.md).
 
 The deployed frontend is https://tagalong-web-clbe.onrender.com and the API is https://tagalong-api-7pdn.onrender.com. Both endpoints passed public readiness checks; the frontend sign-in UI also passed read-only desktop/mobile browser checks. This does not prove real signup email delivery or authenticated end-to-end use.

@@ -1,5 +1,25 @@
 import {test,expect,type Page} from '@playwright/test';
 
+test('an old acceptance frame cannot move the caret in a later draft',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));
+ await page.goto('/');await page.getByRole('link',{name:'Open Coastal weekend'}).click();
+ const draft=page.getByLabel('Message your group');
+ await draft.fill('Let');
+ await page.evaluate(()=>{
+  const frames:FrameRequestCallback[]=[];
+  const original=window.requestAnimationFrame.bind(window);
+  window.requestAnimationFrame=callback=>callback.toString().includes('setSelectionRange')?(frames.push(callback),-1):original(callback);
+  Object.assign(window,{flushAcceptanceFrames:()=>frames.splice(0).forEach(callback=>callback(performance.now()))});
+ });
+ await page.getByRole('button',{name:/Accept suggestion/}).click();
+ await expect(draft).toHaveValue("Let's plan ");
+ await draft.fill('@Tagalong lets fl');
+ await page.evaluate(()=>{(window as unknown as {flushAcceptanceFrames:()=>void}).flushAcceptanceFrames();});
+ await expect(draft).toHaveJSProperty('selectionStart','@Tagalong lets fl'.length);
+ await page.getByRole('button',{name:'Accept suggestion: y',exact:true}).click();
+ await expect(draft).toHaveValue('@Tagalong lets fly ');
+});
+
 test('typing help explains local suggestions and hides completions while editing mid-draft',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));
  await page.goto('/');

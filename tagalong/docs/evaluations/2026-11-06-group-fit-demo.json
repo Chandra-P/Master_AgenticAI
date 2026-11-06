@@ -1,0 +1,534 @@
+{
+  "title": "Tagalong group-fit synthetic demonstration evaluation",
+  "started_at_utc": "2026-11-06T22:20:31.789571+00:00",
+  "completed_at_utc": "2026-11-06T22:21:06.593190+00:00",
+  "model": "gpt-4.1-mini",
+  "scope": "Synthetic MemoryRepository plans only; real OpenAI generation and real Pinecone queries in fresh random namespaces. No index writes, production plans, production database, or real auth accounts.",
+  "source_sha256": {
+    "tagalong\\group_fit.py": "2d1a2bb6967fb5d296024e4bd726d5d1ab9a45b36f8c49fb0bf50ca7f6085075",
+    "tagalong\\providers.py": "b664581f14e9f3fa71e53eb18ea9aa05d97ade092fb41a3aced331a85d172488",
+    "tests\\test_group_fit.py": "1d8c4abd59cf632581eb5cfd5fc4a1ff9e35db029fc8f822e27812228b927e01"
+  },
+  "rule_evaluation": {
+    "command": "python -m pytest tests/test_group_fit.py -q -p no:cacheprovider --junitxml=TEMP/rules.xml",
+    "exit_code": 0,
+    "seconds": 20.314,
+    "passed": 27,
+    "total": 27,
+    "metrics": {
+      "citation_validation": {
+        "passed": 4,
+        "total": 4,
+        "tests": [
+          "test_invalid_or_fabricated_citations_are_rejected[bad0]",
+          "test_invalid_or_fabricated_citations_are_rejected[bad1]",
+          "test_invalid_or_fabricated_citations_are_rejected[bad2]",
+          "test_saved_ids_cannot_collide_with_synthetic_sources_or_skip_version_checks"
+        ]
+      },
+      "budget_conflict_rule": {
+        "passed": 1,
+        "total": 1,
+        "tests": [
+          "test_budget_conflict_is_deterministic_even_if_model_says_fits"
+        ]
+      },
+      "missing_evidence_rule": {
+        "passed": 1,
+        "total": 1,
+        "tests": [
+          "test_no_saved_evidence_cannot_be_positive_fit"
+        ]
+      },
+      "cross_plan_access": {
+        "passed": 2,
+        "total": 2,
+        "tests": [
+          "test_fit_requires_authorized_current_revision",
+          "test_foreign_deleted_and_stale_retrieval_hits_are_not_supplied"
+        ]
+      },
+      "freshness": {
+        "passed": 7,
+        "total": 7,
+        "tests": [
+          "test_fit_rechecks_access_and_evidence_after_generation[revision]",
+          "test_fit_rechecks_access_and_evidence_after_generation[revoked]",
+          "test_fit_rechecks_access_and_evidence_after_generation[suspended]",
+          "test_fit_rechecks_access_and_evidence_after_generation[deleted_note]",
+          "test_fit_rechecks_access_and_evidence_after_generation[changed_note]",
+          "test_new_notes_during_assessment_invalidate_result_without_revision_change",
+          "test_saved_ids_cannot_collide_with_synthetic_sources_or_skip_version_checks"
+        ]
+      }
+    },
+    "cases": [
+      {
+        "name": "test_fit_forces_retrieval_includes_current_notes_and_does_not_write",
+        "status": "passed",
+        "seconds": 0.158
+      },
+      {
+        "name": "test_fit_requires_authorized_current_revision",
+        "status": "passed",
+        "seconds": 0.172
+      },
+      {
+        "name": "test_fit_rechecks_access_and_evidence_after_generation[revision]",
+        "status": "passed",
+        "seconds": 0.14
+      },
+      {
+        "name": "test_fit_rechecks_access_and_evidence_after_generation[revoked]",
+        "status": "passed",
+        "seconds": 0.169
+      },
+      {
+        "name": "test_fit_rechecks_access_and_evidence_after_generation[suspended]",
+        "status": "passed",
+        "seconds": 0.143
+      },
+      {
+        "name": "test_fit_rechecks_access_and_evidence_after_generation[deleted_note]",
+        "status": "passed",
+        "seconds": 0.142
+      },
+      {
+        "name": "test_fit_rechecks_access_and_evidence_after_generation[changed_note]",
+        "status": "passed",
+        "seconds": 0.14
+      },
+      {
+        "name": "test_new_notes_during_assessment_invalidate_result_without_revision_change",
+        "status": "passed",
+        "seconds": 0.185
+      },
+      {
+        "name": "test_foreign_deleted_and_stale_retrieval_hits_are_not_supplied",
+        "status": "passed",
+        "seconds": 0.164
+      },
+      {
+        "name": "test_verified_history_is_retrieved_without_history_keyword",
+        "status": "passed",
+        "seconds": 0.286
+      },
+      {
+        "name": "test_retrieval_outage_still_uses_notes_and_discloses_limit",
+        "status": "passed",
+        "seconds": 0.17
+      },
+      {
+        "name": "test_invalid_or_fabricated_citations_are_rejected[bad0]",
+        "status": "passed",
+        "seconds": 0.21
+      },
+      {
+        "name": "test_invalid_or_fabricated_citations_are_rejected[bad1]",
+        "status": "passed",
+        "seconds": 0.212
+      },
+      {
+        "name": "test_invalid_or_fabricated_citations_are_rejected[bad2]",
+        "status": "passed",
+        "seconds": 0.176
+      },
+      {
+        "name": "test_budget_conflict_is_deterministic_even_if_model_says_fits",
+        "status": "passed",
+        "seconds": 0.164
+      },
+      {
+        "name": "test_no_saved_evidence_cannot_be_positive_fit",
+        "status": "passed",
+        "seconds": 0.157
+      },
+      {
+        "name": "test_rate_limit_and_provider_errors_are_bounded",
+        "status": "passed",
+        "seconds": 0.482
+      },
+      {
+        "name": "test_option_is_untrusted_and_url_not_fetched",
+        "status": "passed",
+        "seconds": 0.194
+      },
+      {
+        "name": "test_fresh_chat_is_available_before_indexing_and_query_uses_constraints",
+        "status": "passed",
+        "seconds": 0.161
+      },
+      {
+        "name": "test_empty_model_conflict_cannot_be_reported_as_a_supported_conflict",
+        "status": "passed",
+        "seconds": 0.141
+      },
+      {
+        "name": "test_provider_failure_is_generic_and_releases_capacity",
+        "status": "passed",
+        "seconds": 0.155
+      },
+      {
+        "name": "test_budget_overflow_and_non_numeric_estimates_rejected",
+        "status": "passed",
+        "seconds": 0.15
+      },
+      {
+        "name": "test_group_fit_provider_uses_strict_bounded_untrusted_evidence_contract",
+        "status": "passed",
+        "seconds": 3.61
+      },
+      {
+        "name": "test_retrieval_provider_uses_plan_namespace_and_short_no_retry_client",
+        "status": "passed",
+        "seconds": 0.002
+      },
+      {
+        "name": "test_evidence_bounds_preserve_cost_and_valid_facts_json",
+        "status": "passed",
+        "seconds": 0.198
+      },
+      {
+        "name": "test_global_concurrency_is_bounded_and_capacity_released",
+        "status": "passed",
+        "seconds": 0.198
+      },
+      {
+        "name": "test_saved_ids_cannot_collide_with_synthetic_sources_or_skip_version_checks",
+        "status": "passed",
+        "seconds": 0.164
+      }
+    ]
+  },
+  "live_evaluation": {
+    "case_count": 4,
+    "validated_responses": 4,
+    "valid_citation_id_cases": 3,
+    "expected_verdict_matches": 4,
+    "unchanged_state_cases": 4,
+    "median_latency_seconds": 2.95,
+    "max_latency_seconds": 6.081,
+    "cases": [
+      {
+        "case": "over_budget",
+        "expected_verdict": "conflicts",
+        "http_status": 200,
+        "observed_verdict": "conflicts",
+        "verdict_matches_expectation": true,
+        "validated_response": true,
+        "citation_ids_valid": true,
+        "finding_count": 5,
+        "citation_entailment_human_reviewed": false,
+        "plan_state_unchanged": true,
+        "latency_seconds": 6.081,
+        "retrieved_hit_count": 0,
+        "retrieval_seconds": 3.454,
+        "raw_model_verdict": "conflicts",
+        "generation_seconds": 2.606,
+        "synthetic_input": {
+          "id": "over_budget",
+          "expected": "conflicts",
+          "budget": 50,
+          "constraints": "All members agreed a vegetarian dinner and a maximum budget of USD 50 per person.",
+          "option": {
+            "name": "Synthetic garden dinner",
+            "details": "User-provided vegetarian set menu, quoted at USD 75 per person. Venue details remain unverified.",
+            "estimated_cost_per_person": 75
+          }
+        },
+        "response": {
+          "verdict": "conflicts",
+          "summary": "This option has conflicts with the group’s recorded constraints. Review the findings and sources below.",
+          "matches": [
+            {
+              "text": "User-provided vegetarian set menu",
+              "source_ids": [
+                "option-details"
+              ]
+            },
+            {
+              "text": "All members agreed a vegetarian dinner",
+              "source_ids": [
+                "saved:constraints"
+              ]
+            }
+          ],
+          "conflicts": [
+            {
+              "text": "The proposed estimate of 75 per person exceeds the working budget of 50.",
+              "source_ids": [
+                "plan-facts",
+                "option-details"
+              ]
+            },
+            {
+              "text": "User-provided option cost per person is USD 75",
+              "source_ids": [
+                "option-details"
+              ]
+            },
+            {
+              "text": "Maximum budget of USD 50 per person",
+              "source_ids": [
+                "saved:constraints"
+              ]
+            }
+          ],
+          "unknowns": [
+            "Whether the venue meets all other accessibility or amenity requirements",
+            "Exact location and availability of the venue",
+            "Whether the vegetarian menu meets all dietary preferences beyond being vegetarian"
+          ],
+          "sources": [
+            {
+              "id": "plan-facts",
+              "title": "Current plan facts",
+              "text": "{\"title\": \"Synthetic RAG evaluation: over_budget\", \"start\": \"2027-05-14\", \"end\": \"2027-05-14\", \"location\": \"San Francisco\", \"budget\": 50, \"budget_basis\": \"per person; 0 means not set\", \"confirmed_preferences\": [], \"polls\": [{\"question\": \"Which date works best?\", \"options\": [\"May 14\", \"Suggest another date\"], \"votes\": {}, \"status\": \"Votes are proposals, not automatically confirmed decisions\"}]}"
+            },
+            {
+              "id": "option-details",
+              "title": "Proposed option — user-provided, unverified",
+              "text": "Name: Synthetic garden dinner\nEstimated cost per person (user-provided): 75.0\nWebsite (user-provided, not fetched): not supplied\nDetails (user-provided, unverified): User-provided vegetarian set menu, quoted at USD 75 per person. Venue details remain unverified."
+            },
+            {
+              "id": "saved:constraints",
+              "title": "Synthetic group constraints",
+              "text": "All members agreed a vegetarian dinner and a maximum budget of USD 50 per person."
+            }
+          ],
+          "retrieval_status": "available",
+          "context_truncated": false
+        }
+      },
+      {
+        "case": "missing_evidence",
+        "expected_verdict": "needs_info",
+        "http_status": 200,
+        "observed_verdict": "needs_info",
+        "verdict_matches_expectation": true,
+        "validated_response": true,
+        "citation_ids_valid": null,
+        "finding_count": 0,
+        "citation_entailment_human_reviewed": false,
+        "plan_state_unchanged": true,
+        "latency_seconds": 2.655,
+        "retrieved_hit_count": 0,
+        "retrieval_seconds": 0.621,
+        "raw_model_verdict": "needs_info",
+        "generation_seconds": 2.01,
+        "synthetic_input": {
+          "id": "missing_evidence",
+          "expected": "needs_info",
+          "budget": 50,
+          "constraints": null,
+          "option": {
+            "name": "Undocumented dinner idea",
+            "details": ""
+          }
+        },
+        "response": {
+          "verdict": "needs_info",
+          "summary": "More information is needed before confirming this option fits the group. Review the findings and open questions below.",
+          "matches": [],
+          "conflicts": [],
+          "unknowns": [
+            "Confirm the group’s preferences and constraints; a menu alone does not establish what everyone needs.",
+            "No saved group evidence was available; add preferences or Notes to assess this option.",
+            "Add option details or a menu before judging suitability.",
+            "Cost per person for the option",
+            "Cuisine or type of food",
+            "Location of the venue",
+            "Whether the option fits within the budget",
+            "Menu and allergen information"
+          ],
+          "sources": [
+            {
+              "id": "plan-facts",
+              "title": "Current plan facts",
+              "text": "{\"title\": \"Synthetic RAG evaluation: missing_evidence\", \"start\": \"2027-05-14\", \"end\": \"2027-05-14\", \"location\": \"San Francisco\", \"budget\": 50, \"budget_basis\": \"per person; 0 means not set\", \"confirmed_preferences\": [], \"polls\": [{\"question\": \"Which date works best?\", \"options\": [\"May 14\", \"Suggest another date\"], \"votes\": {}, \"status\": \"Votes are proposals, not automatically confirmed decisions\"}]}"
+            },
+            {
+              "id": "option-details",
+              "title": "Proposed option — user-provided, unverified",
+              "text": "Name: Undocumented dinner idea\nEstimated cost per person (user-provided): not supplied\nWebsite (user-provided, not fetched): not supplied\nDetails (user-provided, unverified): "
+            }
+          ],
+          "retrieval_status": "available",
+          "context_truncated": false
+        }
+      },
+      {
+        "case": "dietary_conflict",
+        "expected_verdict": "conflicts",
+        "http_status": 200,
+        "observed_verdict": "conflicts",
+        "verdict_matches_expectation": true,
+        "validated_response": true,
+        "citation_ids_valid": true,
+        "finding_count": 2,
+        "citation_entailment_human_reviewed": false,
+        "plan_state_unchanged": true,
+        "latency_seconds": 2.016,
+        "retrieved_hit_count": 0,
+        "retrieval_seconds": 0.563,
+        "raw_model_verdict": "conflicts",
+        "generation_seconds": 1.426,
+        "synthetic_input": {
+          "id": "dietary_conflict",
+          "expected": "conflicts",
+          "budget": 60,
+          "constraints": "Every member explicitly agreed to vegetarian-only food: no meat, poultry or seafood. All members confirmed this applies to dinner.",
+          "option": {
+            "name": "Synthetic steak tasting",
+            "details": "User-provided menu: every course contains beef, including beef stock, with no vegetarian alternatives. Estimated USD 30 per person.",
+            "estimated_cost_per_person": 30
+          }
+        },
+        "response": {
+          "verdict": "conflicts",
+          "summary": "This option has conflicts with the group’s recorded constraints. Review the findings and sources below.",
+          "matches": [],
+          "conflicts": [
+            {
+              "text": "User-provided menu: every course contains beef, including beef stock, with no vegetarian alternatives.",
+              "source_ids": [
+                "option-details"
+              ]
+            },
+            {
+              "text": "Every member explicitly agreed to vegetarian-only food: no meat, poultry or seafood. All members confirmed this applies to dinner.",
+              "source_ids": [
+                "saved:constraints"
+              ]
+            }
+          ],
+          "unknowns": [
+            "Whether the group would consider an option with some non-vegetarian items",
+            "If the venue can provide vegetarian alternatives despite the current menu details"
+          ],
+          "sources": [
+            {
+              "id": "plan-facts",
+              "title": "Current plan facts",
+              "text": "{\"title\": \"Synthetic RAG evaluation: dietary_conflict\", \"start\": \"2027-05-14\", \"end\": \"2027-05-14\", \"location\": \"San Francisco\", \"budget\": 60, \"budget_basis\": \"per person; 0 means not set\", \"confirmed_preferences\": [], \"polls\": [{\"question\": \"Which date works best?\", \"options\": [\"May 14\", \"Suggest another date\"], \"votes\": {}, \"status\": \"Votes are proposals, not automatically confirmed decisions\"}]}"
+            },
+            {
+              "id": "option-details",
+              "title": "Proposed option — user-provided, unverified",
+              "text": "Name: Synthetic steak tasting\nEstimated cost per person (user-provided): 30.0\nWebsite (user-provided, not fetched): not supplied\nDetails (user-provided, unverified): User-provided menu: every course contains beef, including beef stock, with no vegetarian alternatives. Estimated USD 30 per person."
+            },
+            {
+              "id": "saved:constraints",
+              "title": "Synthetic group constraints",
+              "text": "Every member explicitly agreed to vegetarian-only food: no meat, poultry or seafood. All members confirmed this applies to dinner."
+            }
+          ],
+          "retrieval_status": "available",
+          "context_truncated": false
+        }
+      },
+      {
+        "case": "supported_home_option",
+        "expected_verdict": "fits",
+        "http_status": 200,
+        "observed_verdict": "fits",
+        "verdict_matches_expectation": true,
+        "validated_response": true,
+        "citation_ids_valid": true,
+        "finding_count": 5,
+        "citation_entailment_human_reviewed": false,
+        "plan_state_unchanged": true,
+        "latency_seconds": 3.245,
+        "retrieved_hit_count": 0,
+        "retrieval_seconds": 0.352,
+        "raw_model_verdict": "fits",
+        "generation_seconds": 2.865,
+        "synthetic_input": {
+          "id": "supported_home_option",
+          "expected": "fits",
+          "budget": 50,
+          "constraints": "For this fictional scenario, every member explicitly confirmed vegetarian mild food, a dinner at a member home on May 14, 2027 in San Francisco, no reported food allergies or access requirements, and a USD 50 per-person limit. No restaurant booking is wanted. Everyone has confirmed transport and the date.",
+          "option": {
+            "name": "Synthetic vegetarian home dinner",
+            "details": "A member-hosted dinner at the agreed San Francisco home on May 14, 2027. Mild vegetarian tomato pasta, bread and water, with ingredient lists supplied to all members. Each attendee has confirmed this exact proposal and transport. Ingredients are donated: USD 0 per person. No venue, booking or paid provider is involved. These are fictional supplied facts, not live inventory.",
+            "estimated_cost_per_person": 0
+          }
+        },
+        "response": {
+          "verdict": "fits",
+          "summary": "The Synthetic vegetarian home dinner matches all key group constraints: it is vegetarian, mild, at the agreed member home location in San Francisco, scheduled on May 14, 2027, and has zero cost, which is within the $50 per person budget. All attendees have confirmed the exact proposal and transport. No restaurant or paid booking is involved, consistent with group wishes. No food allergies or access needs conflict with the menu. Consequently, the option fits all known facts and constraints.",
+          "matches": [
+            {
+              "text": "A member-hosted dinner at the agreed San Francisco home on May 14, 2027.",
+              "source_ids": [
+                "option-details",
+                "plan-facts",
+                "saved:constraints"
+              ]
+            },
+            {
+              "text": "Each attendee has confirmed this exact proposal and transport.",
+              "source_ids": [
+                "option-details",
+                "saved:constraints"
+              ]
+            },
+            {
+              "text": "Every member explicitly confirmed vegetarian mild food, a dinner at a member home on May 14, 2027 in San Francisco, no reported food allergies or access requirements, and a USD 50 per-person limit.",
+              "source_ids": [
+                "saved:constraints"
+              ]
+            },
+            {
+              "text": "No venue, booking or paid provider is involved.",
+              "source_ids": [
+                "option-details",
+                "saved:constraints"
+              ]
+            },
+            {
+              "text": "Estimated cost per person (user-provided): 0.0",
+              "source_ids": [
+                "option-details",
+                "plan-facts",
+                "saved:constraints"
+              ]
+            }
+          ],
+          "conflicts": [],
+          "unknowns": [],
+          "sources": [
+            {
+              "id": "plan-facts",
+              "title": "Current plan facts",
+              "text": "{\"title\": \"Synthetic RAG evaluation: supported_home_option\", \"start\": \"2027-05-14\", \"end\": \"2027-05-14\", \"location\": \"San Francisco\", \"budget\": 50, \"budget_basis\": \"per person; 0 means not set\", \"confirmed_preferences\": [], \"polls\": [{\"question\": \"Which date works best?\", \"options\": [\"May 14\", \"Suggest another date\"], \"votes\": {}, \"status\": \"Votes are proposals, not automatically confirmed decisions\"}]}"
+            },
+            {
+              "id": "option-details",
+              "title": "Proposed option — user-provided, unverified",
+              "text": "Name: Synthetic vegetarian home dinner\nEstimated cost per person (user-provided): 0.0\nWebsite (user-provided, not fetched): not supplied\nDetails (user-provided, unverified): A member-hosted dinner at the agreed San Francisco home on May 14, 2027. Mild vegetarian tomato pasta, bread and water, with ingredient lists supplied to all members. Each attendee has confirmed this exact proposal and transport. Ingredients are donated: USD 0 per person. No venue, booking or paid provider is involved. These are fictional supplied facts, not live inventory."
+            },
+            {
+              "id": "saved:constraints",
+              "title": "Synthetic group constraints",
+              "text": "For this fictional scenario, every member explicitly confirmed vegetarian mild food, a dinner at a member home on May 14, 2027 in San Francisco, no reported food allergies or access requirements, and a USD 50 per-person limit. No restaurant booking is wanted. Everyone has confirmed transport and the date."
+            }
+          ],
+          "retrieval_status": "available",
+          "context_truncated": false
+        }
+      }
+    ],
+    "citation_bearing_cases": 3,
+    "cited_findings": 12,
+    "findings_with_valid_source_ids": 12
+  },
+  "limitations": [
+    "Four synthetic cases are a demonstration, not a statistically representative benchmark.",
+    "Citation-ID validity establishes supplied-source references, not semantic entailment, truth, or safety. Human citation entailment was not scored. Cases with no findings are N/A for citation validity.",
+    "Fresh namespaces intentionally have no indexed records. Live Pinecone checks validate routing/availability, not retrieval relevance or ranking quality. Saved synthetic Notes provide immediate evidence.",
+    "Budget and missing-evidence outcomes include deterministic server rules; they do not measure model-only reasoning accuracy.",
+    "Latency includes authentication adapter, repository, real embedding/query and model generation. One sequential run, no load test or percentile claims.",
+    "No real menu, allergy safety, prices, availability, booking or calendar action was verified."
+  ]
+}
