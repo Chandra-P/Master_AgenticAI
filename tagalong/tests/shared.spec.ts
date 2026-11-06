@@ -58,6 +58,21 @@ test('real MCP demo books once, persists to the shared itinerary, and cancels wi
  const finalPlan=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers:a})).json();expect(finalPlan.itinerary.some((x:{id:string})=>x.id===booking.itinerary_entry_id)).toBe(false);
 });
 
+test('connected typing suggests a continuation through the authenticated API without sending a message',async({page})=>{
+ await login(page,'alice');
+ const headers={Authorization:'Bearer test-alice'};
+ const created=await page.request.post('/api/backend/v1/plans',{headers,data:{title:'Typing demo '+crypto.randomUUID().slice(0,8),kind:'outing',start:'2027-05-14',end:'2027-05-14'}});expect(created.ok()).toBeTruthy();const plan=await created.json();
+ await page.goto('/plans/'+plan.id);
+ const draft=page.getByLabel('Message your group');
+ const response=page.waitForResponse(r=>r.url().endsWith('/typing-suggestion')&&r.request().method()==='POST');
+ await draft.fill('I want to explore');
+ expect((await response).ok()).toBeTruthy();
+ await expect(page.getByRole('button',{name:'Accept suggestion: together.',exact:true})).toBeVisible();
+ await draft.press('Tab');
+ await expect(draft).toHaveValue('I want to explore together.');
+ const saved=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers})).json();expect(saved.messages).toHaveLength(0);
+});
+
 test('natural-language generation creates a reviewed plan and proactively summarizes it',async({page})=>{
  const title='Reviewed proactive weekend '+crypto.randomUUID().slice(0,8);
  await login(page,'alice');await page.goto('/');

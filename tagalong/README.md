@@ -2,13 +2,13 @@
 
 **Good plans. Great company.**
 
-A group planning app with a browser-local demo and a separately configured shared workspace. Built with Next.js, FastAPI, Supabase Auth/Postgres/Realtime, LangGraph, OpenAI and Pinecone. Public deployment is pending provisioning and live account/database checks; see [current release evidence](docs/CONNECTED_STATUS.md).
+A group planning app with a browser-local demo and an authenticated shared workspace. Built with Next.js, FastAPI, Supabase Auth/Postgres/Realtime, LangGraph, OpenAI and Pinecone. The public app is at https://tagalong-web-clbe.onrender.com; verify each new release against both frontend and API rather than assuming a pushed commit is deployed.
 
 ## Shared workspace
 
 Sign in at `/account` when Supabase and the API are configured. Create shared plans, add existing signed-in accounts by email, chat, vote, paste text documents, request grounded assistant suggestions, confirm proposed preferences, and revoke membership. Changes use revision checks to avoid overwriting concurrent edits. Sources are restricted to the plan and validated against current document versions. OpenAI suggestions cannot execute reservations or calendar actions.
 
-The demo uses synthetic people and venues and simulated AI. Shared mode uses authenticated accounts, real persistence, and the configured OpenAI model. An unavailable connected service reports an error; it never silently substitutes demo data. Live venue search and calendar integration are not enabled.
+The demo uses synthetic people and venues and simulated AI. Shared mode uses authenticated accounts, real persistence, and the configured OpenAI model. An unavailable connected service reports an error; it never silently substitutes demo data. Connected Discover supports venue cards and source links through Keenable; live availability and calendar integration are not enabled.
 
 For setup, environment variables, Docker/Render deployment, production email delivery and release verification, see [deployment instructions](docs/DEPLOYMENT.md) and [backend testing](backend/TESTING.md).
 
@@ -36,6 +36,9 @@ In VS Code, clone `https://github.com/Chandra-P/Master_AgenticAI.git`, then open
 - Browse synthetic suggestions, add them to draft itineraries, and add or remove activities.
 - Responsive sidebar and mobile bottom navigation.
 - Browser-local persistence for plans and interactions.
+- Optional typing suggestions: local in demo mode; connected mode adds OpenAI continuations after a pause. Accepting never sends a message.
+
+In a shared plan, **Demo bookings** demonstrates real MCP calls against a fictional restaurant provider. Explore options, complete group voting and working details, obtain owner approval, then explicitly confirm a simulated reservation. See [the MCP demo guide](docs/DEMO_BOOKING_MCP.md). No real reservation or charge occurs.
 
 ## Demo boundaries
 
@@ -46,9 +49,9 @@ In demo mode, participant, venue, rating, and planning details are synthetic. Ph
 - `src/app`: App Router pages and global styling.
 - `src/components`: Shared shell, branding, and UI primitives.
 - `src/features/planning`: Interactive feature views and React state provider.
-- `src/services`: TypeScript models, synthetic seed data, and mock service implementations.
+- `src/services`: Typed connected adapters, local demo data, and pure helpers for typing, patches, and itinerary ordering.
 - `tests`: Playwright desktop and mobile acceptance scenarios.
-- `.env.example`: Future configuration names only; Phase 1 needs no secrets.
+- `.env.example`: Public frontend configuration names only; local demo mode needs no provider secrets.
 
 `src/services/connected.ts` provides the authenticated shared-workspace adapter. `backend/tagalong` contains planning services, authorization, LangGraph orchestration and provider adapters; `supabase/migrations` contains the schema. The worker indexes plan sources in isolated Pinecone namespaces. Google Calendar and Google Places remain future integrations; external writes require explicit approval.
 

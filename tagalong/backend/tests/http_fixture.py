@@ -22,4 +22,9 @@ def app_factory():
     class BrowserPlaces:
         def search(self,query,location,category):
             return [{'id':'synthetic-restaurant','kind':'place','title':'Synthetic vegetarian restaurant','url':'https://places.example.test/restaurant','snippet':'Synthetic public source snippet for browser verification.','address':'10 Test Street','location':location,'category':'Food & drink','image':'https://places.example.test/restaurant.jpg','image_source_url':'https://places.example.test/restaurant','map_url':'https://www.google.com/maps/search/?api=1&query=Synthetic+restaurant'}]
-    return create_app(repo,authenticate,BrowserAI(),places=BrowserPlaces())
+    app=create_app(repo,authenticate,BrowserAI(),places=BrowserPlaces())
+    class BrowserTyping:
+        def complete(self,draft,context):
+            return ' together.'
+    app.state.typing_provider=BrowserTyping()
+    return app

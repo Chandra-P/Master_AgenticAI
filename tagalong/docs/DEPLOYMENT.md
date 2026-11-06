@@ -2,6 +2,10 @@
 
 The connected app runs as a Next.js web service, a FastAPI web service, and an ingestion worker. Supabase supplies Auth/Postgres/Realtime. OpenAI and Pinecone stay server-side. `render.yaml` describes the three hosting services; it has not been provisioned merely by committing it.
 
+## Model typing suggestions
+
+Connected chat uses the existing server-only `OPENAI_API_KEY` for short draft continuations through `/v1/plans/{pid}/typing-suggestion`. It uses `OPENAI_MODEL` (default `gpt-4.1-mini`); optionally set `OPENAI_TYPING_MODEL` to override it. Deploy the frontend and API together. No new key, Pinecone index, worker or database migration is needed. Demo mode stays local. The typing toggle discloses that enabled connected suggestions send drafts to OpenAI after a pause; switching it off cancels pending client work. Do not log request bodies for this endpoint or add drafts to ingestion. See [typing behavior and limits](DISCOVERY_NOTES_TYPING.md).
+
 ## Free pilot on existing Render services
 
 The deployed frontend is https://tagalong-web-clbe.onrender.com and the API is https://tagalong-api-7pdn.onrender.com. Both endpoints passed public readiness checks; the frontend sign-in UI also passed read-only desktop/mobile browser checks. This does not prove real signup email delivery or authenticated end-to-end use.

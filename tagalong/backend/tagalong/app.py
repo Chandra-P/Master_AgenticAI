@@ -242,6 +242,8 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
     install_plan_management(app,repo,actor)
     from .coordination_routes import install_coordination
     install_coordination(app,repo,actor,ai)
+    from .typing_suggestions import install_typing_suggestions
+    install_typing_suggestions(app,repo,actor)
     return app
 
 app=create_app()

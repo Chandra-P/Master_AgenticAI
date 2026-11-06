@@ -33,6 +33,19 @@ git merge origin/checkpoint/all-projects-2026-11-04
 
 If you are only updating the shared base branch, switch to it and use `git pull --ff-only origin checkpoint/all-projects-2026-11-04`. Create a feature branch before editing; do not push directly to the deployment branch.
 
+## Where to make feature changes
+
+- `src/features/planning/workspace.tsx`: workspace tabs, invitations and plan-level actions.
+- `src/features/planning/chat.tsx`: group conversation and message composer.
+- `src/features/planning/use-typing-suggestions.ts`: debounce, cancellation, current-draft guards and model/local fallback.
+- `src/features/planning/typing-suggestions.tsx` and its CSS: suggestion controls and presentation.
+- `src/services/typing-suggestions.ts`: pure on-device matching for demo and immediate fallback. Connected model continuations use the authenticated typing endpoint; preserve its bounds and avoid logging or persisting drafts.
+- `backend/tagalong/typing_suggestions.py`: OpenAI continuation provider, authorization, input/output bounds and usage limits.
+- `src/features/planning/demo-bookings.tsx` and `backend/tagalong/demo_bookings.py`: reservation review UI and authoritative agreement/confirmation rules.
+- `tests`: browser and pure-helper regressions; `backend/tests`: service and authorization tests.
+
+Keep feature behavior in its module rather than growing the workspace component. Remove imports and helpers only after confirming they have no remaining callers. Preserve historical design/release notes as records; update current guides when behavior changes. Demo-only feature development needs no infrastructure dashboard access or production keys.
+
 ## Verify and submit
 
 From `tagalong/`:

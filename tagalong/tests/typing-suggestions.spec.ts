@@ -22,6 +22,18 @@ test('engine bounds history, completion size and multiline drafts',()=>{
  expect(suggestContinuation('x'.repeat(2000),plan)).toBe('');
 });
 
+test('engine supports mentions, ordinary planning drafts and partial first words',()=>{
+ const plan=initialPlans()[0];
+ expect(suggestContinuation('@Tagalong I want to ',plan)).toBe('plan ');
+ expect(suggestContinuation('@tagalong lets fl',plan)).toBe('y ');
+ expect(suggestContinuation('restau',plan)).toBe('rants ');
+ expect(suggestContinuation('Can we find restau',plan)).toBe('rants ');
+ expect(suggestContinuation('@Tagalong Let',plan)).toBe("'s plan ");
+ expect(suggestContinuation('aardvark ',plan)).toBe('');
+ expect(suggestContinuation('xy',plan)).toBe('');
+ expect(suggestContinuation('I want to '+ 'x'.repeat(1989),plan)).toBe('');
+});
+
 test.describe('chat typing suggestions',()=>{
 
 test.beforeEach(async({page})=>{
@@ -49,6 +61,10 @@ test('local suggestions accept without sending, dismiss, and turn off',async({pa
  await draft.fill('Let');
  await page.getByRole('button',{name:/Accept suggestion/}).click();
  await expect(draft).toHaveValue("Let's plan ");
+ await draft.fill('@Tagalong lets fl');
+ await page.getByRole('button',{name:'Accept suggestion: y',exact:true}).click();
+ await expect(draft).toHaveValue('@Tagalong lets fly ');
+ await expect(page.locator('.chat-message')).toHaveCount(count);
  await page.getByLabel('Typing suggestions').uncheck();
  await draft.fill('Let');
  await expect(page.getByRole('button',{name:/Accept suggestion/})).toHaveCount(0);

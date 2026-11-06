@@ -22,7 +22,9 @@ export class ConnectedService {
   async request<T>(path:string,options:RequestInit={}):Promise<T> {
     const {data:{session},error}=await this.auth.auth.getSession();
     if(error || !session) throw new ApiError('Your session ended. Please sign in again.',401);
-    const result=await fetch('/api/backend'+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,'X-Workspace-Mode':readWorkspaceRole(session.user.id),...options.headers},signal:AbortSignal.timeout(65_000)});
+    const timeout=AbortSignal.timeout(65_000);
+    const signal=options.signal?AbortSignal.any([options.signal,timeout]):timeout;
+    const result=await fetch('/api/backend'+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,'X-Workspace-Mode':readWorkspaceRole(session.user.id),...options.headers},signal});
     const data=await result.json().catch(()=>({detail:'Unexpected response from the shared workspace.'}));
     if(!result.ok) throw new ApiError(typeof data.detail==='string'?data.detail:'This change could not be saved. Please check your input.',result.status);
     return data as T;
@@ -35,6 +37,7 @@ export class ConnectedService {
   transferOwner(id:string,revision:number,userId:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id)+'/owner',{method:'POST',body:JSON.stringify({expected_revision:revision,user_id:userId})});}
   save(plan:Plan,revision:number,previous:Plan){const patches=createPlanPatches(previous,plan);return patches.length?this.request<Plan>('/v1/plans/'+encodeURIComponent(plan.id),{method:'PATCH',body:JSON.stringify({patches,expected_revision:revision})}):Promise.resolve(previous);}
   assistant(id:string,message:string){return this.request<AssistantReply>('/v1/plans/'+encodeURIComponent(id)+'/assistant',{method:'POST',body:JSON.stringify({message})});}
+  typingSuggestion(id:string,draft:string,revision:number,signal:AbortSignal){return this.request<{suggestion:string;source:'model'}>('/v1/plans/'+encodeURIComponent(id)+'/typing-suggestion',{method:'POST',body:JSON.stringify({draft,expected_revision:revision}),signal});}
   proposals(id:string){return this.request<Proposal[]>('/v1/plans/'+encodeURIComponent(id)+'/proposals');}
   confirm(id:string,proposal:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id)+'/proposals/'+encodeURIComponent(proposal)+'/confirm',{method:'POST',body:'{}'});}
   share(id:string,email:string){return this.request<{status:string}>('/v1/plans/'+encodeURIComponent(id)+'/members',{method:'POST',body:JSON.stringify({email})});}
