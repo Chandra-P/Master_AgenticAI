@@ -20,6 +20,10 @@ Only current plan members can search, quote, confirm or view records. Only the b
 
 ## Demo walkthrough
 
+Before confirming a new reservation, finish voting in every current poll, resolve ties, set a destination and a positive working budget, then have the owner review and approve the decisions in **Demo bookings**. Selecting “Suggest another date” does not settle the dates. Members can search and review quotes while agreement is pending. The server checks this gate before and after MCP confirmation, so a direct API request cannot bypass it. Changing votes, options, membership, ownership, dates, location or budget invalidates approval; ordinary messages and itinerary updates do not. Existing reservations can still be cancelled when a decision changes.
+
+`GET /v1/plans/{pid}/demo-bookings` returns `readiness` with `ready`, `blockers` (each with `label` and destination `tab`), authoritative winning `decisions`, `approved`, and `can_approve`. `POST /v1/plans/{pid}/demo-bookings/approve` requires `{confirmed:true,expected_revision:<reviewed plan revision>}` and returns `{simulation:true,readiness}`. Only the current owner can approve, and a stale review is rejected. Approval is separate from reservation confirmation and does not create a booking.
+
 1. Sign in and open a shared plan. Use the **Demo bookings** tab or **Try demo restaurant booking** in chat. Local browser demo mode requires signing in before this real protocol flow can run.
 2. Enter a city, a date within the plan, and party size. Click **Search fictional restaurants**.
 3. Select a fictional restaurant and a displayed demo time, then **Review demo reservation**.

@@ -18,11 +18,16 @@ class FakeGateway:
         return {'result':{'simulation':True,**results[tool]},'trace':[{'tool':tool,'status':'ok','protocol':'MCP','transport':'stdio'}]}
 
 
-def setup():
+def setup(ready=True):
     repo=MemoryRepository();app=create_app(repo,lambda t:Actor(t,t+'@test.com',t));app.state.demo_booking_gateway=FakeGateway()
     c=TestClient(app);h={'Authorization':'Bearer alice'}
     p=c.post('/v1/plans',headers=h,json={'title':'Dinner','kind':'outing','start':'2026-12-12','end':'2026-12-12'}).json()
     base='/v1/plans/'+p['id']+'/demo-bookings'
+    if ready:
+        plan=repo.state['plans'][p['id']]
+        plan['location']='Austin';plan['budget']=150
+        plan['polls'][0]['votes']={'alice':0}
+        assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':plan['revision']}).status_code==200
     return repo,app,c,h,p,base
 
 
@@ -34,6 +39,94 @@ def quote(c,h,base):
 
 def confirm(c,h,base,qid):
     return c.post(base+'/confirm',headers=h,json={'quote_id':qid,'confirmed':True})
+
+
+def test_booking_cannot_skip_group_decisions_but_exploration_is_available():
+    repo,app,c,h,p,base=setup(False)
+    readiness=c.get(base,headers=h).json()['readiness']
+    assert not readiness['ready'] and not readiness['approved']
+    assert {b['tab'] for b in readiness['blockers']}=={'Polls','Planning board'}
+    qid=quote(c,h,base)
+    assert confirm(c,h,base,qid).status_code==409
+    assert 'create_demo_booking' not in app.state.demo_booking_gateway.calls
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':p['revision']}).status_code==409
+
+
+def test_owner_approval_follows_votes_and_is_invalidated_by_changed_decisions():
+    repo,app,c,h,p,base=setup(False)
+    plan=repo.state['plans'][p['id']]
+    plan['location']='Austin';plan['budget']=150
+    plan['polls'][0]['votes']={'alice':0}
+    before=c.get(base,headers=h).json()['readiness']
+    assert before['can_approve'] and not before['ready']
+    assert c.post(base+'/approve',headers=h,json={'confirmed':False,'expected_revision':plan['revision']}).status_code==422
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':plan['revision']}).json()['readiness']['ready']
+    qid=quote(c,h,base)
+    plan['budget']=200
+    assert not c.get(base,headers=h).json()['readiness']['approved']
+    assert confirm(c,h,base,qid).status_code==409
+    assert 'create_demo_booking' not in app.state.demo_booking_gateway.calls
+
+
+@pytest.mark.parametrize('case',['missing_vote','tie','suggest_other_date','invalid_vote'])
+def test_unresolved_polls_cannot_be_approved(case):
+    repo,app,c,h,p,base=setup(False)
+    plan=repo.state['plans'][p['id']];plan['location']='Austin';plan['budget']=150
+    bob={'Authorization':'Bearer bob'};c.get('/v1/me',headers=bob)
+    c.post('/v1/plans/'+p['id']+'/members',headers=h,json={'email':'bob@test.com'})
+    poll=plan['polls'][0];poll['votes']={'alice':0,'bob':0}
+    if case=='missing_vote':poll['votes'].pop('bob')
+    if case=='tie':poll['votes']['bob']=1
+    if case=='suggest_other_date':poll['votes']={'alice':len(poll['options'])-1,'bob':len(poll['options'])-1}
+    if case=='invalid_vote':poll['votes']['bob']=999
+    assert not c.get(base,headers=h).json()['readiness']['ready']
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':plan['revision']}).status_code==409
+    assert c.post(base+'/approve',headers=bob,json={'confirmed':True,'expected_revision':plan['revision']}).status_code==403
+
+
+@pytest.mark.parametrize('change',['budget','location','owner','member','votes'])
+def test_changed_decisions_invalidate_approval_even_without_revision_change(change):
+    repo,app,c,h,p,base=setup();qid=quote(c,h,base)
+    plan=repo.state['plans'][p['id']]
+    if change=='budget':plan['budget']+=10
+    if change=='location':plan['location']='Chicago'
+    if change=='owner':plan['owner_id']='bob'
+    if change=='member':repo.state['members'][p['id']].append('bob')
+    if change=='votes':plan['polls'][0]['votes']['alice']=1
+    assert not c.get(base,headers=h).json()['readiness']['approved']
+    assert confirm(c,h,base,qid).status_code==409
+    assert 'create_demo_booking' not in app.state.demo_booking_gateway.calls
+
+
+def test_decision_changes_during_mcp_confirmation_do_not_save_booking():
+    repo,app,c,h,p,base=setup();qid=quote(c,h,base)
+    def hook(tool):
+        if tool=='create_demo_booking':repo.state['plans'][p['id']]['budget']+=10
+    app.state.demo_booking_gateway.hook=hook
+    assert confirm(c,h,base,qid).status_code==409
+    assert repo.state.get('demo_bookings',{})=={}
+    assert repo.state['plans'][p['id']]['itinerary']==[]
+
+
+def test_changed_decisions_do_not_prevent_existing_booking_cancellation_or_retry():
+    repo,app,c,h,p,base=setup();qid=quote(c,h,base)
+    booking=confirm(c,h,base,qid).json()['booking']
+    repo.state['plans'][p['id']]['budget']=0
+    assert confirm(c,h,base,qid).json()['booking']==booking
+    assert c.post(base+'/'+booking['id']+'/cancel',headers=h,json={'confirmed':True}).status_code==200
+
+
+def test_owner_cannot_approve_stale_review_and_canonical_votes_show_actual_winner():
+    repo,app,c,h,p,base=setup(False)
+    plan=repo.state['plans'][p['id']];plan['location']='Austin';plan['budget']=100
+    plan['members'][0]['name']='Preferred Alice'
+    plan['polls']=[{'id':'food','question':'Where to eat?','options':['Cafe','Bistro'],'votes':{'alice':1}}]
+    readiness=c.get(base,headers=h).json()['readiness']
+    assert readiness['decisions']==[{'question':'Where to eat?','option':'Bistro'}]
+    plan['revision']+=1
+    stale=c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':plan['revision']-1})
+    assert stale.status_code==409
+    assert not c.get(base,headers=h).json()['readiness']['approved']
 
 
 def test_demo_booking_requires_explicit_confirmation_and_is_shared_idempotent():

@@ -22,6 +22,19 @@ test('real MCP demo books once, persists to the shared itinerary, and cancels wi
  expect((await page.request.post('/api/backend/v1/plans/'+plan.id+'/members',{headers:a,data:{email:'bob@example.test'}})).ok()).toBeTruthy();
  await page.goto('/plans/'+plan.id+'?tab=Demo%20bookings');
  await expect(page.getByText('Demo reservation—no real booking or charge',{exact:true})).toBeVisible();
+ await expect(page.getByText('Complete group agreement before confirming a reservation.',{exact:true})).toBeVisible();
+ const planPath='/api/backend/v1/plans/'+plan.id;
+ async function change(headers:Record<string,string>,patches:unknown[]){const current=await(await page.request.get(planPath,{headers})).json();const response=await page.request.patch(planPath,{headers,data:{expected_revision:current.revision,patches}});expect(response.ok(),await response.text()).toBeTruthy();}
+ const current=await(await page.request.get(planPath,{headers:a})).json();
+ const alice=current.members.find((m:{user_id:string})=>m.user_id==='alice').name;
+ const bob=current.members.find((m:{user_id:string})=>m.user_id==='bob').name;
+ await change(a,[{op:'replace',path:['location'],value:'San Francisco'},{op:'replace',path:['budget'],value:500},{op:'add',path:['polls',0,'votes',alice],value:0}]);
+ await change(b,[{op:'add',path:['polls',0,'votes',bob],value:0}]);
+ const readyPlan=await(await page.request.get(planPath,{headers:a})).json();
+ expect((await page.request.post(planPath+'/demo-bookings/approve',{headers:b,data:{confirmed:true,expected_revision:readyPlan.revision}})).status()).toBe(403);
+ await page.reload();
+ await page.getByRole('button',{name:'Approve group decisions',exact:true}).click();
+ await expect(page.getByText('Group decisions approved. You can confirm a reservation.',{exact:true})).toBeVisible();
  await page.getByLabel('Demo city',{exact:true}).fill('San Francisco');await page.getByLabel('Demo party size',{exact:true}).fill('4');
  await page.getByRole('button',{name:'Search fictional restaurants',exact:true}).click();
  await page.getByRole('combobox',{name:'Restaurant',exact:true}).selectOption('demo-lantern');await page.getByRole('button',{name:'Demo slot 19:00',exact:true}).click();
