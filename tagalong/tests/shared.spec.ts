@@ -95,6 +95,24 @@ test('group fit cites saved preferences and current budget without changing the 
  expect(after.revision).toBe(before.revision);expect(after.itinerary).toEqual(before.itinerary);expect(after.messages).toEqual(before.messages);
 });
 
+test('reusable demo groups stay separate from connected membership and contacts',async({page})=>{
+ const group={id:'private-local-group',name:'Private local group sentinel',theme:'Weekend friends',ownerId:'alex',archived:false,members:[{id:'alex',preferredName:'Alex',color:'#edc6b3'},{id:'local-person',preferredName:'Private Alias',color:'#bcd9cd',email:'hidden-contact@example.test'}]};
+ await page.addInitScript(value=>localStorage.setItem('tagalong-groups-v1',JSON.stringify([value])),group);
+ await login(page,'alice');
+ const headers={Authorization:'Bearer test-alice'};
+ const created=await page.request.post('/api/backend/v1/plans',{headers,data:{title:'Connected membership '+crypto.randomUUID().slice(0,8),kind:'outing',start:'2027-05-14',end:'2027-05-14'}});expect(created.ok()).toBeTruthy();const plan=await created.json();
+ const bodies:string[]=[];page.on('request',request=>{if(request.url().includes('/api/backend/'))bodies.push(request.postData()||'');});
+ await page.goto('/groups');
+ await expect(page.getByRole('heading',{name:'Groups are local demo data',exact:true})).toBeVisible();
+ await expect(page.getByText(group.name,{exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Create a group',exact:true})).toHaveCount(0);
+ const before=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers})).json();expect(before.members).toHaveLength(1);
+ await page.getByRole('button',{name:'Explore demo groups',exact:true}).click();
+ await expect(page.getByRole('heading',{name:group.name,exact:true})).toBeVisible();
+ const after=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers})).json();expect(after.members).toEqual(before.members);expect(after.revision).toBe(before.revision);
+ expect(bodies.join('\n')).not.toContain('hidden-contact@example.test');
+});
+
 test('natural-language generation creates a reviewed plan and proactively summarizes it',async({page})=>{
  const title='Reviewed proactive weekend '+crypto.randomUUID().slice(0,8);
  await login(page,'alice');await page.goto('/');

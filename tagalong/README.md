@@ -27,6 +27,8 @@ In VS Code, clone `https://github.com/Chandra-P/Master_AgenticAI.git`, then open
 
 ## Demo features
 
+Reusable themed **Groups** are available from navigation in local demo mode. Shared mode offers an explicit switch to the demo rather than treating local contacts as authenticated members. See [Groups behavior and deployment](docs/GROUPS.md).
+
 - Create an outing or trip with dates and demo participants.
 - Open a shared workspace with chat and a local planning board.
 - Mention `@Tagalong` to receive a clearly labeled, simulated assistant response.

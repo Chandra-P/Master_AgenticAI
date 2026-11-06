@@ -1,12 +1,46 @@
 'use client';
 import {useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {ArrowRight,Sun,Backpack,Users,CalendarDays} from 'lucide-react';
+import {ArrowRight,Sun,Backpack,Users,CalendarDays,Plus} from 'lucide-react';
 import {Dialog} from '@/components/ui/dialog';
 import {Button} from '@/components/ui/button';
 import {usePlanning} from './store';
 import {PlanGenerator} from './plan-generator';
+import {GroupEditor} from './group-editor';
 import type {PlanKind} from '@/services/types';
-function ManualCreatePlan({open,onOpenChange}:{open:boolean;onOpenChange:(open:boolean)=>void}){const {create,notify,mode,busy}=usePlanning();const router=useRouter();const [kind,setKind]=useState<PlanKind>('outing');const [title,setTitle]=useState('');const [start,setStart]=useState('');const [end,setEnd]=useState('');const [participants,setParticipants]=useState('');return <Dialog open={open} onOpenChange={onOpenChange} title="Good company starts here." description="A little outing or a big adventure. Make room for both."><form onSubmit={async e=>{e.preventDefault();if(!title.trim())return;try{const id=await create({kind,title,start,end:kind==='outing'?start:end,participants});onOpenChange(false);notify(mode==='demo'?'Your demo plan is ready. Let’s make memories.':'Your shared plan is ready.');router.push('/plans/'+id);}catch{/* Error is shown by the workspace. */}}}><div className="type-options"><button type="button" className={kind==='outing'?'selected':''} aria-label="Outing" aria-pressed={kind==='outing'} onClick={()=>setKind('outing')}><Sun/><strong>Outing</strong><span>A few hours, a good time</span></button><button type="button" className={kind==='trip'?'selected':''} aria-label="Trip" aria-pressed={kind==='trip'} onClick={()=>setKind('trip')}><Backpack/><strong>Trip</strong><span>A little further together</span></button></div><label className="field">Plan name<input autoFocus required maxLength={80} value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. A weekend by the coast"/></label><div className="field-row"><label className="field"><span><CalendarDays size={15}/> Start date</span><input aria-label="Start date" type="date" value={start} onChange={e=>{setStart(e.target.value);if(end&&end<e.target.value)setEnd(e.target.value);}}/></label>{kind==='trip'&&<label className="field">End date<input aria-label="End date" type="date" min={start} value={end} onChange={e=>setEnd(e.target.value)}/></label>}</div>{mode==='demo'&&<label className="field"><span><Users size={15}/> Invite participants</span><input value={participants} onChange={e=>setParticipants(e.target.value)} placeholder="Maya, Sam, Jordan"/><small>Separate names with commas. Demo only — no invitations are sent.</small></label>}<Button className="full" type="submit" disabled={busy}>{mode==='demo'?'Create demo plan':'Create shared plan'} <ArrowRight size={17}/></Button></form></Dialog>;}
 
-export function CreatePlan({open,onOpenChange}:{open:boolean;onOpenChange:(open:boolean)=>void}){const {mode}=usePlanning();const [manual,setManual]=useState(false);if(mode==='demo'||manual)return <ManualCreatePlan open={open} onOpenChange={value=>{onOpenChange(value);if(!value)setManual(false);}}/>;return <Dialog open={open} onOpenChange={onOpenChange} title="Good company starts here." description="Describe an outing or trip. Tagalong helps your group figure out the rest."><PlanGenerator onCreated={()=>onOpenChange(false)}/><button type="button" className="text-button generator-manual" onClick={()=>setManual(true)}>Create a plan manually</button></Dialog>;}
+function ManualCreatePlan({open,onOpenChange,initialGroupId=''}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string}) {
+ const {groups,groupsReady,groupWarning,create,notify,mode,busy}=usePlanning();
+ const router=useRouter();
+ const [kind,setKind]=useState<PlanKind>('outing');
+ const [title,setTitle]=useState('');
+ const [start,setStart]=useState('');
+ const [end,setEnd]=useState('');
+ const [participants,setParticipants]=useState('');
+ const [groupId,setGroupId]=useState(initialGroupId);
+ const [creatingGroup,setCreatingGroup]=useState(false);
+ const [error,setError]=useState('');
+ const selectedGroup=groups.find(g=>g.id===groupId&&!g.archived);
+ return <Dialog open={open} onOpenChange={value=>{if(!value)setCreatingGroup(false);onOpenChange(value);}} title={creatingGroup?'Your people, together.':'Good company starts here.'} description={creatingGroup?'Create a reusable demo group, then return to your plan.':'A little outing or a big adventure. Make room for both.'}>
+ {creatingGroup?<GroupEditor onCancel={()=>setCreatingGroup(false)} onSaved={group=>{setGroupId(group.id);setCreatingGroup(false);}}/>:<form onSubmit={async e=>{
+  e.preventDefault();if(!title.trim())return;
+  try{
+   const id=await create({kind,title,start,end:kind==='outing'?start:end,participants,groupId:mode==='demo'?(groupId||undefined):undefined});
+   onOpenChange(false);notify(mode==='demo'?'Your demo plan is ready. Let’s make memories.':'Your shared plan is ready.');router.push('/plans/'+id);
+  }catch(cause){setError(cause instanceof Error?cause.message:'Your plan could not be created.');}
+ }}>
+  <div className="type-options"><button type="button" aria-label="Outing" aria-pressed={kind==='outing'} className={kind==='outing'?'selected':''} onClick={()=>setKind('outing')}><Sun/><strong>Outing</strong><span>A few hours, a good time</span></button><button type="button" aria-label="Trip" aria-pressed={kind==='trip'} className={kind==='trip'?'selected':''} onClick={()=>setKind('trip')}><Backpack/><strong>Trip</strong><span>A little further together</span></button></div>
+  <label className="field">Plan name<input autoFocus required maxLength={80} value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. A weekend by the coast"/></label>
+  <div className="field-row"><label className="field"><span><CalendarDays size={15}/> Start date</span><input aria-label="Start date" type="date" value={start} onChange={e=>{setStart(e.target.value);if(end&&end<e.target.value)setEnd(e.target.value);}}/></label>{kind==='trip'&&<label className="field">End date<input aria-label="End date" type="date" min={start} value={end} onChange={e=>setEnd(e.target.value)}/></label>}</div>
+  {mode==='demo'&&<><label className="field"><span><Users size={15}/> Plan with a group</span><select aria-label="Plan with a group" value={groupId} disabled={!groupsReady} onChange={e=>{setGroupId(e.target.value);setError('');}}><option value="">Choose people just for this plan</option>{groups.filter(g=>!g.archived).map(g=><option key={g.id} value={g.id}>{g.name}</option>)}{groupId&&!selectedGroup&&<option value={groupId}>Group no longer available</option>}</select></label>
+  {selectedGroup?<div className="group-selection-summary"><strong>{selectedGroup.name}</strong><span>{selectedGroup.members.map(m=>m.preferredName).join(', ')}</span><small>These adults will be copied into this plan. No invitations are sent.</small></div>:!groupId&&<label className="field"><span><Users size={15}/> Invite participants</span><input value={participants} onChange={e=>setParticipants(e.target.value)} placeholder="Maya, Sam, Jordan"/><small>Separate names with commas. Demo only — no invitations are sent.</small></label>}
+  <button type="button" className="group-create-inline" disabled={!groupsReady} onClick={()=>setCreatingGroup(true)}><Plus size={15}/> Create a new group</button>
+  {groupWarning&&<p className="group-storage-warning" role="alert">{groupWarning}</p>}
+  </>}
+  {error&&<p className="group-error" role="alert">{error}</p>}
+  <Button className="full" type="submit" disabled={busy||(mode==='demo'&&!!groupId&&(!groupsReady||!selectedGroup))}>{mode==='demo'?'Create demo plan':'Create shared plan'} <ArrowRight size={17}/></Button>
+ </form>}
+ </Dialog>;
+}
+
+export function CreatePlan({open,onOpenChange,initialGroupId=''}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string}){const {mode}=usePlanning();const [manual,setManual]=useState(false);if(mode==='demo'||manual)return <ManualCreatePlan open={open} initialGroupId={mode==='demo'?initialGroupId:''} onOpenChange={value=>{onOpenChange(value);if(!value)setManual(false);}}/>;return <Dialog open={open} onOpenChange={onOpenChange} title="Good company starts here." description="Describe an outing or trip. Tagalong helps your group figure out the rest."><PlanGenerator onCreated={()=>onOpenChange(false)}/><button type="button" className="text-button generator-manual" onClick={()=>setManual(true)}>Create a plan manually</button></Dialog>;}

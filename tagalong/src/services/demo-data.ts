@@ -1,4 +1,4 @@
-import type { Plan, Suggestion } from './types';
+import type { Group, Plan, Suggestion } from './types';
 export const members = [{name:'Alex',color:'#edc6b3'},{name:'Maya',color:'#c6d5c4'},{name:'Sam',color:'#c7c7e2'},{name:'Jordan',color:'#eccb8c'}];
 export const suggestions: Suggestion[] = [
  {id:'harbor',title:'Harbor & Pine',category:'Food & drink',location:'Seabrook · Waterfront',description:'Long lunches, seasonal plates, and a table with an ocean view.',price:'$$ · $25–40 / person',rating:'4.8',image:'/images/restaurant.jpg',tag:'A table for everyone'},
@@ -19,3 +19,8 @@ const base: Plan = {
  tasks:[{label:'Vote on our dates',done:false},{label:'Find a cozy place to stay',done:false},{label:'Pick a dinner spot',done:false}]
 };
 export function initialPlans(): Plan[] { return [structuredClone(base),{...structuredClone(base),id:'sunday-supper',title:'Sunday supper club',kind:'outing',location:'Brookside, California',date:'Nov 15',start:'2026-11-15',end:'2026-11-15',budget:60,image:'/images/restaurant.jpg',members:members.slice(0,3),messages:[{id:'s1',author:'Maya',text:'Our next supper club deserves somewhere special. Any ideas?',time:'Yesterday'}],itinerary:[],preferences:[{label:'Vegetarian friendly',confirmed:false}]},{...structuredClone(base),id:'into-the-pines',title:'Into the pines',location:'Pine Valley, California',date:'Dec 11–13',start:'2026-12-11',end:'2026-12-13',image:'/images/forest.jpg',budget:400,members:members.slice(0,3),messages:[],itinerary:[]}]; }
+
+export const groupThemes = ['Sunday supper','Weekend friends','Family outings'];
+export function initialGroups():Group[] {
+ return groupThemes.map((theme,i)=>({id:'demo-group-'+i,name:theme+' · '+['Table talk','Trail crew','Our circle'][i],theme,ownerId:'alex',archived:false,members:members.slice(0,i===2?4:3).map((member,j)=>({id:j===0?'alex':'demo-adult-'+j,preferredName:member.name,color:member.color}))}));
+}

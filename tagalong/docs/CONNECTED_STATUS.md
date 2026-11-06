@@ -1,5 +1,11 @@
 # Tagalong verification and release status
 
+## Reusable Groups integration — 2026-11-06
+
+ShyamK's `895593a` Groups commit is integrated into the current deployment branch while preserving authenticated planning, admin access, RAG and MCP booking demos. Groups are explicitly browser-local demo data; connected users see an explanation and can choose **Explore demo groups**. They do not create shared memberships or send invitations. See [Groups](GROUPS.md).
+
+Verification: lint, TypeScript, production build and 110 desktop/mobile frontend tests passed; backend tests passed (195, with one gated SQL skip). Desktop/mobile Groups visuals were inspected. All 24 shared-workspace tests passed, including contact isolation and unchanged membership checks. Public rollout is being checked separately; the earlier release records below retain their historical scope.
+
 Updated 2026-11-06. This release hardens mobile typing acceptance and transient shared-service reads, and includes a 1080p male/female narrated competition demo with a qualified four-case live evaluation. It retains **Group fit**, a read-only RAG assessment with verified sources, explicit uncertainty and deterministic budget conflicts. Lint, typecheck, production build, 195 backend tests (one gated SQL skip), 90 frontend tests, and 22 shared-workspace tests passed. A live synthetic smoke check completed a Pinecone query against a fresh empty namespace and produced a valid cited OpenAI assessment from supplied test evidence; no private plans or index writes were used. The shared suite verifies authenticated flow and unchanged plan state using synthetic retrieval/model adapters. Public rollout remains a separate check from these local results.
 
 Frontend: https://tagalong-web-clbe.onrender.com · API: https://tagalong-api-7pdn.onrender.com

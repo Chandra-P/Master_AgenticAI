@@ -1,6 +1,6 @@
 'use client';
 import {createContext,useCallback,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
-import type {Plan,CreatePlanInput,Activity} from '@/services/types';
+import type {Plan,CreatePlanInput,Activity,Group,GroupDraft} from '@/services/types';
 import {mockPlanningService,simulatedAssistant} from '@/services/mock-planning-service';
 import {ApiError,ConnectedService,getAuth,type CurrentUser,type PublicConfig,type Proposal,type DocumentSource} from '@/services/connected';
 
@@ -10,7 +10,12 @@ import type {AcceptDraft} from '@/services/coordination';
 
 import {captureRecoveryLocation,clearRecovery,recoveryContext} from '@/services/password-recovery';
 
+import {loadGroups,makeGroup,saveGroups,validateGroup} from '@/services/group-service';
+
 interface Store {
+ groups:Group[];groupsReady:boolean;groupWarning:string;
+ saveGroup:(draft:GroupDraft,id?:string)=>{group?:Group;error?:string};
+ archiveGroup:(id:string,archived:boolean)=>void;removeGroup:(id:string)=>void;
  addDiscoveredPlace:(planId:string,activity:Activity)=>Promise<void>;
  passwordRecovery:boolean;
  createGeneratedPlan:(draft:AcceptDraft)=>Promise<string>;
@@ -26,6 +31,7 @@ interface Store {
 }
 const Context=createContext<Store|null>(null);
 export function PlanningProvider({children}:{children:ReactNode}) {
+ const [groups,setGroups]=useState<Group[]>([]);const groupsRef=useRef<Group[]>([]);const [groupsReady,setGroupsReady]=useState(false);const groupsWritable=useRef(false);const [groupWarning,setGroupWarning]=useState('');
  const [plans,setPlans]=useState<Plan[]>([]);const plansRef=useRef<Plan[]>([]);
  const [mode,setCurrentMode]=useState<'demo'|'connected'>('demo');const [config,setConfig]=useState<PublicConfig|null>(null);
  const [passwordRecovery,setPasswordRecovery]=useState(false);
@@ -64,7 +70,13 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    window.addEventListener('focus',refresh);
    return()=>{clearTimeout(timer);clearInterval(poll);window.removeEventListener('focus',refresh);void auth.removeChannel(channel);};
  },[config,mode,user,pending,reload]);
- function setMode(next:'demo'|'connected'){clearRecovery();setPasswordRecovery(false);generation.current++;try{localStorage.setItem('tagalong-workspace-mode',next);}catch{}replace([]);setUser(null);setError('');setReady(false);setCurrentMode(next);}
+ useEffect(()=>{if(!config)return;let active=true;queueMicrotask(()=>{if(!active)return;if(mode!=='demo'){groupsRef.current=[];setGroups([]);groupsWritable.current=false;setGroupWarning('');setGroupsReady(true);return;}const loaded=loadGroups();groupsRef.current=loaded.groups;setGroups(loaded.groups);groupsWritable.current=loaded.writable;setGroupWarning(loaded.warning);setGroupsReady(true);});return()=>{active=false;};},[config,mode]);
+ function groupsAllowed(){if(mode==='demo'&&groupsReady)return true;setNotice(mode==='demo'?'Groups are still loading. Try again shortly.':'Groups are browser-local demos. Switch to Explore the demo to use them.');return false;}
+ function persistGroups(next:Group[],message:string){const warning=saveGroups(next,groupsWritable.current);groupsRef.current=next;setGroups(next);setGroupWarning(warning);setNotice(warning?'Updated for this session only. '+warning:message);}
+ function saveGroup(draft:GroupDraft,id?:string){if(!groupsAllowed())return {error:'Groups are available only in the local demo.'};const current=groupsRef.current;if(id&&!current.some(g=>g.id===id))return {error:'This group is no longer available.'};const error=validateGroup(draft,current,id);if(error)return {error};const group={...makeGroup(draft,id),archived:id?current.find(g=>g.id===id)!.archived:false};persistGroups(id?current.map(g=>g.id===id?group:g):[group,...current],id?'Group updated. Existing plans stay as they are.':'Your group is ready. No invitations were sent.');return {group};}
+ function archiveGroup(id:string,archived:boolean){if(groupsAllowed())persistGroups(groupsRef.current.map(g=>g.id===id?{...g,archived}:g),archived?'Group archived. Existing plans stay as they are.':'Group restored.');}
+ function removeGroup(id:string){if(groupsAllowed())persistGroups(groupsRef.current.filter(g=>g.id!==id),'Group removed. Existing plans stay as they are.');}
+ function setMode(next:'demo'|'connected'){groupsRef.current=[];setGroups([]);setGroupsReady(false);clearRecovery();setPasswordRecovery(false);generation.current++;try{localStorage.setItem('tagalong-workspace-mode',next);}catch{}replace([]);setUser(null);setError('');setReady(false);setCurrentMode(next);}
  async function execute<T>(action:(valid:()=>boolean)=>Promise<T>):Promise<T>{
    const current=generation.current;setPending(n=>n+1);
    const valid=()=>current===generation.current;
@@ -72,7 +84,7 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    try{return await task;}catch(e){if(!valid())throw e;const message=e instanceof ApiError&&e.status===409?'Someone changed this plan. We refreshed it; please retry your change.':e instanceof Error?e.message:'Your change could not be saved.';setError(message);setNotice(message);if(service.current){try{const next=await service.current.plans();if(valid())replace(next);}catch{}}throw e;}finally{setPending(n=>n-1);}
  }
  async function createGeneratedPlan(draft:AcceptDraft){return execute(async valid=>{const plan=await service.current!.request<Plan>('/v1/plans/from-draft',{method:'POST',body:JSON.stringify(draft)});if(!valid())throw new Error('Workspace changed.');replace([plan,...plansRef.current.filter(p=>p.id!==plan.id)]);setError('');setNotice('Your reviewed plan is ready.');return plan.id;});}
- async function create(input:CreatePlanInput){return execute(async valid=>{const plan=mode==='demo'?mockPlanningService.create(input):await service.current!.create(input);if(!valid())throw new Error('Workspace changed.');replace([plan,...plansRef.current]);setError('');return plan.id;});}
+ async function create(input:CreatePlanInput){return execute(async valid=>{const group=mode==='demo'&&input.groupId?groupsRef.current.find(g=>g.id===input.groupId&&!g.archived):undefined;if(mode==='demo'&&input.groupId&&(!groupsReady||!group))throw new Error('Choose an active group before creating this plan.');const {groupId:_demoGroupId,...sharedInput}=input;void _demoGroupId;const plan=mode==='demo'?mockPlanningService.create(input,group):await service.current!.create(sharedInput);if(!valid())throw new Error('Workspace changed.');replace([plan,...plansRef.current]);setError('');return plan.id;});}
  async function addDiscoveredPlace(id:string,activity:Activity){await execute(async valid=>{const old=plansRef.current.find(p=>p.id===id);if(!old)throw new Error('This plan is unavailable.');if(old.itinerary.some(a=>a.id===activity.id||a.source_url===activity.source_url&&a.title===activity.title&&a.location===activity.location&&a.day===activity.day))throw new Error('This place is already in the draft for that day.');const next={...old,itinerary:[...old.itinerary,activity]};const saved=mode==='demo'?next:await service.current!.save(next,old.revision??0,old);if(!valid())throw new Error('Workspace changed.');replace(plansRef.current.map(p=>p.id===id?saved:p));setError('');setNotice('Place added to your draft itinerary. Nothing is booked.');});}
  async function update(id:string,fn:(plan:Plan)=>Plan){
    try{await execute(async valid=>{const old=plansRef.current.find(p=>p.id===id);if(!old)throw new Error('This plan is unavailable.');const next=fn(old);const saved=mode==='demo'?next:await service.current!.save(next,old.revision??0,old);if(!valid())return;replace(plansRef.current.map(p=>p.id===id?saved:p));setError('');});}catch{/* The shared error banner retains failures for the user. */}
@@ -109,6 +121,6 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  async function addDocument(id:string,title:string,text:string){await execute(async valid=>{await service.current!.addDocument(id,title,text);if(valid())setNotice('Saved to Notes. Available to the assistant now; historical search indexing continues in the background.');});}
  async function removeDocument(id:string,sourceId:string){await execute(async valid=>{await service.current!.removeDocument(id,sourceId);if(valid())setNotice('Document removed from retrieval.');});}
  async function revoke(id:string,userId:string){await execute(async valid=>{const api=service.current!;await api.revoke(id,userId);if(!valid())return;const plan=await api.plan(id);if(valid())replace(plansRef.current.map(p=>p.id===id?plan:p));});}
- return <Context.Provider value={{addDiscoveredPlace,passwordRecovery,createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
+ return <Context.Provider value={{groups:mode==='demo'?groups:[],groupsReady,groupWarning,saveGroup,archiveGroup,removeGroup,addDiscoveredPlace,passwordRecovery,createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
 }
 export function usePlanning(){const store=useContext(Context);if(!store)throw new Error('PlanningProvider is required');return store;}
