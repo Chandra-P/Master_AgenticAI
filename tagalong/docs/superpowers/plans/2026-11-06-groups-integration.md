@@ -13,4 +13,6 @@
 - [x] Navigation/UI/dialog/CSS integration and original group scenarios.
 - [x] Connected-mode boundary and no automatic membership/plan mutation tests.
 - [x] Independent review, lint, typecheck, build, frontend/shared/backend tests, visual inspection.
-- [ ] Resolve all merge paths, scan staged content, commit merge/push and verify public rollout.
+- [x] Resolve all merge paths, scan staged content, commit merge/push and verify public rollout.
+
+Release evidence: merge `16932ce` preserves parents `2ef5bf9` and ShyamK's `895593a`. Pushed to the deployment branch; public /groups returned 200 with all three new Groups UI markers. Local checks: lint/typecheck/build, 110 frontend, 24 shared, 195 backend tests passed (one gated SQL skip); staged content scan and whitespace check were clean. GitHub CI remained in progress at public rollout verification.
