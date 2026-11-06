@@ -23,3 +23,6 @@ __pycache__/
 .python/
 .uv-cache/
 node_modules/
+
+# Local development memory and temporary investigations; never product inputs
+/workspace/

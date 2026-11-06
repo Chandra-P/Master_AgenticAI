@@ -13,6 +13,10 @@ test('create a trip, chat with simulated AI, vote and review the live board',asy
  await page.getByLabel('Message your group').fill('@Tagalong suggest a relaxed weekend');
  await page.getByRole('button',{name:'Send message'}).click();
  await expect(page.getByText('Simulated assistant', {exact:true}).first()).toBeVisible();
+ // Wait for the actual reply before leaving Chat (the reply timer is cancelled on unmount).
+ await expect(page.getByText('Relaxed pace',{exact:true}).first()).toBeAttached();
+ // The compact chat-side board is intentionally hidden on mobile.
+ await page.getByRole('tab',{name:'Planning board'}).click();
  await expect(page.getByText('Relaxed pace', {exact:true}).first()).toBeVisible();
  await page.getByRole('tab',{name:'Polls'}).click();
  await page.getByRole('button',{name:/Nov 20/}).click();
@@ -34,6 +38,9 @@ test('discover, add to itinerary, confirm preferences and navigate',async({page}
  await page.getByRole('tab',{name:'Planning board'}).click();
  await page.getByRole('button',{name:'Confirm Outdoor dining'}).click();
  await expect(page.getByText('Confirmed by you').first()).toBeVisible();
+ // On mobile, the About link lives in the collapsible sidebar.
+ const menu=page.getByRole('button',{name:'Open menu'});
+ if(await menu.isVisible())await menu.click();
  await page.getByRole('link',{name:'About Tagalong'}).click();
  await expect(page.getByRole('heading',{name:'Good plans. Great company.'})).toBeVisible();
 });

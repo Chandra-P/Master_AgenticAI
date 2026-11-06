@@ -28,6 +28,15 @@ In VS Code, use **Git: Clone** with `https://github.com/Chandra-P/tagalong.git`,
 - Browse synthetic suggestions, add them to draft itineraries, and add or remove activities.
 - Responsive sidebar and mobile bottom navigation.
 - Browser-local persistence for plans and interactions.
+- Reusable adult groups with preset/custom themes, suggested editable names, and archive/restore/remove controls.
+
+## Demo groups
+
+Open `/groups` or choose **Groups** in navigation. Alex is the fixed demo owner. Start with Sunday supper, Weekend friends, Family outings, or type a custom theme. Group names are unique within this browser workspace, including archived groups. Each adult needs a distinct preferred name/alias; email and first/last names are optional. Use synthetic adult details only. Do not enter children's names or photos.
+
+Choose **Plan with this group**, or select/create a group in the existing plan dialog. Creating a group within that dialog preserves the plan draft. Saving the group keeps it even if you later cancel the plan. New plans copy aliases and colors only; contact details remain in group storage and are not passed to the simulated assistant. Editing, archiving or removing groups does not alter existing plan participants, messages or votes. Archived groups cannot be selected for new plans. Creating a group sends no invitations.
+
+Groups use `tagalong-groups-v1` in localStorage; plans retain `tagalong-demo-v1`. An empty saved group list stays empty. Unreadable or unavailable group storage produces a visible warning and an in-memory fallback without overwriting malformed data. This is a single-browser demo, not authenticated or synchronized group membership. No credentials, migrations, additional dependencies or files from the root `workspace/` directory are required.
 
 ## Demo boundaries
 
@@ -55,3 +64,5 @@ npm test
 ```
 
 The initial upload remains a prototype under verification. See `VERIFICATION.md` for the results from the upload session. Production integration work has not started.
+
+The November 6 groups verification is recorded in `../docs/groups-demo-plan.md`. Browser tests use fresh contexts and synthetic data; screenshots are generated under ignored `test-results/`. `npm run build -- --webpack` is an available production build alternative. The current local ESLint dependency/configuration mismatch is recorded separately from feature results; no packages were changed for groups.

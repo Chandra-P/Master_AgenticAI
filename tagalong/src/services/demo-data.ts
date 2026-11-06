@@ -1,4 +1,8 @@
-import type { Plan, Suggestion } from './types';
+import type { Group, Plan, Suggestion } from './types';
+export const groupThemes = ['Sunday supper','Weekend friends','Family outings'];
+export function initialGroups():Group[] {
+ return groupThemes.map((theme,i)=>({id:'demo-group-'+i,name:theme+' · '+['Table talk','Trail crew','Our circle'][i],theme,ownerId:'alex',archived:false,members:members.slice(0,i===2?4:3).map((member,j)=>({id:j===0?'alex':'demo-adult-'+j,preferredName:member.name,color:member.color}))}));
+}
 export const members = [{name:'Alex',color:'#edc6b3'},{name:'Maya',color:'#c6d5c4'},{name:'Sam',color:'#c7c7e2'},{name:'Jordan',color:'#eccb8c'}];
 export const suggestions: Suggestion[] = [
  {id:'harbor',title:'Harbor & Pine',category:'Food & drink',location:'Seabrook · Waterfront',description:'Long lunches, seasonal plates, and a table with an ocean view.',price:'$$ · $25–40 / person',rating:'4.8',image:'/images/restaurant.jpg',tag:'A table for everyone'},
