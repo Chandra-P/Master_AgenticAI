@@ -30,7 +30,8 @@ test('typing help explains local suggestions and hides completions while editing
  await expect(page.getByRole('button',{name:/Accept suggestion/})).toBeVisible();
  await draft.press('ArrowLeft');
  await expect(page.getByRole('button',{name:/Accept suggestion/})).toHaveCount(0);
- await draft.press('End');
+ // Undo the one-character move; End does not move the caret on every mobile platform.
+ await draft.press('ArrowRight');
  await expect(page.getByRole('button',{name:/Accept suggestion/})).toBeVisible();
  await page.getByRole('button',{name:/Accept suggestion/}).click();
  await expect(draft).toHaveValue("Let's plan ");

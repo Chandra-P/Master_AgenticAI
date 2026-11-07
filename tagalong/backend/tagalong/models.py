@@ -35,7 +35,33 @@ class DateFields(Item):
         return self
 
 
-class Create(DateFields):
+class GroupSelection(Item):
+    group_id: str | None = Field(default=None, min_length=1, max_length=128)
+    expected_group_revision: int | None = Field(default=None, ge=1, strict=True)
+
+    @model_validator(mode='after')
+    def paired_group_selection(self):
+        if (self.group_id is None) != (self.expected_group_revision is None):
+            raise ValueError('Group and its current revision are required together')
+        return self
+
+
+class GroupSnapshot(Item):
+    id: str = Field(min_length=1, max_length=128)
+    name: str = Field(min_length=1, max_length=80)
+    theme: str = Field(min_length=1, max_length=60)
+    revision: int = Field(ge=1, strict=True)
+    participants: list[str] = Field(min_length=1, max_length=13)
+
+    @field_validator('participants')
+    @classmethod
+    def aliases_only(cls, values):
+        if any(not value.strip() or len(value)>40 for value in values):
+            raise ValueError('Invalid intended participant alias')
+        return values
+
+
+class Create(DateFields, GroupSelection):
     kind: Literal['outing', 'trip']
     title: str = Field(min_length=1, max_length=200)
     participants: str = Field(default='', max_length=2000)
@@ -131,6 +157,7 @@ class Task(Item):
 
 
 class Snapshot(DateFields):
+    group: GroupSnapshot | None = None
     id: str
     title: str = Field(min_length=1, max_length=200)
     kind: Literal['outing', 'trip']

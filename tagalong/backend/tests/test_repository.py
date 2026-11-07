@@ -64,3 +64,17 @@ def test_coordination_change_updates_only_its_projection():
     assert len(writes)==2
     assert any('tagalong_coordination' in sql for sql in writes)
     assert not any('INSERT INTO public.tagalong_plans' in sql for sql in writes)
+
+
+def test_group_roster_persists_in_existing_state_without_plan_projection_changes():
+    from tagalong.core import Actor
+    from tagalong.groups import GroupDraft, save_group
+    from tests.test_groups import body
+    r=repository(MemoryRepository().state)
+    saved=r.transact(lambda s:save_group(s,Actor('alice','alice@example.test','alice','Alice'),GroupDraft.model_validate(body())))
+    writes=[(sql,args) for sql,args in r.pool.c.calls if not sql.startswith('SELECT')]
+    assert len(writes)==1 and writes[0][0].startswith('UPDATE public.tagalong_state')
+    state=writes[0][1][0].obj
+    assert state['groups'][saved['id']]==saved
+    assert state['members']=={} and state['plans']=={}
+    assert 'private@example.test' not in str(state['group_events'])

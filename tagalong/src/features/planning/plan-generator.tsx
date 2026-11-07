@@ -5,6 +5,8 @@ import {Sparkles,ArrowRight} from 'lucide-react';
 import {usePlanning} from './store';
 import {ConnectedService,getAuth} from '@/services/connected';
 import {CoordinationService,type DraftResponse} from '@/services/coordination';
+import {GroupPicker} from './group-picker';
+import {GroupEditor} from './group-editor';
 import {Button} from '@/components/ui/button';
 
 export const ideaExamples=['Weekend trip to Austin with 6 friends','Dinner Friday night for 8 people','Family vacation in Colorado','Birthday brunch downtown'];

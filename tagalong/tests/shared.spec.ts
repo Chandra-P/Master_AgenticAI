@@ -141,11 +141,11 @@ test('reusable demo groups stay separate from connected membership and contacts'
  const created=await page.request.post('/api/backend/v1/plans',{headers,data:{title:'Connected membership '+crypto.randomUUID().slice(0,8),kind:'outing',start:'2027-05-14',end:'2027-05-14'}});expect(created.ok()).toBeTruthy();const plan=await created.json();
  const bodies:string[]=[];page.on('request',request=>{if(request.url().includes('/api/backend/'))bodies.push(request.postData()||'');});
  await page.goto('/groups');
- await expect(page.getByRole('heading',{name:'Groups are local demo data',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Good company, on repeat.',exact:true})).toBeVisible();
  await expect(page.getByText(group.name,{exact:true})).toHaveCount(0);
- await expect(page.getByRole('button',{name:'Create a group',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Create a group',exact:true}).first()).toBeEnabled();
  const before=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers})).json();expect(before.members).toHaveLength(1);
- await page.getByRole('button',{name:'Explore demo groups',exact:true}).click();
+ await page.goto('/account');await page.getByRole('button',{name:'Explore the demo',exact:true}).click();await page.goto('/groups');
  await expect(page.getByRole('heading',{name:group.name,exact:true})).toBeVisible();
  const after=await(await page.request.get('/api/backend/v1/plans/'+plan.id,{headers})).json();expect(after.members).toEqual(before.members);expect(after.revision).toBe(before.revision);
  expect(bodies.join('\n')).not.toContain('hidden-contact@example.test');

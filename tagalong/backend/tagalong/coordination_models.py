@@ -1,6 +1,6 @@
 from typing import Literal
 from pydantic import BaseModel,ConfigDict,Field,field_validator,model_validator
-from .models import DateFields,iso_date
+from .models import GroupSelection, DateFields,iso_date
 
 
 class Structured(BaseModel):
@@ -81,7 +81,7 @@ class Generate(Structured):
     def valid(cls,value):return iso_date(value)
 
 
-class AcceptDraft(DateFields):
+class AcceptDraft(DateFields, GroupSelection):
     draft_id:str=Field(min_length=1,max_length=100)
     title:str=Field(min_length=1,max_length=200)
     kind:Literal['outing','trip']
