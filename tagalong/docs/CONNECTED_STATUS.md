@@ -4,7 +4,7 @@
 
 The owner authorized integration, full combined tests and publication. Shyam's original `3dd344b` Discover commit is merged with redesign `7a75367`, retaining both histories. His four production Discover source files match PR #3 exactly; the existing screenshot test now waits for real restaurant articles rather than matching the new loading skeletons. Next.js regenerated its production route declarations during the build.
 
-Combined lint, TypeScript and production build passed; all 134 frontend tests and 204 backend tests passed (one gated SQL skip). All 26 shared-workspace tests passed on the combined source. Publication is approved and public capability verification is pending. No migration or new dependency is needed. Earlier release-candidate notes below describe their historical state before this approved integration.
+Combined lint, TypeScript and production build passed; all 134 frontend tests and 204 backend tests passed (one gated SQL skip). All 26 shared-workspace tests passed on the combined source. Source merge `3ddf663` was published to main and the Render deployment branch. Public checks verified both decision-first homepage and Shyam's Discover controls; API decision, summary and finalization routes; connected web health (200); and unauthenticated decision access denied (401). GitHub marks PR #3 merged. Additional GitHub CI jobs were still running at this check. No migration or new dependency is needed. Earlier release-candidate notes below describe their historical state before this approved integration.
 
 ## Decision-first release candidate — 2026-11-06
 
