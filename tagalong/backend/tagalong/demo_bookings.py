@@ -41,6 +41,10 @@ def decision_snapshot(s, pid):
     facts = {key: p.get(key) for key in ('owner_id', 'start', 'end', 'location', 'budget', 'polls')}
     facts['members'] = sorted(s['members'].get(pid, []))
     facts['voters'] = names
+    record=s.get('decision_state',{}).get(pid)
+    if record and record.get('engaged'):
+        facts.pop('polls',None)
+        facts['decision_state']={'decisions':record['decisions'],'finalization':record.get('finalization')}
     return names, hashlib.sha256(json.dumps(facts, sort_keys=True).encode()).hexdigest()
 
 
@@ -49,7 +53,22 @@ def booking_readiness(s, pid, a):
     names, fingerprint = decision_snapshot(s, pid)
     blockers = []
     decisions = []
-    for poll in p['polls']:
+    record=s.get('decision_state',{}).get(pid)
+    modern=bool(record and record.get('engaged'))
+    if modern:
+        from .decisions import consent
+        required=[d for d in record['decisions'] if d['required']]
+        def confirmed(d):
+            return (d.get('confirmation') and d['confirmation'].get('decisionVersion')==d['version']
+                    and d.get('selectedOptionId') in {o['id'] for o in d['options']}
+                    and set(d['eligibleMemberIds'])==set(s['members'][pid]) and consent(d,d['selectedOptionId']))
+        for d in record['decisions']:
+            if confirmed(d):decisions.append({'question':d['title'],'option':next(o['label'] for o in d['options'] if o['id']==d['selectedOptionId'])})
+        finalization=record.get('finalization')
+        if (not required or not all(confirmed(d) for d in required) or not finalization
+                or finalization.get('decisionVersions')!={d['id']:d['version'] for d in record['decisions']}):
+            blockers.append({'label':'Confirm required decisions and finalize the reviewed plan','tab':'Decisions'})
+    for poll in [] if modern else p['polls']:
         votes = [poll.get('votes', {}).get(name) for name in names]
         valid = bool(votes) and all(type(v) is int and 0 <= v < len(poll['options']) for v in votes)
         counts = Counter(votes) if valid else Counter()
@@ -64,12 +83,9 @@ def booking_readiness(s, pid, a):
             decisions.append({'question': poll['question'], 'option': poll['options'][winners[0]]})
     location = p.get('location', '').strip().lower()
     if not location or any(text in location for text in ('to decide', 'somewhere together')):
-        blockers.append({'label': 'Choose a destination or meeting place', 'tab': 'Planning board'})
+        blockers.append({'label': 'Choose a destination or meeting place', 'tab': 'Overview' if modern else 'Planning board'})
     if p.get('budget', 0) <= 0:
-        blockers.append({'label': 'Set a working group budget', 'tab': 'Planning board'})
-    record=s.get('decision_state',{}).get(pid)
-    if record and record.get('engaged') and not record.get('finalization'):
-        blockers.append({'label':'Confirm required decisions and finalize the reviewed plan','tab':'Decisions'})
+        blockers.append({'label': 'Set a working group budget', 'tab': 'Overview' if modern else 'Planning board'})
     approved = s.get('booking_decision_approvals', {}).get(pid, {}).get('fingerprint') == fingerprint
     return {'ready': not blockers and approved, 'blockers': blockers, 'decisions': decisions, 'approved': approved,
             'can_approve': p['owner_id'] == a.id and not blockers}
@@ -122,12 +138,14 @@ def install_demo_bookings(app, repo, actor):
 
     def fresh(s, pid, a, q):
         guard(s, pid, a, q['date'], q['plan_revision'])
+        if q.get('decision_fingerprint')!=decision_snapshot(s,pid)[1]:
+            fail(409,'Group decisions changed; request a new demo quote')
         if q['expires_epoch'] <= time.time():
             fail(409, 'Demo quote expired; request a new quote')
 
     def require_ready(s, pid, a):
         if not booking_readiness(s, pid, a)['ready']:
-            fail(409, 'Complete group voting, set a location and budget, and ask the owner to approve decisions before booking')
+            fail(409, 'Complete the group agreement, set a location and budget, and ask the owner to approve decisions before booking')
 
     @app.get('/v1/plans/{pid}/demo-bookings')
     def listing(pid: str, a=Depends(actor)):
@@ -146,7 +164,7 @@ def install_demo_bookings(app, repo, actor):
                 fail(403, 'Only the plan owner can approve group decisions')
             guard(s, pid, a, revision=b.expected_revision)
             if booking_readiness(s, pid, a)['blockers']:
-                fail(409, 'Resolve voting, location and budget before approving decisions')
+                fail(409, 'Resolve group agreement, location and budget before approving decisions')
             s.setdefault('booking_decision_approvals', {})[pid] = {'fingerprint': decision_snapshot(s, pid)[1], 'approved_by': a.id, 'approved_at': now()}
             return {'simulation': True, 'readiness': booking_readiness(s, pid, a)}
         return repo.transact(save)
@@ -167,11 +185,12 @@ def install_demo_bookings(app, repo, actor):
         data = b.model_dump(mode='json')
         def before(s):
             throttle(s, pid, a)
-            return guard(s, pid, a, data['date'])['revision']
-        revision = repo.transact(before)
+            return guard(s, pid, a, data['date'])['revision'],decision_snapshot(s,pid)[1]
+        revision,fingerprint = repo.transact(before)
         result = await tool('check_availability', data)
         def save(s):
             guard(s, pid, a, data['date'], revision)
+            if decision_snapshot(s,pid)[1]!=fingerprint:fail(409,'Group decisions changed; request a new demo quote')
             quotes = s.setdefault('demo_booking_quotes', {})
             for key in list(quotes):
                 if quotes[key]['expires_epoch'] <= time.time() and not existing(s, quotes[key]['plan_id'], key):
@@ -181,9 +200,9 @@ def install_demo_bookings(app, repo, actor):
             if not result['result'].get('available'):
                 fail(409, 'Demo availability changed')
             expires = time.time() + 600
-            q = {**data, 'id': uid(), 'restaurant_name': result['result']['restaurant_name'], 'estimated_total': result['result']['estimated_total'], 'currency': result['result']['currency'], 'expires_at': datetime.fromtimestamp(expires, timezone.utc).isoformat(), 'expires_epoch': expires, 'plan_id': pid, 'created_by': a.id, 'plan_revision': revision, 'simulation': True}
+            q = {**data, 'id': uid(), 'restaurant_name': result['result']['restaurant_name'], 'estimated_total': result['result']['estimated_total'], 'currency': result['result']['currency'], 'expires_at': datetime.fromtimestamp(expires, timezone.utc).isoformat(), 'expires_epoch': expires, 'plan_id': pid, 'created_by': a.id, 'plan_revision': revision, 'decision_fingerprint':fingerprint, 'simulation': True}
             quotes[q['id']] = q
-            return {'simulation': True, 'quote': {k:v for k,v in q.items() if k not in ('expires_epoch','plan_revision','created_by','plan_id')}, 'trace': result['trace']}
+            return {'simulation': True, 'quote': {k:v for k,v in q.items() if k not in ('expires_epoch','plan_revision','decision_fingerprint','created_by','plan_id')}, 'trace': result['trace']}
         return repo.transact(save)
 
     @app.post('/v1/plans/{pid}/demo-bookings/confirm')

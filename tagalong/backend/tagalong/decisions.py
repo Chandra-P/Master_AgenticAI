@@ -2,10 +2,11 @@
 import copy
 import json
 import math
+from datetime import datetime
 from collections import Counter
 from typing import Literal
 from fastapi import Depends
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictBool, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictBool, StrictStr, field_validator, model_validator
 from .core import access, fail, now, source, uid
 
 
@@ -16,8 +17,69 @@ class Revision(BaseModel):
 class Version(Revision):
     expected_version: StrictInt=Field(ge=1)
 
+class OptionProvenance(BaseModel):
+    """User-supplied external excerpt; never an authoritative saved plan source."""
+    model_config=ConfigDict(extra='forbid')
+    url:StrictStr=Field(min_length=1,max_length=2048)
+    retrievedAt:StrictStr=Field(max_length=40,pattern=r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$')
+    excerpt:StrictStr=Field(max_length=1500)
+
+    @field_validator('url')
+    @classmethod
+    def link(cls,value):
+        from .places import safe_source_url
+        clean=safe_source_url(value)
+        if not clean:raise ValueError('Use a public HTTP or HTTPS provenance link')
+        return clean
+
+    @field_validator('retrievedAt')
+    @classmethod
+    def timestamp(cls,value):
+        datetime.fromisoformat(value.replace('Z','+00:00'))
+        return value
+
+class OptionDetails(BaseModel):
+    model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
+    label:StrictStr=Field(min_length=1,max_length=300,pattern=r'\S')
+    url:StrictStr|None=Field(default=None,max_length=2048)
+    image:StrictStr|None=Field(default=None,max_length=2048)
+    estimatedCostPerPerson:float|None=Field(default=None,ge=0,le=1000000)
+    notes:StrictStr|None=Field(default=None,max_length=2000)
+    sourceIds:list[StrictStr]=Field(default_factory=list,max_length=12)
+    provenance:OptionProvenance|None=None
+
+    @model_validator(mode='after')
+    def matching_provenance(self):
+        if self.provenance and self.provenance.url!=self.url:raise ValueError('Provenance must match the option website')
+        if any(x.startswith('external:') for x in self.sourceIds):
+            if self.provenance is None:raise ValueError('External excerpts need durable provenance')
+            self.sourceIds=[x for x in self.sourceIds if not x.startswith('external:')]
+        return self
+
+    @field_validator('url','image')
+    @classmethod
+    def links(cls,value):
+        from .places import safe_source_url
+        if value is None:return value
+        clean=safe_source_url(value)
+        if not clean:raise ValueError('Use a public HTTP or HTTPS link')
+        return clean
+
+    @field_validator('estimatedCostPerPerson',mode='before')
+    @classmethod
+    def numeric(cls,value):
+        if value is not None and type(value) not in (int,float):raise ValueError('Use a numeric estimate')
+        return value
+
+    @field_validator('sourceIds')
+    @classmethod
+    def sources(cls,value):
+        if any(not x or len(x)>200 for x in value):raise ValueError('Invalid source ID')
+        return list(dict.fromkeys(value))
+
 class Options(BaseModel):
     options:list[str]=Field(max_length=12)
+    option_details:list[OptionDetails]|None=Field(default=None,max_length=12)
     @field_validator('options')
     @classmethod
     def labels(cls,value):
@@ -34,6 +96,7 @@ class Edit(Version):
     title:str|None=Field(default=None,min_length=1,max_length=120,pattern=r'\S')
     required:StrictBool|None=None
     options:list[str]|None=None
+    option_details:list[OptionDetails]|None=Field(default=None,max_length=12)
     @field_validator('options')
     @classmethod
     def labels(cls,value):
@@ -170,12 +233,27 @@ def install_decisions(app,repo,actor,ai=None):
         if d:evidence(s,pid,d)
         return snapshot(s,pid,a)
 
+    def detailed_options(s,pid,labels,details,previous=()):
+        if details is not None and [x.label.strip() for x in details]!=labels:fail(422,'Option details must match the option labels in order')
+        result=[]
+        old={x['label']:x for x in previous}
+        for index,label in enumerate(labels):
+            metadata=details[index].model_dump(exclude_none=True) if details is not None else {k:v for k,v in old.get(label,{}).items() if k not in ('id','label')}
+            for sid in metadata.get('sourceIds',[]):
+                if sid=='plan-facts':continue
+                if sid.startswith('external:'):fail(422,'External excerpts need durable provenance')
+                raw=sid.removeprefix('saved:');src=s['sources'].get(pid+':'+raw)
+                if not src or src['plan_id']!=pid or src['deleted']:fail(422,'Option references an unavailable plan source')
+            result.append({'id':uid(),'sourceIds':[],**metadata,'label':label})
+        return result
+
     @app.post('/v1/plans/{pid}/decisions')
     def propose(pid:str,b:Propose,a=Depends(actor)):
         def change(s):
             p,r,_=command(s,pid,a,b,owner=True)
             if len(r['decisions'])>=20:fail(409,'Decision limit reached')
             d=new_decision(pid,b.title,b.category,b.required,b.options,s['members'][pid]);r['decisions'].append(d);r['finalization']=None
+            d['options']=detailed_options(s,pid,b.options,b.option_details)
             return finish(s,pid,a,p,r,d)
         return repo.transact(change)
 
@@ -184,10 +262,11 @@ def install_decisions(app,repo,actor,ai=None):
         def change(s):
             p,r,d=command(s,pid,a,b,did,True)
             if not any(getattr(b,k) is not None for k in ('title','required','options')):fail(422,'Provide a decision change')
+            if b.option_details is not None and b.options is None:fail(422,'Provide matching options with option details')
             invalidate(r,d)
             if b.title is not None:d['title']=b.title
             if b.required is not None:d['required']=b.required
-            if b.options is not None:d['options']=[{'id':uid(),'label':x,'sourceIds':[]} for x in b.options]
+            if b.options is not None:d['options']=detailed_options(s,pid,b.options,b.option_details,d['options'])
             return finish(s,pid,a,p,r,d)
         return repo.transact(change)
 

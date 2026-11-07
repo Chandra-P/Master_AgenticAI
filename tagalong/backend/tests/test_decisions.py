@@ -162,6 +162,8 @@ def test_finalized_decisions_survive_server_booking_but_real_outline_edits_reope
     data=c.put(url+'/decisions/'+d['id']+'/response',headers=h,json={'expected_revision':data['plan_revision'],'expected_version':d['version'],'option_id':d['options'][0]['id'],'response':'support'}).json()
     data=c.post(url+'/decisions/'+d['id']+'/confirm',headers=h,json={'expected_revision':data['plan_revision'],'expected_version':d['version'],'option_id':d['options'][0]['id']}).json()
     data=c.post(url+'/finalize',headers=h,json={'expected_revision':data['plan_revision'],'idempotency_key':'booked-outline','reviewed':True}).json();assert data['finalized']
+    # Finalizing new decisions invalidates the setup's earlier booking approval.
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':data['plan_revision']}).status_code==200
     qid=quote(c,h,base);book=confirm(c,h,base,qid);assert book.status_code==200,book.text
     after=c.get(url+'/decisions',headers=h).json();assert after['finalized'] and after['decisions'][0]['confirmation']==data['decisions'][0]['confirmation']
     import copy

@@ -6,6 +6,7 @@ import {ArrowLeft, AtSign, Check, LayoutDashboard, Send, Sparkles} from 'lucide-
 import type {Plan, Tab} from '@/services/types';
 import {Button} from '@/components/ui/button';
 import {usePlanning} from './store';
+import {FindOptionsButton} from './research/option-workbench';
 import {TypingSuggestions} from './typing-suggestions';
 import {useTypingSuggestions} from './use-typing-suggestions';
 
@@ -89,7 +90,7 @@ export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
         <h2>All the good ideas start here.</h2>
         <p><span className="online-dot"/>{plan.members.length} people, one great plan</p>
       </div>
-      <span className="chat-demo">{mode === 'demo' ? 'Demo conversation' : 'Group conversation'}</span>
+      <FindOptionsButton plan={plan}/><span className="chat-demo">{mode === 'demo' ? 'Demo conversation' : 'Group conversation'}</span>
       {mode === 'demo' && <Link className="text-button" href="/account">Use live AI in shared workspace</Link>}
     </div>
     <div className="chat-messages">

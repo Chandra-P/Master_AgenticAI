@@ -1,6 +1,3 @@
-import Image from 'next/image';
-import {ArrowUpRight,MapPin,CalendarDays,MessageCircle} from 'lucide-react';
-import Link from 'next/link';
-import type {Plan,Member} from '@/services/types';
+import type {Member} from '@/services/types';
+
 export function Avatars({members,limit=4}:{members:Member[];limit?:number}){return <div className="avatar-stack" aria-label={members.map(m=>m.name).join(', ')}>{members.slice(0,limit).map((m,i)=><span key={m.name+i} className="avatar" style={{background:m.color}} title={m.name}>{m.name.slice(0,1)}{m.name.split(' ')[1]?.slice(0,1)}</span>)}{members.length>limit&&<span className="avatar extra">+{members.length-limit}</span>}</div>;}
-export function PlanCard({plan,index=0}:{plan:Plan;index?:number}){return <Link href={'/plans/'+plan.id} aria-label={'Open '+plan.title} className="plan-card"><div className={'plan-card-image image-'+index}><Image src={plan.image} alt={plan.kind==='trip'?'A scenic place to escape together':'A warm restaurant for a shared meal'} fill sizes="(max-width: 700px) 100vw, 33vw"/><span className="image-kind">{plan.kind==='trip'?'↗ Trip':'☀ Outing'}</span><span className="image-arrow"><ArrowUpRight size={18}/></span></div><div className="plan-card-content"><div className="card-title-row"><h3>{plan.title}</h3><span className={'status '+(index===1?'mint':'')}>{index===1?'Coming together':'In the making'}</span></div><p className="location"><MapPin size={13}/>{plan.location}</p><div className="card-meta"><span><CalendarDays size={14}/>{plan.date}</span><span>·</span><span>{plan.members.length} people</span></div><div className="card-bottom"><Avatars members={plan.members}/><span><MessageCircle size={14}/>{plan.messages.length} messages</span></div></div></Link>;}

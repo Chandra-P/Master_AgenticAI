@@ -2,9 +2,12 @@ import {ApiError,ConnectedService} from './connected';
 
 export type DecisionResponse='support'|'can_live_with'|'object'|'abstain';
 export type DecisionStatus='needs_options'|'awaiting_responses'|'needs_discussion'|'ready_to_confirm'|'confirmed'|'reopened';
+export interface OptionProvenance {url:string;retrievedAt:string;excerpt:string}
+export interface DecisionOptionDetails {label:string;url?:string;notes?:string;estimatedCostPerPerson?:number|null;image?:string;sourceIds?:string[];provenance?:OptionProvenance}
+export interface DecisionOption extends DecisionOptionDetails {id:string;sourceIds:string[]}
 export interface Decision {
  id:string;planId:string;title:string;category:string;required:boolean;status:DecisionStatus;version:number;
- options:{id:string;label:string;sourceIds:string[]}[];eligibleMemberIds:string[];
+ options:DecisionOption[];eligibleMemberIds:string[];
  ballots:{memberId:string;optionId:string|null;response:DecisionResponse;decisionVersion:number;updatedAt:string}[];
  selectedOptionId:string|null;confirmation:null|{by:string;at:string;decisionVersion:number};
 }
@@ -15,8 +18,8 @@ export interface DecisionSnapshot {
  finalization:null|{by:string;at:string;planRevision:number;decisionVersions:Record<string,number>};last_activity_at:string|null;comment_counts?:Record<string,number>;
 }
 export type DecisionCommand=
- |{kind:'create';title:string;category:string;required:boolean;options:string[]}
- |{kind:'edit';decisionId:string;title?:string;required?:boolean;options?:string[]}
+ |{kind:'create';title:string;category:string;required:boolean;options:string[];optionDetails?:DecisionOptionDetails[]}
+ |{kind:'edit';decisionId:string;title?:string;required?:boolean;options?:string[];optionDetails?:DecisionOptionDetails[]}
  |{kind:'respond';decisionId:string;optionId:string|null;response:DecisionResponse}
  |{kind:'comment';decisionId:string;text:string}
  |{kind:'confirm';decisionId:string;optionId:string}
@@ -24,7 +27,6 @@ export type DecisionCommand=
  |{kind:'finalize';reviewed:true;idempotencyKey:string}
  |{kind:'reopenPlan'};
 
-export const decisionStatusLabel=(status:DecisionStatus)=>({needs_options:'Needs options',awaiting_responses:'Awaiting responses',needs_discussion:'Needs discussion',ready_to_confirm:'Ready to confirm',confirmed:'Confirmed',reopened:'Reopened'}[status]);
 interface DecisionRequestContext {memberId?:string;isCurrent?:()=>boolean}
 const requestScope=(context:DecisionRequestContext)=>({userId:context.memberId,isCurrent:context.isCurrent});
 
@@ -76,6 +78,7 @@ export class DecisionService {
    case 'finalize':path=base+'/finalize';Object.assign(data,{idempotency_key:command.idempotencyKey,reviewed:command.reviewed});break;
    case 'reopenPlan':path=base+'/reopen';break;
   }
+  if((command.kind==='create'||command.kind==='edit')&&command.optionDetails)data.option_details=command.optionDetails;
   return validateDecisionSnapshot(await this.api.request<unknown>(path,{method,body:JSON.stringify(data)},requestScope(context)),snapshot.plan_id);
  }
 }
@@ -94,9 +97,3 @@ export function decisionParticipation(decision:Decision){
  return {ballots,missing};
 }
 
-export function decisionNextAction(snapshot:DecisionSnapshot){
- const required=snapshot.decisions.filter(d=>d.required);
- const decision=required.find(d=>d.status!=='confirmed');
- return decision?{label:decision.options.length?'Review '+decision.title.toLowerCase():'Propose '+decision.title.toLowerCase(),decisionId:decision.id}
-  :{label:snapshot.finalized?'View final itinerary':'Review and finalize',decisionId:null};
-}

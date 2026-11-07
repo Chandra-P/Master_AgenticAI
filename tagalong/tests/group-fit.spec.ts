@@ -1,3 +1,4 @@
+import {openTool} from './planning-tools';
 import {test,expect,type Page} from '@playwright/test';
 
 async function setup(page:Page,hold=false){
@@ -41,7 +42,7 @@ test('editing a pending option prevents its old group-fit response from appearin
 });
 
 test('demo group fit explains that shared sources require sign-in',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));await page.goto('/');await page.getByRole('link',{name:'Open Coastal weekend'}).click();await page.getByRole('tab',{name:'Group fit',exact:true}).click();await expect(page.getByText('Sign in to a shared plan to check an option against your group’s sources. Open your account',{exact:true})).toBeVisible();await expect(page.locator('.group-fit-panel').getByRole('link',{name:'Open your account',exact:true})).toHaveAttribute('href','/account');await expect(page.getByRole('button',{name:'Check group fit',exact:true})).toHaveCount(0);
+ await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));await page.goto('/');await page.getByRole('link',{name:'Open Coastal weekend'}).click();await openTool(page,'Group fit');await expect(page.getByText('Sign in to a shared plan to check an option against your group’s sources. Open your account',{exact:true})).toBeVisible();await expect(page.locator('.group-fit-panel').getByRole('link',{name:'Open your account',exact:true})).toHaveAttribute('href','/account');await expect(page.getByRole('button',{name:'Check group fit',exact:true})).toHaveCount(0);
 });
 
 test('missing evidence remains an uncertain result rather than a recommendation',async({page})=>{
@@ -52,6 +53,6 @@ test('missing evidence remains an uncertain result rather than a recommendation'
 
 test('a discovered place opens a prefilled group-fit check before any action is saved',async({page})=>{
  const state=await setup(page);await page.route('**/api/backend/v1/places/search',route=>route.fulfill({json:{provider:'Synthetic public fixture',notice:'Unverified source information.',results:[{id:'fit-place',kind:'place',title:'Fixture Cafe',url:'https://venue.example.test/menu',snippet:'Vegetarian dinner menu.',address:'10 Test Street',location:'Austin',category:'Food & drink',image:null,image_source_url:null,map_url:'https://www.google.com/maps/search/?api=1&query=Fixture+Cafe'}]}}));
- await page.getByRole('tab',{name:'Discover',exact:true}).click();await page.getByLabel('Looking for').fill('Dinner');await page.getByRole('button',{name:'Update',exact:true}).click();await page.getByRole('button',{name:'Check group fit for Fixture Cafe',exact:true}).click();
+ await openTool(page,'Discover');await page.getByLabel('Looking for').fill('Dinner');await page.getByRole('button',{name:'Update',exact:true}).click();await page.getByRole('button',{name:'Check group fit for Fixture Cafe',exact:true}).click();
  const dialog=page.getByRole('dialog');await expect(dialog.getByLabel('Option name',{exact:true})).toHaveValue('Fixture Cafe');await expect(dialog.getByLabel('Option details or menu',{exact:true})).toHaveValue('Vegetarian dinner menu.\n10 Test Street');await expect(dialog.getByLabel('Option website (optional)',{exact:true})).toHaveValue('https://venue.example.test/menu');expect(state.requests()).toBe(0);
 });

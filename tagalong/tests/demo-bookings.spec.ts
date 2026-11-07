@@ -4,7 +4,7 @@ test('chat makes the honest reservation demo discoverable without sending the dr
  await page.goto('/');await page.getByRole('link',{name:'Open Coastal weekend'}).click();await page.getByRole('tab',{name:'Chat',exact:true}).click();
  await page.getByLabel('Message your group').fill('private unsent draft');
  await page.getByRole('button',{name:'Try demo restaurant booking'}).click();
- await expect(page.getByRole('tab',{name:'Demo bookings'})).toHaveAttribute('aria-selected','true');
+ await expect(page.getByRole('region',{name:'Demo bookings planning tool',exact:true})).toBeVisible();
  await expect(page.getByText('Demo reservation—no real booking or charge',{exact:true})).toBeVisible();
  await expect(page.getByText('Sign in to a shared plan to run the restaurant MCP demo.')).toBeVisible();
  await expect(page.getByRole('button',{name:'Confirm demo reservation',exact:true})).toHaveCount(0);
@@ -35,9 +35,9 @@ test('members can explore while booking waits for agreement and owner review',as
  await expect(page.getByRole('link',{name:'Complete the date poll'})).toHaveAttribute('href','/plans/booking-flow?tab=Polls');
  await page.getByRole('complementary',{name:'Reservation progress'}).screenshot({path:'test-results/flow-agreement-'+test.info().project.name+'.png'});
  await page.getByRole('link',{name:'Complete the date poll'}).click();
- await expect(page.getByRole('tab',{name:'Polls 0',exact:true})).toHaveAttribute('aria-selected','true');
+ await expect(page.getByRole('region',{name:'Polls planning tool',exact:true})).toBeVisible();
  await page.getByRole('link',{name:'Review group decisions',exact:true}).click();
- await expect(page.getByRole('tab',{name:'Demo bookings',exact:true})).toHaveAttribute('aria-selected','true');
+ await expect(page.getByRole('region',{name:'Demo bookings planning tool',exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Search fictional restaurants',exact:true}).click();await page.getByRole('combobox',{name:'Restaurant',exact:true}).selectOption('demo-lantern');await page.getByRole('button',{name:'Review demo reservation',exact:true}).click();
  await expect(page.getByRole('button',{name:'Confirm demo reservation',exact:true})).toBeDisabled();
  expect(confirmCalls).toBe(0);

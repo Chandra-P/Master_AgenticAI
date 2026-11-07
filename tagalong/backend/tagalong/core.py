@@ -54,6 +54,10 @@ def access(s,pid,a):
     return s['plans'][pid]
 def view(s,p,a):
     p = copy.deepcopy(p)
+    # This is server-derived identity, independent of editable display titles.
+    p.pop('demo_template',None)
+    story=s.get('demo_plan_stories',{}).get(p['id'])
+    if story:p['demo_template']=story['template']
     for member in p['members']:
         preferred=s['actors'].get(member.get('user_id'),{}).get('display_name')
         if preferred: member['name']=preferred
@@ -89,6 +93,9 @@ def update(s,a,pid,incoming,revision):
     if p['revision']!=revision: fail(409,'Plan changed; reload before retrying')
     if any(key in incoming for key in ('decisions','decision_state','finalization','finalized','score','comments')): fail(403,'Decision state is server-controlled')
     projected=view(s,p,a)
+    if 'demo_template' in incoming and incoming['demo_template']!=projected.get('demo_template'):
+        fail(403,'Demo identity is server-controlled')
+    incoming={key:value for key,value in incoming.items() if key!='demo_template'}
     if incoming.get('role')!=projected['role']: fail(403,'Invalid role')
     if incoming.get('group')!=projected.get('group'):fail(403,'Server-controlled group snapshot')
     for key in ('id','owner_id','members','preferences'):

@@ -252,6 +252,10 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
     install_coordination(app,repo,actor,ai)
     from .group_fit import install_group_fit
     install_group_fit(app,repo,actor,ai)
+    from .research import install_research
+    install_research(app,repo,actor,ai,places)
+    from .demo_plan import install_demo_plans
+    install_demo_plans(app,repo,actor)
     from .typing_suggestions import install_typing_suggestions
     install_typing_suggestions(app,repo,actor)
     return app

@@ -1,3 +1,4 @@
+import {openTool} from './planning-tools';
 import {test,expect,type Page,type BrowserContext} from '@playwright/test';
 
 async function login(page:Page,name:'alice'|'bob',role:'member'|'admin'='member'){
@@ -275,7 +276,7 @@ test('two members share a plan, chat, vote, confirm an AI proposal and preserve 
   await alice.getByRole('dialog').getByRole('button',{name:'Add member'}).click();
   await expect(alice.getByRole('dialog')).not.toBeVisible();
   await bob.reload();await expect(bob.getByRole('heading',{name:/Shared coast/})).toBeVisible();
-  await alice.getByRole('tab',{name:'Documents'}).click();
+  await openTool(alice,'Documents');
   await alice.getByLabel('Document title').fill('Group food notes');
   await alice.getByLabel('Document text').fill('We prefer vegetarian meals for this trip.');
   await alice.getByRole('button',{name:'Save document'}).click();
@@ -287,19 +288,19 @@ test('two members share a plan, chat, vote, confirm an AI proposal and preserve 
   await alice.getByText(/Sources \(/).click();
   await expect(alice.locator('blockquote').filter({hasText:'Group food notes'})).toBeVisible();
   await expect(alice.getByText('@Tagalong remember our food preferences',{exact:true})).toHaveCount(1);
-  await alice.getByRole('tab',{name:'Planning board'}).click();
+  await openTool(alice,'Planning board');
   await expect(alice.getByRole('button',{name:'Confirm Vegetarian'})).toBeVisible();
   await alice.getByRole('button',{name:'Confirm Vegetarian'}).click();
   await expect(alice.getByText('Confirmed by you',{exact:true})).toBeVisible();
-  await alice.getByRole('tab',{name:'Polls'}).click();
+  await openTool(alice,'Polls');
   await alice.getByRole('button',{name:'Create poll',exact:true}).click();
   await alice.getByLabel('Poll question').fill('Dinner time?');await alice.getByLabel('Option 1').fill('6 pm');await alice.getByLabel('Option 2').fill('7 pm');
   await alice.getByRole('button',{name:'Publish poll',exact:true}).click();
-  await bob.reload();await bob.getByRole('tab',{name:'Polls'}).click();
+  await bob.reload();await openTool(bob,'Polls');
   await bob.getByRole('button',{name:/6 pm/}).click();await expect(bob.getByRole('button',{name:/6 pm/})).toContainText('1 vote');
   await bob.getByRole('button',{name:/7 pm/}).click();await expect(bob.getByRole('button',{name:/7 pm/})).toContainText('1 vote');
   await expect(bob.getByRole('button',{name:/6 pm/})).toContainText('0 votes');
-  await alice.reload();await alice.getByRole('tab',{name:'Polls'}).click();await expect(alice.getByRole('button',{name:/7 pm/})).toContainText('1 vote');
+  await alice.reload();await openTool(alice,'Polls');await expect(alice.getByRole('button',{name:/7 pm/})).toContainText('1 vote');
   await alice.getByRole('button',{name:'Add member',exact:true}).click();
   await alice.getByRole('button',{name:'Remove member bob'}).click();
   await expect(alice.getByRole('button',{name:'Remove member bob'})).toHaveCount(0);

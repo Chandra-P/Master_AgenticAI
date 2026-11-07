@@ -1,3 +1,5 @@
+import {publicWebUrl,safeActivityImage} from './place-links';
+import type {DecisionOptionDetails} from './decisions';
 import type {Plan} from './types';
 import {decisionParticipation,type Decision,type DecisionSnapshot,type DecisionCommand} from './decisions';
 
@@ -58,11 +60,11 @@ export function applyDemoDecision(plan:Plan,input:DecisionSnapshot,command:Decis
    ownerOnly();if(snapshot.decisions.length>=20)throw new Error('Decision limit reached.');
    const title=command.title.trim();if(!title||title.length>120)throw new Error('Provide a decision title (120 characters maximum).');
    const options=validateOptions(command.options);
-   snapshot.decisions.push({id:crypto.randomUUID(),planId:plan.id,title,category:command.category,required:command.required,status:'needs_options',version:1,options:options.map(option),eligibleMemberIds:plan.members.map((_,i)=>demoMemberId(plan,i)),ballots:[],selectedOptionId:null,confirmation:null});invalidate();break;
+   snapshot.decisions.push({id:crypto.randomUUID(),planId:plan.id,title,category:command.category,required:command.required,status:'needs_options',version:1,options:withDetails(options,command.optionDetails),eligibleMemberIds:plan.members.map((_,i)=>demoMemberId(plan,i)),ballots:[],selectedOptionId:null,confirmation:null});invalidate();break;
   }
   case 'edit':{
    ownerOnly();if(command.title!==undefined){if(!command.title.trim()||command.title.length>120)throw new Error('Provide a valid decision title.');decision!.title=command.title.trim();}
-   if(command.options!==undefined)decision!.options=validateOptions(command.options).map(option);
+   if(command.options!==undefined)decision!.options=withDetails(validateOptions(command.options),command.optionDetails??decision!.options.filter(o=>command.options!.includes(o.label)));
    if(command.required!==undefined)decision!.required=command.required;
    decision!.version++;decision!.ballots=[];decision!.confirmation=null;decision!.selectedOptionId=null;invalidate();break;
   }
@@ -96,3 +98,5 @@ export function applyDemoDecision(plan:Plan,input:DecisionSnapshot,command:Decis
 }
 
 function validateOptions(options:string[]){const cleaned=options.map(s=>s.trim());if(cleaned.length>12||cleaned.some(s=>!s||s.length>300)||new Set(cleaned.map(s=>s.toLowerCase())).size!==cleaned.length)throw new Error('Use up to 12 distinct options, each 1–300 characters.');return cleaned;}
+
+function withDetails(labels:string[],details?:DecisionOptionDetails[]){return labels.map((label,index)=>{const meta=details?.find(item=>item.label===label);if(!meta)return option(label,index);if(meta.url&&!publicWebUrl(meta.url))throw new Error('Use a public website link.');if(meta.estimatedCostPerPerson!=null&&(!Number.isFinite(meta.estimatedCostPerPerson)||meta.estimatedCostPerPerson<0||meta.estimatedCostPerPerson>1000000))throw new Error('Use a valid cost estimate.');return {...option(label,index),...(meta.url?{url:publicWebUrl(meta.url)}:{}),...(meta.notes?{notes:meta.notes.slice(0,2000)}:{}),...(meta.image&&safeActivityImage(meta.image)?{image:safeActivityImage(meta.image)}:{}),...(meta.estimatedCostPerPerson!=null?{estimatedCostPerPerson:meta.estimatedCostPerPerson}:{}),...(meta.provenance?{provenance:meta.provenance}:{}),sourceIds:meta.sourceIds||[]};});}

@@ -249,3 +249,87 @@ def test_sdk_subprocess_parameters_exclude_provider_secrets_and_use_fixed_progra
     monkeypatch.setattr('tagalong.demo_booking_gateway.stdio_client',inspect)
     with pytest.raises(RuntimeError,match='inspection complete'):
         asyncio.run(DemoBookingGateway().call('create_demo_booking',{'quote_id':'synthetic'}))
+
+def modern_agreement(repo,c,h,p,finalize=True):
+    url='/v1/plans/'+p['id'];plan=repo.state['plans'][p['id']]
+    plan['location']='Austin';plan['budget']=150
+    data=c.get(url+'/decisions',headers=h).json()
+    for d in list(data['decisions']):
+        base=url+'/decisions/'+d['id']
+        r=c.patch(base,headers=h,json={'expected_revision':data['plan_revision'],'expected_version':d['version'],'options':['Confirmed '+d['title']]})
+        assert r.status_code==200,r.text
+        data=r.json();current=next(x for x in data['decisions'] if x['id']==d['id']);option=current['options'][0]['id']
+        r=c.put(base+'/response',headers=h,json={'expected_revision':data['plan_revision'],'expected_version':current['version'],'option_id':option,'response':'support'})
+        assert r.status_code==200,r.text
+        data=r.json()
+        r=c.post(base+'/confirm',headers=h,json={'expected_revision':data['plan_revision'],'expected_version':current['version'],'option_id':option})
+        assert r.status_code==200,r.text
+        data=r.json()
+    if finalize:
+        r=c.post(url+'/finalize',headers=h,json={'expected_revision':data['plan_revision'],'reviewed':True,'idempotency_key':'modern-final'})
+        assert r.status_code==200,r.text
+        data=r.json()
+    return data
+
+def test_finalized_modern_agreement_does_not_require_duplicate_legacy_poll_votes():
+    repo,app,c,h,p,base=setup(False)
+    data=modern_agreement(repo,c,h,p)
+    readiness=c.get(base,headers=h).json()['readiness']
+    assert readiness['can_approve'] and readiness['blockers']==[]
+    assert readiness['decisions']==[{'question':d['title'],'option':'Confirmed '+d['title']} for d in data['decisions']]
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':data['plan_revision']}).status_code==200
+    assert confirm(c,h,base,quote(c,h,base)).status_code==200
+
+def test_incomplete_modern_decisions_still_block_booking():
+    repo,app,c,h,p,base=setup(False);data=modern_agreement(repo,c,h,p,False)
+    readiness=c.get(base,headers=h).json()['readiness']
+    assert not readiness['can_approve']
+    assert {b['tab'] for b in readiness['blockers']}=={'Decisions'}
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':data['plan_revision']}).status_code==409
+
+@pytest.mark.parametrize('change',['version','options','selected','confirmation','finalization','reopened'])
+def test_modern_decision_snapshot_invalidates_approval_and_quotes_without_revision_change(change):
+    repo,app,c,h,p,base=setup()
+    modern_agreement(repo,c,h,p)
+    # No legacy poll blocker here: isolate whether modern state participates in fingerprint.
+    revision=repo.state['plans'][p['id']]['revision']
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':revision}).status_code==200
+    qid=quote(c,h,base);record=repo.state['decision_state'][p['id']];d=record['decisions'][0]
+    if change=='version':d['version']+=1
+    elif change=='options':d['options'][0]['label']='Changed lodging details'
+    elif change=='selected':d['selectedOptionId']='different'
+    elif change=='confirmation':d['confirmation']['at']='2026-11-07T00:00:00Z'
+    elif change=='finalization':record['finalization']['at']='2026-11-07T00:00:00Z'
+    else:d['confirmation']=None;record['finalization']=None
+    readiness=c.get(base,headers=h).json()['readiness']
+    assert not readiness['approved']
+    assert confirm(c,h,base,qid).status_code==409
+    assert 'create_demo_booking' not in app.state.demo_booking_gateway.calls
+
+def test_refinalized_modern_agreement_needs_fresh_booking_approval_and_quote():
+    repo,app,c,h,p,base=setup(False);data=modern_agreement(repo,c,h,p)
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':data['plan_revision']}).status_code==200
+    qid=quote(c,h,base)
+    record=repo.state['decision_state'][p['id']];record['finalization']['at']='2026-11-08T00:00:00Z'
+    assert not c.get(base,headers=h).json()['readiness']['approved']
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':data['plan_revision']}).status_code==200
+    assert confirm(c,h,base,qid).status_code==409
+    assert confirm(c,h,base,quote(c,h,base)).status_code==200
+
+def test_reopen_reconfirm_refinalize_api_invalidates_previous_booking_approval():
+    repo,app,c,h,p,base=setup(False);data=modern_agreement(repo,c,h,p)
+    assert c.post(base+'/approve',headers=h,json={'confirmed':True,'expected_revision':data['plan_revision']}).status_code==200
+    qid=quote(c,h,base);d=data['decisions'][0];url='/v1/plans/'+p['id'];path=url+'/decisions/'+d['id']
+    r=c.post(path+'/reopen',headers=h,json={'expected_revision':data['plan_revision'],'expected_version':d['version']})
+    assert r.status_code==200,r.text
+    data=r.json();current=data['decisions'][0]
+    readiness=c.get(base,headers=h).json()['readiness'];assert not readiness['approved'] and not readiness['can_approve']
+    r=c.put(path+'/response',headers=h,json={'expected_revision':data['plan_revision'],'expected_version':current['version'],'option_id':current['options'][0]['id'],'response':'support'})
+    assert r.status_code==200,r.text
+    data=r.json()
+    r=c.post(path+'/confirm',headers=h,json={'expected_revision':data['plan_revision'],'expected_version':current['version'],'option_id':current['options'][0]['id']})
+    assert r.status_code==200,r.text
+    r=c.post(url+'/finalize',headers=h,json={'expected_revision':r.json()['plan_revision'],'reviewed':True,'idempotency_key':'refinalized'})
+    assert r.status_code==200,r.text
+    readiness=c.get(base,headers=h).json()['readiness'];assert readiness['can_approve'] and not readiness['approved']
+    assert confirm(c,h,base,qid).status_code==409
