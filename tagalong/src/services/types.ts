@@ -7,7 +7,8 @@ export interface Preference { label: string; confirmed: boolean }
 export interface Poll { id: string; question: string; options: string[]; votes: Record<string,number>; datePoll?: boolean }
 export interface Activity { id: string; title: string; time: string; category: string; location: string; image?: string;source_url?:string;map_url?:string;image_source_url?:string;day?:string }
 export interface GroupMember { id:string; preferredName:string; color:string; firstName?:string; lastName?:string; email?:string }
-export interface Group { id:string; name:string; theme:string; ownerId:string; members:GroupMember[]; archived:boolean }
+export interface Group { id:string; name:string; theme:string; ownerId:string; members:GroupMember[]; archived:boolean; revision?:number }
+export interface GroupSnapshot {id:string;name:string;theme:string;revision?:number;participants?:string[]}
 export type GroupDraft = Pick<Group,'name'|'theme'|'members'>;
 export interface Plan { decisionState?:DecisionSnapshot; groupId?:string; group?:Pick<Group,'id'|'name'|'theme'>; id: string; title: string; kind: PlanKind; location: string; date: string; start: string; end: string; budget: number; image: string; members: Member[]; messages: Message[]; preferences: Preference[]; polls: Poll[]; itinerary: Activity[]; tasks: {label:string;done:boolean}[]; revision?:number;owner_id?:string;role?:'owner'|'member' }
 export interface CreatePlanInput { title:string; kind:PlanKind; start:string; end:string; participants:string; groupId?:string }

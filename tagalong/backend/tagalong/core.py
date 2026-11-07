@@ -73,11 +73,14 @@ def source(s,pid,sid,title,text,deleted=False,kind='message'):
 
 def create(s,a,b):
     register(s,a); pid=uid()
+    from .groups import plan_group
+    group=plan_group(s,a,b.group_id,b.expected_group_revision)
     start=date.fromisoformat(b.start); end=date.fromisoformat(b.end)
     display=lambda d:f'{d:%b} {d.day}'+(f', {d.year}' if start.year!=end.year else '')
     date_label=display(start) if start==end else display(start)+' - '+display(end)
     options=[date_label,'Suggest another date range' if start!=end else 'Suggest another date']
     p={'id':pid,'title':b.title,'kind':b.kind,'location':'Location to decide','date':date_label,'start':b.start,'end':b.end,'budget':0,'image':'/images/coast.jpg' if b.kind=='trip' else '/images/restaurant.jpg','members':[{'name':a.name,'color':'#6366f1','user_id':a.id}], 'messages':[],'preferences':[],'polls':[{'id':uid(),'question':'Which date range works best?' if start!=end else 'Which date works best?','options':options,'votes':{},'datePoll':True}],'itinerary':[],'tasks':[{'label':'Set a group budget','done':False},{'label':'Choose a meeting place','done':False}],'revision':1,'owner_id':a.id}
+    if group is not None:p['group']=group
     s['plans'][pid]=p; s['members'][pid]=[a.id]
     return view(s,p,a)
 
@@ -87,6 +90,7 @@ def update(s,a,pid,incoming,revision):
     if any(key in incoming for key in ('decisions','decision_state','finalization','finalized','score','comments')): fail(403,'Decision state is server-controlled')
     projected=view(s,p,a)
     if incoming.get('role')!=projected['role']: fail(403,'Invalid role')
+    if incoming.get('group')!=projected.get('group'):fail(403,'Server-controlled group snapshot')
     for key in ('id','owner_id','members','preferences'):
         if incoming.get(key)!=projected[key]: fail(403,'Server-controlled field: '+key)
     from .models import validate_snapshot, ValidationError
