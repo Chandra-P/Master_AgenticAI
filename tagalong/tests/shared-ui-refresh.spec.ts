@@ -1,3 +1,4 @@
+import {openSection} from './planning-tools';
 import {test,expect,type Page} from '@playwright/test';
 import {inspectVisual} from './ui-refresh.helpers';
 
@@ -38,20 +39,20 @@ test('connected tools, expanded evidence and owner dialogs adapt across screen s
   await inspectVisual(page,info,`${width}-generated-review`);
   await page.goto('/plans/'+plan.id);
   for(const name of ['Decisions','Chat','Planning board','Polls','Discover','Itinerary','Documents','Demo bookings','Group fit']){
-   await page.getByRole('tab',{name,exact:name!=='Polls'}).click();
+   await openSection(page,name);
    if(name==='Discover')await expect(page.getByRole('heading',{name:'Synthetic vegetarian restaurant',exact:true})).toBeVisible();
    await inspectVisual(page,info,`${width}-connected-${name.replaceAll(' ','-')}`);
   }
-  await page.getByRole('tab',{name:'Discover',exact:true}).click();await page.getByRole('button',{name:'Add Synthetic vegetarian restaurant to plan',exact:true}).click();
+  await openSection(page,'Discover');await page.getByRole('button',{name:'Add Synthetic vegetarian restaurant to plan',exact:true}).click();
   await inspectVisual(page,info,`${width}-place-dialog`);await page.keyboard.press('Escape');
   await page.getByRole('button',{name:'Check group fit for Synthetic vegetarian restaurant',exact:true}).click();await inspectVisual(page,info,`${width}-venue-fit-dialog`);await page.keyboard.press('Escape');
   await page.getByRole('button',{name:'Add member',exact:true}).click();await inspectVisual(page,info,`${width}-member-dialog`);await page.keyboard.press('Escape');
   for(const name of ['Transfer ownership','Delete plan']){await page.getByRole('button',{name,exact:true}).click();await inspectVisual(page,info,`${width}-${name.replaceAll(' ','-')}`);await page.keyboard.press('Escape');}
  }
- await page.getByRole('tab',{name:'Documents',exact:true}).click();await page.getByLabel('Document title',{exact:true}).fill('Synthetic venue note');
+ await openSection(page,'Documents');await page.getByLabel('Document title',{exact:true}).fill('Synthetic venue note');
  await page.getByLabel('Document text',{exact:true}).fill('Synthetic adult group prefers a relaxed vegetarian dinner.');await page.getByRole('button',{name:'Save document',exact:true}).click();
  await page.getByText('Synthetic venue note',{exact:true}).click();await inspectVisual(page,info,'390-expanded-note');
- await page.getByRole('tab',{name:'Group fit',exact:true}).click();await page.getByLabel('Option name',{exact:true}).fill('Synthetic dinner');
+ await openSection(page,'Group fit');await page.getByLabel('Option name',{exact:true}).fill('Synthetic dinner');
  await page.getByLabel('Option details or menu',{exact:true}).fill('A synthetic vegetarian menu.');await page.getByRole('button',{name:'Check group fit',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Sources used',exact:true})).toBeVisible();await inspectVisual(page,info,'390-fit-result');
  await page.getByRole('button',{name:/^Source:/}).first().click();await inspectVisual(page,info,'390-fit-source');

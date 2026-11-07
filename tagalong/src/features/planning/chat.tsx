@@ -7,6 +7,7 @@ import {ArrowLeft, AtSign, Check, LayoutDashboard, Send, Sparkles} from 'lucide-
 import type {Plan, Tab} from '@/services/types';
 import {Button} from '@/components/ui/button';
 import {usePlanning} from './store';
+import {fictionalCast} from '@/services/demo-plan';
 import {FindOptionsButton} from './research/option-workbench';
 import {TypingSuggestions} from './typing-suggestions';
 import {useTypingSuggestions} from './use-typing-suggestions';
@@ -23,6 +24,9 @@ export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const oldCount = useRef(plan.messages.length);
+  const conversationRef=useRef<HTMLDivElement>(null);
+  const demoStory=plan.demo_template==='austin-four-friends';
+  useEffect(()=>{if(demoStory&&conversationRef.current)conversationRef.current.scrollTop=0;},[demoStory,plan.id]);
   const completion = useTypingSuggestions({
     plan, text, enabled: suggestionsEnabled && caretAtEnd && !isComposing && dismissed !== text && !thinking,
     connected: mode === 'connected' && !!user && !!config?.connectedReady,
@@ -89,26 +93,27 @@ export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
     <div className="chat-heading">
       <div>
         <h2>All the good ideas start here.</h2>
-        <p><span className="online-dot"/>{plan.members.length} people, one great plan</p>
+        <p><span className="online-dot"/>{demoStory?'4 fictional friends, one weekend':plan.members.length+' people, one great plan'}</p>
       </div>
-      <FindOptionsButton plan={plan}/><span className="chat-demo">{mode === 'demo' ? 'Demo conversation' : 'Group conversation'}</span>
+      <a className="text-button" href={'#plan-ideas-'+plan.id}>Get city ideas and events</a><FindOptionsButton plan={plan}/><span className="chat-demo">{mode === 'demo' ? 'Demo conversation' : 'Group conversation'}</span>
       {mode === 'demo' && <Link className="text-button" href="/account">Use live AI in shared workspace</Link>}
     </div>
-    <div className="chat-messages">
+    {demoStory&&<div className="demo-conversation-intro"><strong>Four friends planning together</strong><p>Alex, Maya, Sam and Jordan are fictional adults. Follow their ideas, objections and compromises below. Scripted dialogue and votes are separate from real members and the live AI check.</p><div className="journey-buttons"><Button variant="outline" onClick={()=>conversationRef.current?.scrollTo({top:0,behavior:'smooth'})}>Replay from the first idea</Button><Button variant="outline" onClick={()=>onTab('Decisions')}>See their options and votes</Button><Button variant="outline" onClick={()=>onTab('Itinerary')}>See the final itinerary</Button></div></div>}<div className="chat-messages" ref={conversationRef}>
       <div className="chat-date"><span/>THE BEGINNING OF SOMETHING GOOD<span/></div>
       {plan.messages.map(message => {
         const member = plan.members.find(person => message.user_id
           ? person.user_id === message.user_id : person.name === message.author);
         const author = member?.name || message.author;
+        const fictional=message.simulation?fictionalCast.find(person=>person.name===message.author):undefined;
         return <article key={message.id} className={'chat-message ' + (message.assistant ? 'assistant-message' : '')}>
           {message.assistant
             ? <span className="avatar ai-avatar"><Sparkles size={18}/></span>
-            : <span className="avatar" style={{background: member?.color || '#eccfc0',color:avatarTextColor(member?.color || '#eccfc0')}}>{author.slice(0, 1)}</span>}
+            : <span className="avatar" style={{background: fictional?.color || member?.color || '#eccfc0',color:avatarTextColor(fictional?.color || member?.color || '#eccfc0')}}>{author.slice(0, 1)}</span>}
           <div className="message-content">
             <div className="message-byline">
-              <strong>{author}{message.author === (user?.name || 'Alex') && <em>you</em>}</strong>
-              {message.assistant && <span className="simulated-label">{mode === 'demo' ? 'Simulated assistant' : 'AI suggestion'}</span>}
-              <time>{message.time}</time>
+              <strong>{author}{!message.simulation && message.author === (user?.name || 'Alex') && <em>you</em>}</strong>
+              {message.assistant && <span className="simulated-label">{message.simulation?'Scripted demo assistant':mode==='demo'?'Simulated assistant':demoStory?'Live AI reply':'AI suggestion'}</span>}
+              {message.simulation&&!message.assistant&&<span className="simulated-label">Fictional friend</span>}<time>{message.time}</time>
             </div>
             <div className="message-bubble">
               {message.text}
@@ -119,8 +124,8 @@ export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
                 </blockquote>)}
               </details>}
               {message.assistant && <div className="assistant-actions">
-                <button onClick={() => onTab('Planning board')}>
-                  <LayoutDashboard size={13}/> See the planning board <ArrowLeft className="arrow-right" size={13}/>
+                <button onClick={() => onTab(message.simulation?'Decisions':'Planning board')}>
+                  <LayoutDashboard size={13}/> {message.simulation?'See the group decisions':'See the planning board'} <ArrowLeft className="arrow-right" size={13}/>
                 </button>
               </div>}
             </div>

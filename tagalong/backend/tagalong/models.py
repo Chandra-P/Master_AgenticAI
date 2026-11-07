@@ -1,7 +1,7 @@
 """Strict bounded HTTP snapshots; mutable plan data is validated before transactions."""
 from datetime import date
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, ValidationError, field_validator, model_validator
 
 MAX_MESSAGES = 1000
 MAX_PREFERENCES = 200
@@ -92,6 +92,7 @@ class Message(Item):
     sources: list[Citation] = Field(default_factory=list, max_length=6)
     assistant: bool = False
     user_id: str | None = None
+    simulation: StrictBool | None = None
 
 
 class Preference(Item):
@@ -212,4 +213,3 @@ class AssistantOutput(BaseModel):
 def validate_snapshot(value):
     parsed = Snapshot.model_validate(value)
     value['title'] = parsed.title
-

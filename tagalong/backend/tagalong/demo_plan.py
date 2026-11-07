@@ -13,6 +13,77 @@ class DemoPlanRequest(BaseModel):
     idempotency_key: str = Field(min_length=1, max_length=128, pattern=r'^[A-Za-z0-9_-]+$')
 
 
+DIALOGUE_VERSION=2
+
+
+def demo_dialogue(story):
+    """Replay fictional adults and cited scripted assistance, never real account actions."""
+    scenes=[
+        ('1 · Start the weekend plan',[
+            ('Alex','Could the four of us take a weekend trip? I vote Austin: food, a little music, and time together.'),
+            ('Maya','I am interested. Let us compare a couple of places before we lock anything in.'),
+            ('Sam','Yes, but I need a ceiling on the whole weekend, not just the hotel.'),
+            ('Jordan','Count me in if we leave room to rest. I do not want a race between attractions.'),
+            ('Tagalong','This is a fictional planning conversation. I will lay out choices and record objections; the real account owner still controls all actual decisions.'),
+        ]),
+        ('2 · Destination and dates',[
+            ('Alex','Destination choices: Austin, San Antonio, or postpone. My first date choice is April 9–11, 2027; April 16–18 and May 7–9 are alternatives.'),
+            ('Sam','I object to April 9–11: I cannot join that weekend. April 16–18 works. I can live with Austin if the numbers work.'),
+            ('Maya','Austin and April 16–18 both work for this fictional plan. I prefer that to postponing.'),
+            ('Jordan','April 16–18 works for me too. I support Austin, with a calmer schedule.'),
+            ('Alex','I can move the trip a week. Austin, April 16–18 is my revised proposal.'),
+            ('Tagalong','The saved discussion records Sam’s date objection. All four have now named April 16–18 as workable in the script; no real calendars were checked.'),
+        ]),
+        ('3 · Needs and budget conflict',[
+            ('Alex','What about a central hotel, a big Saturday tour, and late music? I modeled USD 430 each for lodging and USD 780 overall.'),
+            ('Sam','I object to that budget. USD 650 per person is my fictional ceiling, including meals, travel, and a cushion.'),
+            ('Maya','I need vegetarian meal choices. A barbecue-only dinner would leave me out, even if everyone else likes it.'),
+            ('Jordan','I object to the packed tour and late-night default. Please also verify step-free access; we cannot assume a route or hotel will work.'),
+            ('Tagalong','The constraints note records USD 650, vegetarian food, a relaxed pace, and an access check. I suggest comparing lower lodging allowances, one shared meal, and optional activities. Those are proposed compromises, not verified venue suitability.'),
+            ('Alex','Fair. I can trade the central hotel and mandatory late night for a weekend we can all join.'),
+        ]),
+        ('4 · Compare three lodging options',[
+            ('Tagalong','Three scripted lodging alternatives: busy central hotel with a USD 430 allowance; Lone Star Court candidate with USD 300; or separate stays with USD 280. These are fictional budget allowances, not researched room prices.'),
+            ('Alex','I initially support the busy central hotel, but I can live with the Lone Star Court candidate if we check transport.'),
+            ('Sam','I object to the USD 430 allowance. I support the USD 300 candidate: lodging 300, meals 120, transport 100, contingency 130 totals 650.'),
+            ('Maya','I support staying together rather than splitting up. The USD 300 lodging allowance works for the story.'),
+            ('Jordan','I support the shared candidate, pending actual step-free access and travel-time checks. The name alone proves neither.'),
+            ('Tagalong','Recorded compromise: Lone Star Court is the lodging candidate; Alex can live with it and the others support it. Its linked website is a reference, not proof of price, availability, or access.'),
+        ]),
+        ('5 · Compare three meal options',[
+            ('Alex','For dinner: barbecue-only, Bouldin Creek Cafe as a shared candidate, or separate meals. My first choice was barbecue.'),
+            ('Maya','I object to barbecue-only. I support comparing Bouldin Creek Cafe so the shared meal includes my vegetarian preference.'),
+            ('Sam','I support the shared cafe candidate with a fictional USD 35 meal allowance inside the USD 120 meals budget.'),
+            ('Jordan','I support that candidate if we check seating, access, and hours. I would rather eat together than split up.'),
+            ('Tagalong','The saved constraints support the need for vegetarian choices, and the discussion records the objection. The cafe is a candidate to verify directly; this script does not certify dietary safety, current menu, or seating.'),
+            ('Alex','I can live with the shared cafe. Let us verify the actual menu instead of assuming the restaurant label settles it.'),
+        ]),
+        ('6 · Activity pace and alternatives',[
+            ('Alex','Activity choices: a packed all-day schedule, an optional Lady Bird Lake walk with rest, or skip a group activity. I initially preferred the full day.'),
+            ('Jordan','I object to the full day. I support the flexible walk only if we verify a suitable route and can opt out without pressure.'),
+            ('Maya','I support the optional walk and rest. That leaves time for our shared meal.'),
+            ('Sam','I support the flexible plan with a fictional zero activity allowance. We still need to check any real transport or activity costs.'),
+            ('Tagalong','The pace objection is recorded in the discussion note. The revised option is a flexible walk and rest; Alex can live with it. The official trail link does not establish step-free access or a researched zero price.'),
+        ]),
+        ('7 · Final responses and selection recap',[
+            ('Alex','My final story responses: support Austin and April 16–18; can live with Lone Star Court, the shared cafe, and the flexible walk. I withdraw my earlier hotel and pace proposals.'),
+            ('Maya','I support all five revised choices, pending direct menu and provider checks. Keeping the meal shared resolves my objection.'),
+            ('Sam','I can live with Austin and support the revised dates, lodging, meal, and activity. The modeled USD 650 total resolves my cost objection; it is not a quote.'),
+            ('Jordan','I support the revised five choices, with rest and an access-check task. My support is for this fictional outline, not a guarantee about any venue.'),
+            ('Tagalong','Scripted selections: Austin, April 16–18, Lone Star Court lodging candidate, Bouldin Creek Cafe meal candidate, and an optional Lady Bird Lake walk. Friday arrival and dinner; Saturday flexible exploring and rest; Sunday breakfast and departure.'),
+            ('Tagalong','These are fictional responses, not real ballots or finalization. The actual owner must review real costs, availability, dietary needs, transport and access, collect actual member responses, and arrange any booking personally. Nothing was booked, paid, invited, or sent.'),
+        ]),
+    ]
+    citations=[{k:item[k] if k!='text' else item[k][:6000] for k in ('id','title','text')} for item in story['sources']]
+    messages=[]
+    for scene,turns in scenes:
+        for author,text in turns:
+            message={'id':'demo-scene-'+str(len(messages)).zfill(3),'author':author,'text':text,'time':'Scene '+scene,'assistant':author=='Tagalong','simulation':True}
+            if author=='Tagalong':message['sources']=citations
+            messages.append(message)
+    return messages
+
+
 def story_data(pid):
     sources = [
         {'id':'demo-constraints','title':'Fictional demo · four friends’ constraints','text':'Alex proposes Austin, April 16–18, 2027. Maya prefers vegetarian food. Sam wants a fictional USD 650 per-person ceiling. Jordan prefers a relaxed pace and asks the group to verify step-free access. These are synthetic adult aliases and fictional needs.'},
@@ -34,8 +105,19 @@ def story_data(pid):
         (['Barbecue-only meal concept','Bouldin Creek Cafe candidate','Separate meals'],'The cast prefers one shared meal after Maya raises a vegetarian need. Verify the actual current menu, dietary requirements, hours and seating directly.',{'Alex':'can_live_with','Maya':'support','Sam':'support','Jordan':'support'}),
         (['Packed all-day activity schedule','Optional Lady Bird Lake walk and rest','Skip the group activity'],'Jordan’s pace objection leads to an optional walk with rest time. The route and step-free access still need provider checks; the fictional zero allowance is not a researched price.',{'Alex':'can_live_with','Maya':'support','Sam':'support','Jordan':'support'}),
     ]
-    for choice, (alternatives, reason, votes) in zip(choices, comparisons):
+    initial_votes=[
+        {'Alex':'support','Maya':'support','Sam':'can_live_with','Jordan':'can_live_with'},
+        {'Alex':'support','Maya':'can_live_with','Sam':'object','Jordan':'can_live_with'},
+        {'Alex':'support','Maya':'can_live_with','Sam':'object','Jordan':'object'},
+        {'Alex':'support','Maya':'object','Sam':'can_live_with','Jordan':'can_live_with'},
+        {'Alex':'support','Maya':'can_live_with','Sam':'object','Jordan':'object'},
+    ]
+    for index,(choice, (alternatives, reason, votes)) in enumerate(zip(choices, comparisons)):
         choice.update(alternatives=alternatives,reason=reason,votes=votes,sourceIds=['demo-constraints','demo-discussion'])
+        choice['rounds']=[
+            {'title':'Initial proposal','option':alternatives[0],'votes':initial_votes[index],'resolution':'Compare objections before selecting a shared outline.','sourceIds':['demo-constraints','demo-discussion']},
+            {'title':'Revised fictional responses','option':choice['label'],'votes':votes,'resolution':reason,'sourceIds':['demo-constraints','demo-discussion']},
+        ]
     milestones = [
         {'id':'idea','title':'1. Four friends initiate a weekend','text':'Alex opens a plan: “Could we meet in Austin for April 16–18?” Maya, Sam and Jordan join this fictional conversation. The real saved plan grants access only to your account.','sourceIds':['demo-constraints']},
         {'id':'preferences','title':'2. Needs become shared evidence','text':'Maya: “A vegetarian dinner matters to me.” Sam: “Let’s model a USD 650 ceiling.” Jordan: “Please keep the pace relaxed and verify step-free access.” The constraints note captures the discussion for retrieval.','sourceIds':['demo-constraints']},
@@ -50,7 +132,9 @@ def story_data(pid):
         {'date':'2027-04-17','title':'Saturday · a little exploring, plenty of room','items':[{'time':'10:00 AM','title':'Flexible trail and boardwalk walk','location':'Lady Bird Lake · verify route and step-free access','image':'/images/coast.jpg'},{'time':'1:00 PM','title':'Unscheduled lunch and rest','location':'Choose together on the day','image':'/images/restaurant.jpg'},{'time':'5:00 PM','title':'Optional music or a quiet evening','location':'Group chooses after checking energy and budget','image':'/images/forest.jpg'}]},
         {'date':'2027-04-18','title':'Sunday · an easy goodbye','items':[{'time':'9:00 AM','title':'Breakfast and shared expense review','location':'Choose together · fictional estimates only','image':'/images/restaurant.jpg'},{'time':'11:00 AM','title':'Verify checkout and head home','location':'Confirm actual provider checkout terms','image':'/images/coast.jpg'}]},
     ]
-    return {'planId':pid,'template':'austin-four-friends','scripted':True,'title':'Four friends, one Austin weekend','disclosure':'Fictional walkthrough · scripted AI and votes · no bookings','cast':cast,'sources':sources,'choices':choices,'milestones':milestones,'days':days,'referenceDate':'2026-11-06'}
+    story={'planId':pid,'template':'austin-four-friends','scripted':True,'dialogueVersion':DIALOGUE_VERSION,'title':'Four friends, one Austin weekend','disclosure':'Fictional walkthrough · scripted AI and votes · no bookings','cast':cast,'sources':sources,'choices':choices,'milestones':milestones,'days':days,'referenceDate':'2026-11-06'}
+    sources[1]['text']='Fictional scripted conversation; no actual participant responses or provider execution.\n'+'\n'.join(m['time']+' — '+m['author']+': '+m['text'] for m in demo_dialogue(story))
+    return story
 
 
 def create_demo_plan(state, actor, body):
@@ -69,7 +153,7 @@ def create_demo_plan(state, actor, body):
     pid = created['id']; plan = state['plans'][pid]
     story = story_data(pid)
     plan.update(location='Austin, Texas', budget=650)
-    plan['messages'] = [{'id':'demo-story-introduction','author':'Fictional demo narrator','text':'Fictional demo: Alex, Maya, Sam and Jordan plan an Austin weekend. Open View demo story to replay the scripted conversation, source evidence, illustrative votes and itinerary. No real participant responses or bookings are represented here.','time':'Demo story','assistant':False}]
+    plan['messages'] = demo_dialogue(story)
     plan['tasks'] = [{'label':label,'done':False} for label in ['Verify real prices, availability and cancellation terms','Confirm step-free access and travel times with providers','Replace fictional estimates with reviewed costs','Invite real participants and collect their own responses']]
     plan['itinerary'] = [{'id':'demo-story-'+str(index),'title':'DEMO · '+item['title'],'time':item['time'],'day':day['date'],'category':'Fictional walkthrough · illustrative photo','location':item['location'],'image':item['image']} for index,(day,item) in enumerate((day,item) for day in story['days'] for item in day['items'])]
     photos = [
@@ -86,6 +170,32 @@ def create_demo_plan(state, actor, body):
         source(state,pid,item['id'],item['title'],item['text'],kind='document')
     state.setdefault('demo_plan_stories', {})[pid] = story
     keys[key] = pid
+    return view(state,plan,actor)
+
+
+def upgrade_demo_plan(state,actor,pid):
+    """Explicit owner-operated transcript upgrade; preserve real replies and decisions."""
+    plan=access(state,pid,actor)
+    if plan['owner_id']!=actor.id:fail(403,'Only the owner can upgrade the demo story')
+    previous=state.get('demo_plan_stories',{}).get(pid)
+    if not previous or previous.get('template')!='austin-four-friends':fail(404,'Demo story not found')
+    if previous.get('dialogueVersion',0)>=DIALOGUE_VERSION:return view(state,plan,actor)
+    story=story_data(pid)
+    history=list(previous.get('previousLiveChecks',[]))
+    if previous.get('liveCheck') is not None:history.append(previous['liveCheck'])
+    if history:story['previousLiveChecks']=history
+    def old_script(message):
+        if message.get('user_id'):return False
+        if message.get('id')=='demo-story-introduction' and message.get('author')=='Fictional demo narrator':return True
+        return message.get('simulation') is True and message.get('id','').startswith('demo-scene-') and message.get('author') in {'Alex','Maya','Sam','Jordan','Tagalong'}
+    real_messages=[m for m in plan['messages'] if not old_script(m)]
+    from .models import MAX_MESSAGES
+    transcript=demo_dialogue(story)
+    if len(transcript)+len(real_messages)>MAX_MESSAGES:fail(409,'The upgraded demo would exceed the message limit')
+    plan['messages']=transcript+real_messages
+    for item in story['sources']:source(state,pid,item['id'],item['title'],item['text'],kind='document')
+    state['demo_plan_stories'][pid]=story
+    plan['revision']+=1
     return view(state,plan,actor)
 
 

@@ -26,8 +26,11 @@ def app_factory():
             return super().answer(plan,message,resolve_sources)
     class BrowserPlaces:
         def search(self,query,location,category):
+            if category=='events':return [{'title':'Synthetic Music Night','url':'https://events.example.test/music-night','snippet':'Synthetic Music Night May 15, 2027'}]
             return [{'id':'synthetic-restaurant','kind':'place','title':'Synthetic vegetarian restaurant','url':'https://places.example.test/restaurant','snippet':'Synthetic public source snippet for browser verification.','address':'10 Test Street','location':location,'category':'Food & drink','image':'https://places.example.test/restaurant.jpg','image_source_url':'https://places.example.test/restaurant','map_url':'https://www.google.com/maps/search/?api=1&query=Synthetic+restaurant'}]
+        def fetch_page(self,row):return {**row,'content':'Synthetic Music Night May 15, 2027. This is a synthetic official organizer fixture.'}
     app=create_app(repo,authenticate,BrowserAI(),places=BrowserPlaces())
+    app.state.city_event_extractor=lambda *args:[{'source_id':'event-source:1','kind':'event','official':True,'name':'Synthetic Music Night','raw_date':'May 15, 2027','date':'2027-05-15'}]
     class BrowserTyping:
         def complete(self,draft,context):
             return ' together.'

@@ -256,6 +256,8 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
     install_research(app,repo,actor,ai,places)
     from .demo_plan import install_demo_plans
     install_demo_plans(app,repo,actor)
+    from .city_ideas import install_city_ideas
+    install_city_ideas(app,repo,actor,places,ai)
     from .typing_suggestions import install_typing_suggestions
     install_typing_suggestions(app,repo,actor)
     return app

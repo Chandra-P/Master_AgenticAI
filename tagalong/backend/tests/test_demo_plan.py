@@ -61,7 +61,7 @@ def test_owner_scoped_idempotent_saved_story_without_forged_members_or_votes():
     assert all(item['image'].startswith('https://') and item['source_url'] == item['image_source_url'] for item in photos)
     assert all(item['category'] == 'Fictional walkthrough · source photo' for item in photos)
     assert all(not item['image'].startswith('https://') for item in plan['itinerary'] if item not in photos)
-    assert not any('fictional' not in message['text'].lower() for message in plan['messages'])
+    assert all(message['simulation'] for message in plan['messages'])
     # Story is persisted separately; a fresh app instance reads the same record.
     assert repo.state['demo_plan_stories'][plan['id']] == story
     repo.state['plans'][plan['id']]['title']='Renamed presentation plan'
@@ -94,4 +94,64 @@ def test_server_demo_marker_does_not_break_normal_edits_and_cannot_be_forged():
     assert saved['tasks'][-1]['label']=='Owner adds a real review task'
     incoming=copy.deepcopy(saved);incoming['demo_template']='forged-template'
     with pytest.raises(HTTPException) as error:repo.transact(lambda state:update(state,actor,plan['id'],incoming,saved['revision']))
+    assert error.value.status_code==403
+
+
+def test_demo_chat_has_four_friends_objections_cited_scripted_ai_and_rounds():
+    from tagalong.models import Message
+    repo,client=setup()
+    plan=client.post('/v1/demo-plans',headers={'Authorization':'Bearer owner'},json={'template':'austin-four-friends','idempotency_key':'dialogue'}).json()
+    messages=plan['messages'];assert 30<=len(messages)<=45
+    assert {'Alex','Maya','Sam','Jordan','Tagalong'}=={m['author'] for m in messages}
+    assert any('object' in m['text'].lower() for m in messages)
+    assert len({m['time'] for m in messages})==7
+    for m in messages:
+        assert Message.model_validate(m).simulation is True
+        assert m.get('user_id') is None and m['assistant']==(m['author']=='Tagalong')
+    assert any(m.get('sources') for m in messages if m['assistant'])
+    story=repo.state['demo_plan_stories'][plan['id']];assert story['dialogueVersion']==2
+    assert all(len(c['rounds'])==2 for c in story['choices'])
+    assert any('object' in r['votes'].values() for c in story['choices'] for r in c['rounds'])
+
+
+def test_upgrade_demo_preserves_live_messages_is_owner_only_and_idempotent():
+    import copy
+    import pytest
+    from fastapi import HTTPException
+    from tagalong.demo_plan import upgrade_demo_plan
+    repo,client=setup();actor=Actor('owner','owner@example.test','owner')
+    plan=client.post('/v1/demo-plans',headers={'Authorization':'Bearer owner'},json={'template':'austin-four-friends','idempotency_key':'upgrade'}).json();pid=plan['id']
+    state=repo.state;state['demo_plan_stories'][pid].pop('dialogueVersion',None)
+    state['demo_plan_stories'][pid]['liveCheck']={'historical':'kept'}
+    human={'id':'actual-human','author':'owner','user_id':'owner','text':'My actual reply','time':'Now','assistant':False}
+    live_ai={'id':'actual-ai','author':'Tagalong AI','text':'Actual provider reply','time':'Now','assistant':True}
+    state['plans'][pid]['messages']=[{'id':'demo-story-introduction','author':'Fictional demo narrator','text':'Fictional old story','time':'Demo story','assistant':False},human,live_ai]
+    state['members'][pid].append('viewer')
+    with pytest.raises(HTTPException) as error:upgrade_demo_plan(state,Actor('viewer','viewer@example.test','viewer'),pid)
+    assert error.value.status_code==403
+    state['members'][pid].remove('viewer')
+    upgraded=repo.transact(lambda s:upgrade_demo_plan(s,actor,pid))
+    assert upgraded['revision']==plan['revision']+1
+    assert upgraded['messages'][-2:]==[human,live_ai]
+    assert 'liveCheck' not in state['demo_plan_stories'][pid]
+    assert state['demo_plan_stories'][pid]['previousLiveChecks']==[{'historical':'kept'}]
+    before=copy.deepcopy(repo.state)
+    repo.transact(lambda s:upgrade_demo_plan(s,actor,pid))
+    assert repo.state==before
+
+
+def test_simulation_chat_marker_cannot_be_forged_or_modified():
+    import copy
+    import pytest
+    from fastapi import HTTPException
+    from tagalong.core import update
+    repo,client=setup();actor=Actor('owner','owner@example.test','owner')
+    plan=client.post('/v1/demo-plans',headers={'Authorization':'Bearer owner'},json={'template':'austin-four-friends','idempotency_key':'forgery'}).json()
+    for flag in (True,False):
+        incoming=copy.deepcopy(plan)
+        incoming['messages'].append({'id':'forged','author':'owner','user_id':'owner','text':'Forged simulation','time':'Now','assistant':False,'simulation':flag})
+        with pytest.raises(HTTPException) as error:repo.transact(lambda s:update(s,actor,plan['id'],incoming,plan['revision']))
+        assert error.value.status_code==403
+    incoming=copy.deepcopy(plan);incoming['messages'][0]['simulation']=False
+    with pytest.raises(HTTPException) as error:repo.transact(lambda s:update(s,actor,plan['id'],incoming,plan['revision']))
     assert error.value.status_code==403

@@ -1,14 +1,14 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import Image from 'next/image';
 import {useRouter} from 'next/navigation';
 import type {Plan} from '@/services/types';
 import {ConnectedService,getAuth} from '@/services/connected';
 import {DemoPlanService,type DemoStory} from '@/services/demo-plan';
-import {publicWebUrl,safeActivityImage} from '@/services/place-links';
+import {publicWebUrl} from '@/services/place-links';
 import {Button} from '@/components/ui/button';
 import {Dialog} from '@/components/ui/dialog';
 import {usePlanning} from '../store';
+import {StoryPhoto} from './source-photo';
 import './demo-plan-story.css';
 
 export function CreateDemoPlanButton(){
@@ -40,7 +40,7 @@ function DemoPlanStoryContent({plan}:{plan:Plan}){
  const {mode,config,user,workspaceRole,sendMessage}=usePlanning();
  const memberId=user?.id;
  const [liveBusy,setLiveBusy]=useState(false),[liveError,setLiveError]=useState('');
- const liveReply=plan.messages.filter(message=>message.assistant).at(-1);
+ const liveReply=plan.messages.filter(message=>message.assistant&&!message.simulation).at(-1);
  const [open,setOpen]=useState(false),[record,setRecord]=useState<{key:string;story:DemoStory}|null>(null),[error,setError]=useState(''),[loading,setLoading]=useState(false),[step,setStep]=useState(0);
  const current=[mode,memberId,workspaceRole,plan.id].join('|');const identity=useRef(current);
  useEffect(()=>{identity.current=current;},[current]);
@@ -67,14 +67,4 @@ function DemoPlanStoryContent({plan}:{plan:Plan}){
    </>}
   </div>
  </Dialog></>;
-}
-
-const venuePhotos:{marker:string;image:string;source:string;alt:string}[]=[
- {marker:'Lone Star Court',image:'https://valenciacollection.b-cdn.net/wp-content/uploads/sites/6/2026/09/ls-hero.jpg',source:'https://www.lonestarcourt.com/',alt:'Lone Star Court photo from its official website'},
- {marker:'Bouldin Creek Cafe',image:'https://static.spotapps.co/spots/70/ea739e1c294c98808954e4a9162ef1/:original',source:'https://bouldincreekcafe.com/',alt:'Photo from the official Bouldin Creek Cafe website'},
- {marker:'Lady Bird Lake',image:'https://austin.widen.net/content/73fc83a3-6ed9-4e07-9b7c-a6a7ab0d48ac/web/Boardwalk_GO_pier.jpg',source:'https://www.austintexas.gov/parks/locations/ann-and-roy-butler-hike-and-bike-trail-and-boardwalk-lady-bird-lake',alt:'Boardwalk photo from the City of Austin website'},
-];
-function StoryPhoto({image,label=''}:{image:string;label?:string}){
- const venue=venuePhotos.find(photo=>label.includes(photo.marker));const src=safeActivityImage(venue?.image||image);if(!src)return null;
- return <figure className="demo-story-photo"><Image src={src} alt={venue?.alt||'Illustrative scenery, not a photo of the selected venue'} width={360} height={180} unoptimized referrerPolicy="no-referrer"/><figcaption>{venue?<><a href={venue.source} target="_blank" rel="noopener noreferrer">Source photo</a> · current details unverified</>:'Illustrative photo · not the selected venue'}</figcaption></figure>;
 }

@@ -96,4 +96,3 @@ export function decisionParticipation(decision:Decision){
  const missing=decision.eligibleMemberIds.filter(id=>!ballots.some(b=>b.memberId===id));
  return {ballots,missing};
 }
-

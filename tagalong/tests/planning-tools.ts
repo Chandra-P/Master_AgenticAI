@@ -5,3 +5,5 @@ export async function openTool(page:Page,name:string){
  if(!(await tools.getAttribute('open'))&&!(await tools.evaluate(element=>element.hasAttribute('open'))))await tools.getByText('More planning tools',{exact:true}).click();
  await tools.getByRole('button',{name,exact:true}).click();
 }
+
+export async function openSection(page:Page,name:string){if(['Overview','Decisions','Chat','Itinerary'].includes(name))await page.getByRole('tab',{name,exact:true}).click();else await openTool(page,name);}

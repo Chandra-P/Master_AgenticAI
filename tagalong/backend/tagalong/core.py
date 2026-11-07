@@ -112,6 +112,7 @@ def update(s,a,pid,incoming,revision):
         if m not in proposed: fail(403,'Existing messages cannot be changed')
     for m in proposed:
         if m.get('id') not in old:
+            if 'simulation' in m: fail(403,'Simulation messages are server-controlled')
             if m.get('author')!=a.name or m.get('user_id')!=a.id or m.get('assistant') or m.get('sources'): fail(403,'Invalid message identity')
             if not isinstance(m.get('text'),str) or not m['text'].strip() or len(m['text'])>20000: fail(422,'Invalid message')
             source(s,pid,m['id'],'Chat: '+a.name,m['text'])

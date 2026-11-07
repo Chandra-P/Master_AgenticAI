@@ -2,7 +2,7 @@ import type {DecisionSnapshot} from './decisions';
 export type PlanKind = 'outing' | 'trip';
 export type Tab = 'Overview' | 'Decisions' | 'Chat' | 'Planning board' | 'Polls' | 'Discover' | 'Itinerary' | 'Documents' | 'Demo bookings' | 'Group fit';
 export interface Member { name: string; color: string; user_id?:string }
-export interface Message { id: string; author: string; text: string; time: string; assistant?: boolean; user_id?:string; sources?:{id:string;title:string;text:string}[] }
+export interface Message { simulation?:boolean; id: string; author: string; text: string; time: string; assistant?: boolean; user_id?:string; sources?:{id:string;title:string;text:string}[] }
 export interface Preference { label: string; confirmed: boolean }
 export interface Poll { id: string; question: string; options: string[]; votes: Record<string,number>; datePoll?: boolean }
 export interface Activity { id: string; title: string; time: string; category: string; location: string; image?: string;source_url?:string;map_url?:string;image_source_url?:string;day?:string }

@@ -12,19 +12,19 @@ import {GroupFit} from '../group-fit';
 import {ResearchResults} from './research-results';
 import './option-workbench.css';
 
-export function OptionWorkbench({plan,decisionId,initialMode='manual',onDone}:{plan:Plan;decisionId?:string;initialMode?:'manual'|'research';onDone:()=>void}){
+export function OptionWorkbench({plan,decisionId,initialMode='manual',onDone,initialOption}:{plan:Plan;decisionId?:string;initialMode?:'manual'|'research';onDone:()=>void;initialOption?:ResearchOption}){
  const {mode,user,workspaceRole}=usePlanning();
- return <Workbench key={[plan.id,mode,user?.id,workspaceRole].join('|')} plan={plan} decisionId={decisionId} initialMode={initialMode} onDone={onDone}/>;
+ return <Workbench key={[plan.id,mode,user?.id,workspaceRole].join('|')} plan={plan} decisionId={decisionId} initialMode={initialMode} onDone={onDone} initialOption={initialOption}/>;
 }
-function Workbench({plan,decisionId,initialMode,onDone}:{plan:Plan;decisionId?:string;initialMode:'manual'|'research';onDone:()=>void}){
+function Workbench({plan,decisionId,initialMode,onDone,initialOption}:{plan:Plan;decisionId?:string;initialMode:'manual'|'research';onDone:()=>void;initialOption?:ResearchOption}){
  const {mode,user,config,workspaceRole,notify}=usePlanning();
  const {snapshot,run,pending,loading,error:decisionError}=useDecisionSnapshot(plan);
  const [target,setTarget]=useState(decisionId||'');
  const current=snapshot?.decisions.find(d=>d.id===(target||snapshot.decisions[0]?.id));
- const [view,setView]=useState(initialMode),[name,setName]=useState(''),[url,setUrl]=useState(''),[cost,setCost]=useState(''),[notes,setNotes]=useState('');
+ const [view,setView]=useState(initialMode),[name,setName]=useState(initialOption?.name||''),[url,setUrl]=useState(initialOption?.url||''),[cost,setCost]=useState(initialOption?.estimated_cost_per_person?.toString()||''),[notes,setNotes]=useState(initialOption?.details||'');
  const [query,setQuery]=useState(''),[location,setLocation]=useState(/to decide|somewhere/i.test(plan.location)?'':plan.location);
  const [result,setResult]=useState<{key:string;data:ResearchResult}|null>(null),[searchKey,setSearching]=useState<string|null>(null),[error,setError]=useState('');
- const [selected,setSelected]=useState<ResearchOption|null>(null),[fit,setFit]=useState<ResearchOption|null>(null);
+ const [selected,setSelected]=useState<ResearchOption|null>(initialOption||null),[fit,setFit]=useState<ResearchOption|null>(null);
  const controller=useRef<AbortController|null>(null),sequence=useRef(0),active=useRef(true),busyRef=useRef(false);
  const identity=[plan.id,plan.revision,mode,user?.id,workspaceRole,query,location,current?.category,current?.id,current?.version].join('|');
  const searching=searchKey===identity;
@@ -93,4 +93,3 @@ export function DecisionOptionActions({planId,decisionId,owner}:{planId:string;d
  if(!plan)return null;
  return <>{owner&&<FindOptionsButton plan={plan} decisionId={decisionId} label="Add option" manual/>}<FindOptionsButton plan={plan} decisionId={decisionId}/></>;
 }
-

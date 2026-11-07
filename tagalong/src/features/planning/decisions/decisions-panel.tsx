@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 import type {Plan,Tab} from '@/services/types';
 import {demoMemberId} from '@/services/demo-decisions';
+import {DemoDecisions} from '../demo-story/demo-decisions';
 import {Button} from '@/components/ui/button';
 import {Dialog} from '@/components/ui/dialog';
 import {usePlanning} from '../store';
@@ -10,6 +11,10 @@ import {ConsensusMeter} from './consensus-meter';
 import {DecisionCard} from './decision-card';
 import {DecisionNarrative} from './decision-narrative';
 export function DecisionsPanel({plan,onTab}:{plan:Plan;onTab:(tab:Tab)=>void}){
+ if(plan.demo_template==='austin-four-friends')return <><DemoDecisions plan={plan}/><details className="demo-real-controls"><summary>Real-member decisions for this demo plan</summary><LiveDecisionsPanel plan={plan} onTab={onTab}/></details></>;
+ return <LiveDecisionsPanel plan={plan} onTab={onTab}/>;
+}
+function LiveDecisionsPanel({plan,onTab}:{plan:Plan;onTab:(tab:Tab)=>void}){
  const {mode,user,workspaceRole}=usePlanning();const {snapshot,refreshing,loading,error,pending,run,reload,loadComments,summarize}=useDecisionSnapshot(plan);
  const [add,setAdd]=useState(false),[drawer,setDrawer]=useState(false),[review,setReview]=useState(false),[reviewedRevision,setReviewedRevision]=useState<number|null>(null),[title,setTitle]=useState(''),[category,setCategory]=useState('other'),[options,setOptions]=useState(''),[required,setRequired]=useState(true),[notice,setNotice]=useState('');
  const finalizationKey=useRef(crypto.randomUUID());

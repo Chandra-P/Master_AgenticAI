@@ -6,6 +6,14 @@ test('an account saves and reopens the four-friend fictional story with sources 
  await page.goto('/');await page.getByRole('button',{name:'Add four-friends demo plan',exact:true}).click();await expect(page.getByRole('heading',{name:'DEMO · Four friends, one Austin weekend.',exact:true})).toBeVisible();
  const url=page.url(),base='/api/backend/v1/plans/'+new URL(url).pathname.split('/').pop();
  const plan=await(await page.request.get(base,{headers:{Authorization:'Bearer test-alice'}})).json();expect(plan.members).toHaveLength(1);expect(plan.itinerary).toHaveLength(7);
+ expect(plan.messages.filter((message:{simulation?:boolean})=>message.simulation)).toHaveLength(40);
+ await page.getByRole('tab',{name:'Chat',exact:true}).click();
+ await expect(page.getByText('Four friends planning together',{exact:true})).toBeVisible();
+ await expect(page.locator('.chat-messages').getByText('Fictional friend',{exact:true})).toHaveCount(plan.messages.filter((message:{simulation?:boolean;assistant?:boolean})=>message.simulation&&!message.assistant).length);
+ for(const name of ['Alex','Maya','Sam','Jordan'])await expect(page.locator('.chat-messages .message-byline > strong').filter({hasText:name}).first()).toBeVisible();
+ await page.getByRole('button',{name:'See their options and votes',exact:true}).click();
+ const choices=page.getByRole('region',{name:'Four friends’ planning decisions'});await expect(choices.getByRole('article')).toHaveCount(5);await expect(choices.getByText('First responses · disagreement remains',{exact:true})).toHaveCount(5);await expect(choices.getByText('Final responses · fictional agreement',{exact:true})).toHaveCount(5);
+ await page.screenshot({path:test.info().outputPath('friends-options-and-votes.png')});
  expect((await page.request.get(base+'/demo-story',{headers:{Authorization:'Bearer test-bob'}})).status()).toBe(404);
  await page.getByRole('button',{name:'View demo story',exact:true}).click();const dialog=page.getByRole('dialog');await expect(dialog.getByText(/Alex, Maya, Sam and Jordan are fictional adults/)).toBeVisible();await expect(dialog.locator('[aria-label="Fictional story cast"]').getByText('Fictional friend',{exact:true})).toHaveCount(4);
  for(let index=0;index<6;index++)await dialog.getByRole('button',{name:'Next step',exact:true}).click();await expect(dialog.getByText('Step 7 of 7',{exact:true})).toBeVisible();await expect(dialog.getByRole('region',{name:'Final fictional itinerary'}).getByRole('heading',{name:'The story’s final day-by-day itinerary',exact:true})).toBeVisible();

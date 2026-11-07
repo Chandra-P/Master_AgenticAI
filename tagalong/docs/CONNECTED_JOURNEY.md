@@ -27,6 +27,8 @@ See [deployment instructions](DEPLOYMENT.md) and [multi-user test scope](MEMBER_
 
 ## Saved four-friend walkthrough
 
+The saved plan now opens a forty-turn scripted conversation in **Chat**, with Alex, Maya, Sam and Jordan labeled as fictional friends. **Decisions** displays five choice cards directly, including alternatives, initial objections, the scripted AI resolution, four final responses, evidence and photos. **Itinerary** shows the agreed fictional choices and the day-by-day schedule. The modal replay is supplementary; the story is visible in the ordinary plan sections.
+
 The authenticated Home action **Add four-friends demo plan** creates or reopens one saved fictional Austin-weekend template for the account. **View demo story** replays initiation, constraints, disagreements, sourced reasoning, alternative comparisons, four fictional responses per choice and a three-day itinerary. Destination, dates, lodging, restaurant and activity selections have explicit reasons and reference links. Source-linked photos are distinguished from illustrative scenery, and all modeled costs are labeled fictional.
 
 Fictional cast and story votes never become real account memberships, ballots or bookings. Real invited members can view the story under normal plan authorization. The owner still needs real responses to finalize the actual plan. The replay is clearly scripted; **Run live RAG and AI check** makes a separate normal assistant request and saves its actual answer and citations. That button uses configured providers and their quota; it does not run automatically.
@@ -34,6 +36,16 @@ Fictional cast and story votes never become real account memberships, ballots or
 The owner-requested demo was saved to the existing Chandra account on 6 November 2026. Only its three fictional documents were explicitly indexed for the live check. The actual Pinecone query returned three source matches, and the actual AI response was persisted with three citations. No synthetic account, real booking, outbound invitation or charge was created; normal configured AI/embedding usage applies.
 
 ## Code organization
+
+### Guided city ideas
+
+After **Start Planning**, review the destination and working dates, then choose interests in **What would your group enjoy?** and click **Suggest things to do**. Individual place cards and dated event cards include provider links, source-supported photos when available, evidence and actual search statuses. Select up to eight ideas before creating the reviewed plan. They become explicitly draft itinerary items and an unverified evidence Note, retaining retrieval timestamps and source excerpts.
+
+Existing plans expose the same guide beside **Chat**, with editable city and visit dates. **Propose for group decision** opens the normal option review: owners add voting alternatives and members suggest them through contextual comments. No search result casts votes, confirms consensus or books anything.
+
+`backend/tagalong/city_ideas.py` separates event extraction, validation and bounded search. `/v1/city-ideas` requires authentication and applies rate/concurrency limits. Event names and source dates must occur on a retrieved organizer page and agree with the requested date range. Unknown events and unavailable tools produce explicit empty/unavailable results. This is not live ticket availability; verify details directly. Provider snippets are untrusted evidence. Selected result identities use URL and event date so later searches cannot collide.
+
+A separate live provider smoke check for Austin, April 16–18, 2027 with Food/Music/Outdoors returned five place options and zero verified dated events. Both lookups completed. This verifies provider connectivity, not comprehensive event coverage or future availability.
 
 The Week 2 reference (`Mastering-Agentic-AI-Week2-Session1/Week2-Session1/company_kb_viewer.py`) separates named retrieval/generation stages from rendering. Tagalong follows that separation while retaining its existing application framework:
 

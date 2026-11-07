@@ -6,7 +6,7 @@
 
 **Architecture:** Preserve Next.js/FastAPI, existing theme, versioned decisions, authorization and JSON persistence. Four main tabs (Overview, Decisions, Chat, Itinerary) host contextual tools. A read-only research endpoint retrieves authorized current evidence and bounded external place results with factual execution receipts. Structured decision options retain website, estimates and notes; confirmed outcomes are shown in final itinerary review without pretending a booking.
 
-**Approved scope:** User approved visible RAG/search, simplified navigation and connected lodging/other-option workflows, then instructed implementation across the journey. This document records that approved design; no new dependencies, migrations, paid calls or production-data edits are needed for development.
+**Approved scope:** User approved visible RAG/search, simplified navigation and connected lodging/other-option workflows, then instructed implementation across the journey. Later instructions add a saved four-friend demonstration and interest-led city/event suggestions. Local verification uses synthetic fixtures; separately authorized live checks use configured providers and the explicitly requested account demo. No new dependency or migration is needed.
 
 **Alternatives:** Merely exposing traces leaves disconnected tools; replacing the existing app loses working collaboration. Extend the existing flows and keep legacy URLs accessible through contextual panels.
 
@@ -20,9 +20,9 @@
 - Legacy tool links remain usable without becoming additional primary tabs.
 
 ## Tasks
-- [ ] Backend research: add bounded authorized retrieval/search endpoint and structured option details to versioned decisions; tests for source validity, partial failures, stale reads, ownership and legacy strings.
-- [ ] Navigation: four main tabs, contextual notes/research/legacy polls/demo bookings; Overview directs users to specific working actions.
-- [ ] Options: accessible per-decision add/search/compare flow with name, link, estimate, notes; sources and retrieval/tool receipts visible; explicit save and version-safe update.
-- [ ] Itinerary: show current confirmed outcomes and booking/verification next steps, not just manually added activities.
-- [ ] Browser regressions: lodging manual/search option, source inspection, vote/comment/finalize and mobile navigation; adapt legacy tests to contextual tools.
-- [ ] Verification: lint/types/build, backend/frontend/shared suites, independent review; document scope and evidence. Push/deployment follows established authorized release process only after checks pass.
+- [x] Backend research: add bounded authorized retrieval/search endpoint and structured option details to versioned decisions; tests for source validity, partial failures, stale reads, ownership and legacy strings.
+- [x] Navigation: four main tabs, contextual notes/research/legacy polls/demo bookings; Overview directs users to specific working actions.
+- [x] Options: accessible per-decision add/search/compare flow with name, link, estimate, notes; sources and retrieval/tool receipts visible; explicit save and version-safe update.
+- [x] Itinerary: show current confirmed outcomes and booking/verification next steps, not just manually added activities.
+- [x] Browser regressions: lodging manual/search option, source inspection, vote/comment/finalize and mobile navigation; adapt legacy tests to contextual tools.
+- [x] Verification: lint/types/build, backend/frontend/shared suites, independent review; document scope and evidence. Push/deployment follows established authorized release process only after checks pass.

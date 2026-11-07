@@ -1,3 +1,4 @@
+import {openSection} from './planning-tools';
 import {test,expect} from '@playwright/test';
 import {inspectVisual} from './ui-refresh.helpers';
 
@@ -17,7 +18,7 @@ test('every demo route, tool and responsive state has readable type and contrast
   }
   await page.goto('/plans/coastal-weekend');
   for(const name of ['Decisions','Chat','Planning board','Polls','Discover','Itinerary','Documents','Demo bookings','Group fit']){
-   await page.getByRole('tab',{name,exact:name!=='Polls'}).click();
+   await openSection(page,name);
    await inspectVisual(page,info,`${width}-tool-${name.replaceAll(' ','-')}`);
   }
   await page.goto('/discover');await page.getByLabel('Search ideas').fill('no matching idea');
@@ -48,7 +49,7 @@ test('dialogs, comments, forms and mobile navigation fit the visual system',asyn
   await page.getByRole('button',{name:'Review final plan',exact:true}).last().click();await inspectVisual(page,info,`${width}-review-final`);await page.keyboard.press('Escape');
   if(width<=1300){await page.getByRole('button',{name:'Planning assistant',exact:true}).click();await inspectVisual(page,info,`${width}-planning-assistant`);await page.keyboard.press('Escape');}
   for(const [tab,button] of [['Planning board','Edit details'],['Polls','Create poll'],['Itinerary','Add activity']]){
-   await page.getByRole('tab',{name:tab}).click();await page.getByRole('button',{name:button,exact:true}).click();await inspectVisual(page,info,`${width}-${button.replaceAll(' ','-')}`);await page.keyboard.press('Escape');
+   await openSection(page,tab);await page.getByRole('button',{name:button,exact:true}).click();await inspectVisual(page,info,`${width}-${button.replaceAll(' ','-')}`);await page.keyboard.press('Escape');
   }
   await page.getByRole('button',{name:'Invite',exact:true}).click();await inspectVisual(page,info,`${width}-participants`);await page.keyboard.press('Escape');
   if(width===390){await page.getByRole('button',{name:'Open menu',exact:true}).click();await inspectVisual(page,info,'390-navigation');await page.keyboard.press('Escape');}

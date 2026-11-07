@@ -1,0 +1,19 @@
+import {test,expect} from '@playwright/test';
+
+test('interests lead to sourced places and dated events saved as reviewed draft ideas',async({page})=>{
+ await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-alice',refresh_token:'refresh-alice',token_type:'bearer',expires_in:3600,user:{id:'alice',email:'alice@example.test',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:'2026-01-01T00:00:00Z'}}}));
+ await page.goto('/account');await page.getByLabel('Email address',{exact:true}).fill('alice@example.test');await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();
+ await page.goto('/');await page.getByLabel('Describe your plan').fill('Four friends want food and music in Austin');await page.getByRole('button',{name:'Start Planning',exact:true}).click();
+ const draft=page.getByRole('region',{name:'Review AI plan draft'});await expect(draft).toBeVisible();await draft.getByLabel('Working start date',{exact:true}).fill('2027-05-14');await draft.getByLabel('Working end date',{exact:true}).fill('2027-05-16');
+ await expect(draft.getByRole('button',{name:'Suggest things to do',exact:true})).toBeDisabled();await draft.getByRole('button',{name:'Music',exact:true}).click();await draft.getByRole('button',{name:'Suggest things to do',exact:true}).click();
+ const venue=draft.getByRole('article',{name:'Synthetic vegetarian restaurant suggestion'}),event=draft.getByRole('article',{name:'Synthetic Music Night suggestion'});
+ await expect(venue).toBeVisible();await expect(event).toBeVisible();await expect(event.getByText('Event idea · 2027-05-15',{exact:true})).toBeVisible();await expect(event.getByRole('link',{name:'Explore Synthetic Music Night'})).toHaveAttribute('href','https://events.example.test/music-night');
+ await venue.getByRole('button',{name:'Add to draft ideas',exact:true}).click();await event.getByRole('button',{name:'Add to draft ideas',exact:true}).click();await draft.getByRole('button',{name:'Create reviewed plan',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Austin weekend draft.',exact:true})).toBeVisible();
+ const id=new URL(page.url()).pathname.split('/').pop();const plan=await(await page.request.get('/api/backend/v1/plans/'+id,{headers:{Authorization:'Bearer test-alice'}})).json();
+ expect(plan.itinerary.some((item:{title:string;source_url?:string})=>item.title==='Synthetic Music Night'&&item.source_url==='https://events.example.test/music-night')).toBeTruthy();
+ await page.getByRole('tab',{name:'Chat',exact:true}).click();const guide=page.getByRole('complementary',{name:'AI city planning guide'});await guide.getByRole('button',{name:'Music',exact:true}).click();await guide.getByRole('button',{name:'Suggest things to do',exact:true}).click();await guide.getByRole('article',{name:'Synthetic Music Night suggestion'}).getByRole('button',{name:'Propose for group decision',exact:true}).click();
+ const dialog=page.getByRole('dialog');await expect(dialog.getByLabel('Option name',{exact:true})).toHaveValue('Synthetic Music Night');await expect(dialog.getByLabel('Website link',{exact:true})).toHaveValue('https://events.example.test/music-night');
+ await dialog.getByRole('button',{name:'Add to decision',exact:true}).click();await expect(dialog).not.toBeVisible();await page.getByRole('tab',{name:'Decisions',exact:true}).click();await expect(page.getByRole('radio',{name:/^Synthetic Music Night 0 support/})).toBeVisible();
+ await page.reload();await expect(page.getByRole('radio',{name:/^Synthetic Music Night 0 support/})).toBeVisible();await page.screenshot({path:test.info().outputPath('city-event-decision.png')});
+});

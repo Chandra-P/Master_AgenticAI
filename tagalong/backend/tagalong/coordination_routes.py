@@ -98,7 +98,17 @@ def install_coordination(app,repo,actor,ai):
             p['messages']=[{'id':uid(),'author':a.name,'user_id':a.id,'text':'Planning idea: '+item.get('prompt',b.title),'time':now()}]
             p['tasks']=[{'label':x,'done':False} for x in d.suggested_tasks]
             p['itinerary']=[{'id':uid(),**activity.model_dump()} for activity in d.suggested_itinerary]
+            for suggestion in b.reviewed_suggestions:
+                activity={'id':uid(),'title':suggestion.title,'time':'Draft - time to agree','category':suggestion.category,'location':b.location,'source_url':suggestion.url}
+                if suggestion.day:activity['day']=suggestion.day
+                if suggestion.image:activity.update(image=suggestion.image,image_source_url=suggestion.url)
+                p['itinerary'].append(activity)
             saved=update(s,a,p['id'],p,p['revision']);item['created_plan_id']=p['id']
+            if b.reviewed_suggestions:
+                from .core import source
+                text='Explicitly reviewed draft ideas. Public sources remain unverified; confirm event dates, hours and availability. These are not bookings.\n'
+                text+='\n'.join(suggestion.title+(' ('+suggestion.day+')' if suggestion.day else '')+' — '+suggestion.url+('\nUnverified evidence retrieved '+suggestion.provenance.retrievedAt+': '+suggestion.provenance.excerpt if suggestion.provenance else '') for suggestion in b.reviewed_suggestions)
+                source(s,p['id'],uid(),'Reviewed city ideas — unverified sources',text,kind='document')
             return saved
         return repo.transact(save)
 

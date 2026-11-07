@@ -39,7 +39,7 @@ Run the backend pytest suite using the project's virtual environment. See DEPLOY
 
 These tests verify browser behavior, API validation and permissions against the local fixture. They do not verify real Supabase email delivery, production PostgreSQL behavior, provider availability or paid AI quality. Public deployment health checks are separate from authenticated end-to-end testing.
 
-## Results — 6 November 2026
+## Previous release results — 6 November 2026
 
 - Backend: 210 passed, one dedicated live SQL/RLS test skipped because no disposable test database was supplied.
 - Frontend: 144 passed across desktop and mobile. After the Home group-selection correction, all 36 affected Home, Groups and authentication cases also passed.
@@ -49,3 +49,13 @@ These tests verify browser behavior, API validation and permissions against the 
 - Independent review identified the asynchronous account-switch race and Home group fallback; both were fixed and regression-tested. No remaining important findings were reported for those corrections.
 
 The teammate Discover and shared Groups histories are retained in the combined branch. No production account, plan or booking was changed for these tests.
+
+## Connected journey, guided ideas and four-friend demo verification
+
+The new browser cases cover city interests, source-linked places, dated official-event fixtures, selected draft ideas surviving plan creation, and the handoff into a decision option. Saved-demo tests verify forty scripted Chat turns, four fictional authors, five decision cards with first/final vote rounds, source links and a separate provider-backed assistant action. Desktop and mobile both run these cases.
+
+The full frontend run passed 162 cases; four redundant mobile visual runs are skipped because the desktop visual tests explicitly cover desktop, tablet and phone widths. Backend tests passed 252 cases with one disposable-database integration case skipped. Build, lint and explicit TypeScript checking passed. Independent review found selection-identity collisions and dropped provenance; both were corrected with regression coverage.
+
+The complete shared-workspace run passed 52 cases, with four redundant mobile visual cases skipped. The three-member invitation → contextual comments → objection resolution → current-version voting → owner confirmation → finalization → reload journey passed on both desktop and mobile. Tests also retain the teammate Discover/Groups features and cover account isolation, owner transfer, private evidence, fake MCP bookings and admin/member separation.
+
+Public provider quality and organizer inventory are not established by synthetic place/event fixtures. The separately authorized saved account demo uses actual configured Pinecone/OpenAI calls for its recorded live check; scripted dialogue and votes remain visibly distinct from that proof.

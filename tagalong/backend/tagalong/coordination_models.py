@@ -1,6 +1,7 @@
 from typing import Literal
 from pydantic import BaseModel,ConfigDict,Field,field_validator,model_validator
 from .models import GroupSelection, DateFields,iso_date
+from .decisions import OptionProvenance
 
 
 class Structured(BaseModel):
@@ -81,7 +82,37 @@ class Generate(Structured):
     def valid(cls,value):return iso_date(value)
 
 
+class ReviewedSuggestion(Structured):
+    title:str=Field(min_length=1,max_length=200,pattern=r'\S')
+    url:str=Field(min_length=1,max_length=2048)
+    image:str|None=Field(default=None,max_length=2048)
+    day:str|None=None
+    category:Literal['Place idea','Event idea']
+    provenance:OptionProvenance|None=None
+    @model_validator(mode='after')
+    def matching_provenance(self):
+        if self.provenance and self.provenance.url!=self.url:raise ValueError('Provenance must match the suggestion website')
+        return self
+    @field_validator('url','image')
+    @classmethod
+    def public_urls(cls,value,info):
+        from .places import safe_source_url
+        if value is None:return None
+        clean=safe_source_url(value)
+        if not clean or (info.field_name=='image' and not clean.startswith('https://')):raise ValueError('Use public source URLs and HTTPS images')
+        return clean
+    @field_validator('day')
+    @classmethod
+    def day_valid(cls,value):return iso_date(value) if value is not None else None
+
+
 class AcceptDraft(DateFields, GroupSelection):
+    reviewed_suggestions:list[ReviewedSuggestion]=Field(default_factory=list,max_length=8)
+    @model_validator(mode='after')
+    def suggestion_days(self):
+        if any(item.day and not self.start<=item.day<=self.end for item in self.reviewed_suggestions):raise ValueError('Suggestion date must be within plan dates')
+        if any(item.category=='Event idea' and not item.day for item in self.reviewed_suggestions):raise ValueError('Event ideas need a reviewed date')
+        return self
     draft_id:str=Field(min_length=1,max_length=100)
     title:str=Field(min_length=1,max_length=200)
     kind:Literal['outing','trip']
