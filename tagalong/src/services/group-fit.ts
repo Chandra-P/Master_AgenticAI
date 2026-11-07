@@ -8,9 +8,10 @@ export interface GroupFitResult {
  matches:GroupFitReason[];
  conflicts:GroupFitReason[];
  unknowns:string[];
- sources:{id:string;title:string;text:string}[];
+ sources:{id:string;title:string;text:string;retrieval_origin?:string}[];
  retrieval_status:'available'|'unavailable';
  context_truncated:boolean;
+ index_freshness?:{status:'current'|'pending'|'failed';current_sources:number;indexed_sources:number;pending_sources:number;failed_sources:number};
 }
 
 export class GroupFitService {

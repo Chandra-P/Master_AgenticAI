@@ -10,6 +10,7 @@ from fastapi import Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from .core import access, fail
 from .notes_context import notes_context
+from .retrieval_status import indexing_status
 
 
 class Option(BaseModel):
@@ -71,10 +72,11 @@ def fit_evidence(s,pid,query,hits,option):
         (facts['polls'] if facts['polls'] else facts['confirmed_preferences']).pop()
         facts_truncated=True
     option_text=('Name: '+option['name']+'\nEstimated cost per person (user-provided): '+str(option.get('estimated_cost_per_person','not supplied'))+'\nWebsite (user-provided, not fetched): '+option.get('url','not supplied')+'\nDetails (user-provided, unverified): '+option['details'])
-    evidence=[{'id':'plan-facts','title':'Current plan facts','text':json.dumps(facts,ensure_ascii=False)},
-              {'id':'option-details','title':'Proposed option — user-provided, unverified','text':option_text}]
+    evidence=[{'id':'plan-facts','title':'Current plan facts','text':json.dumps(facts,ensure_ascii=False),'retrieval_origin':'postgres'},
+              {'id':'option-details','title':'Proposed option — user-provided, unverified','text':option_text,'retrieval_origin':'user_input'}]
     docs=[x for x in s['sources'].values() if x['plan_id']==pid and not x['deleted'] and x.get('kind')=='document']
     notes,status=notes_context(docs,query)
+    for item in notes:item['retrieval_origin']='saved_note'
     history=[]
     for hit in hits[:12]:
         if not isinstance(hit,dict) or not isinstance(hit.get('id'),str): continue
@@ -83,7 +85,7 @@ def fit_evidence(s,pid,query,hits,option):
         if any(x['id']==src['id'] for x in history):continue
         chunk=hit.get('chunk',0)
         if type(chunk) is not int or chunk<0:continue
-        item=copy.deepcopy(src);item['text']=src['text'][chunk*6000:chunk*6000+3000]
+        item=copy.deepcopy(src);item['text']=src['text'][chunk*6000:(chunk+1)*6000];item['retrieval_origin']='pinecone'
         if not item['text']:continue
         item['excerpt_truncated']=len(item['text'])<len(src['text'])
         history.append(item)
@@ -93,11 +95,12 @@ def fit_evidence(s,pid,query,hits,option):
         src=s['sources'].get(pid+':'+message['id'])
         if src and not src['deleted'] and src['plan_id']==pid:
             item=copy.deepcopy(src);item['text']=item['text'][:1500]
+            item['retrieval_origin']='recent_message'
             item['excerpt_truncated']=len(item['text'])<len(src['text'])
             recent.append(item)
     decision_sources=[copy.deepcopy(src) for src in s['sources'].values() if src['plan_id']==pid and not src['deleted'] and src.get('kind') in ('decision','decision_comment')]
     for item in decision_sources[-2:]:
-        item['text']=item['text'][:3000];item['excerpt_truncated']=len(item['text'])<len(s['sources'][pid+':'+item['id']]['text']);recent.append(item)
+        item['text']=item['text'][:3000];item['retrieval_origin']='current_decision';item['excerpt_truncated']=len(item['text'])<len(s['sources'][pid+':'+item['id']]['text']);recent.append(item)
     selected=[]
     # Preserve semantic history while also including fresh, not-yet-indexed chat.
     for item in history[:2]+recent[-2:]+notes+history[2:]:
@@ -139,8 +142,8 @@ def install_group_fit(app,repo,actor,ai):
             def snapshot(s):
                 guard(s)
                 document_versions={x['id']:x['version'] for x in s['sources'].values() if x['plan_id']==pid and not x['deleted'] and x.get('kind')=='document'}
-                return (*fit_evidence(s,pid,query,hits,option),document_versions)
-            evidence,truncated,has_evidence,facts,document_versions=repo.transact(snapshot)
+                return (*fit_evidence(s,pid,query,hits,option),document_versions,indexing_status(s,pid))
+            evidence,truncated,has_evidence,facts,document_versions,index_freshness=repo.transact(snapshot)
             try:
                 output=FitOutput.model_validate(ai.assess_group_fit(option,evidence)).model_dump()
                 ids={x['id'] for x in evidence}
@@ -174,8 +177,8 @@ def install_group_fit(app,repo,actor,ai):
             elif unknowns or not output['matches'] or output['verdict']=='conflicts':
                 if output['verdict']=='conflicts' and not unknowns:unknown('Clarify the concern before deciding; no supported conflict was provided.')
                 output['verdict']='needs_info';output['summary']='More information is needed before confirming this option fits the group. Review the findings and open questions below.'
-            output['sources']=[{key:x[key] for key in ('id','title','text')} for x in evidence]
+            output['sources']=[{key:x[key] for key in ('id','title','text','retrieval_origin') if key in x} for x in evidence]
             output['matches']=output['matches'][:8];output['conflicts']=output['conflicts'][:8];output['unknowns']=unknowns[:8]
-            output['retrieval_status']=retrieval;output['context_truncated']=truncated
+            output['retrieval_status']=retrieval;output['context_truncated']=truncated;output['index_freshness']=index_freshness
             return output
         finally:slots.release()

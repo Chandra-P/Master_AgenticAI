@@ -85,6 +85,7 @@ function GroupFitForm({plan,initialOption}:{plan:Plan;initialOption?:GroupFitOpt
     <h3>{result.verdict==='fits'?'Fits the recorded constraints':result.verdict==='conflicts'?'Conflicts with the group':'More information needed'}</h3>
     <p>{result.summary}</p>
     {result.retrieval_status==='unavailable'&&<p className="group-fit-notice">Historical retrieval was unavailable. This check uses the current plan facts and any available saved Notes; it may miss earlier discussion.</p>}
+    {result.index_freshness&&result.index_freshness.status!=='current'&&<p className="group-fit-notice" role="status">{result.index_freshness.status==='pending'?'Some saved sources are waiting to be indexed.':'Some saved sources could not be indexed.'} Current Notes and plan facts are included; older discussion may be missing ({result.index_freshness.indexed_sources} of {result.index_freshness.current_sources} current sources indexed).</p>}
     {result.context_truncated&&<p className="group-fit-notice">Only selected evidence excerpts were considered. Review the original sources for full context.</p>}
     {result.matches.length>0&&<section><h4>What fits</h4>{reasons(result.matches)}</section>}
     {result.conflicts.length>0&&<section><h4>What conflicts</h4>{reasons(result.conflicts)}</section>}
@@ -92,7 +93,7 @@ function GroupFitForm({plan,initialOption}:{plan:Plan;initialOption?:GroupFitOpt
     <section className="group-fit-sources"><h4>Sources used</h4><p>Current plan facts are authoritative. Menus, messages, and option details are evidence to review, not guarantees about a venue.</p>
      {result.sources.length===0&&<p>No supporting source excerpts were returned. Add a Note or more option details and check again.</p>}
      {result.sources.map((source,index)=><article id={sourcePrefix+'-'+index} key={source.id}>
-      <button type="button" aria-expanded={expanded===source.id} aria-controls={sourcePrefix+'-text-'+index} onClick={()=>setExpanded(expanded===source.id?null:source.id)}>Source: {source.title}</button>
+      <button type="button" aria-expanded={expanded===source.id} aria-controls={sourcePrefix+'-text-'+index} onClick={()=>setExpanded(expanded===source.id?null:source.id)}>Source: {source.title}</button><small className="group-fit-source-origin">{originLabel(source.retrieval_origin)}</small>
       {expanded===source.id&&<p id={sourcePrefix+'-text-'+index}>{source.text}</p>}
      </article>)}
     </section>
@@ -101,3 +102,5 @@ function GroupFitForm({plan,initialOption}:{plan:Plan;initialOption?:GroupFitOpt
   </>}
  </section>;
 }
+
+function originLabel(origin:string|undefined){switch(origin){case 'pinecone':return 'retrieved from this plan’s Pinecone memory';case 'saved_note':return 'current saved Note';case 'recent_message':return 'recent conversation';case 'current_decision':return 'current decision or comment';case 'postgres':return 'current plan facts';case 'user_input':return 'option details you supplied';default:return 'saved plan evidence';}}

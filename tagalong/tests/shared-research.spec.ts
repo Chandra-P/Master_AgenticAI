@@ -11,7 +11,10 @@ test('saved notes and real tool receipts lead to a sourced decision option witho
  const place=page.getByRole('article').filter({has:page.getByRole('heading',{name:'Place',exact:true})}).first();await place.getByRole('button',{name:'Find options',exact:true}).click();
  const dialog=page.getByRole('dialog');await dialog.getByLabel('What are you looking for?',{exact:true}).fill('Vegetarian dinner in April');await dialog.getByLabel('Search location',{exact:true}).fill('Austin');await dialog.getByRole('button',{name:'Search with group context',exact:true}).click();
  await expect(dialog.getByRole('heading',{name:'What Tagalong actually used',exact:true})).toBeVisible();
- const evidence=dialog.getByRole('region',{name:'Remembered group context'});await evidence.getByText('Our dinner needs',{exact:true}).click();await expect(evidence.getByText(/We prefer vegetarian food/)).toBeVisible();
+ await expect(dialog.getByText('AI compared these options with your group',{exact:true})).toBeVisible();
+ const evidence=dialog.getByRole('region',{name:'Remembered group context'});await expect(evidence.getByRole('status')).toContainText('0 of 1 current sources are indexed');await evidence.locator('summary').filter({hasText:'Our dinner needs'}).click();await expect(evidence.getByText('Saved Note',{exact:true})).toBeVisible();await expect(evidence.getByText(/We prefer vegetarian food/)).toBeVisible();
+ await expect(dialog.getByText('Why it may fit',{exact:true})).toBeVisible();
+ await expect(dialog.getByRole('link',{name:'View evidence: Our dinner needs',exact:true})).toBeVisible();
  await expect(dialog.getByRole('link',{name:'Explore Synthetic vegetarian restaurant',exact:true})).toHaveAttribute('href','https://places.example.test/restaurant');
  await dialog.getByRole('button',{name:'Review and add option',exact:true}).click();await expect(dialog.getByLabel('Option name',{exact:true})).toHaveValue('Synthetic vegetarian restaurant');
  const base=new URL(page.url()).pathname.replace('/plans/','/api/backend/v1/plans/'),headers={Authorization:'Bearer test-alice'};
@@ -23,6 +26,14 @@ test('saved notes and real tool receipts lead to a sourced decision option witho
  await place.getByText('Source evidence for Synthetic vegetarian restaurant',{exact:true}).click();await expect(place.getByText(/Unverified source retrieved/)).toBeVisible();await expect(place.locator('.decision-option-details details').getByText('Synthetic public source snippet for browser verification.',{exact:true})).toBeVisible();
  await place.getByRole('button',{name:'Save response',exact:true}).click();await place.getByRole('button',{name:'Confirm selected option',exact:true}).click();await expect(place.getByText('Confirmed',{exact:true})).toBeVisible();
  await page.getByRole('tab',{name:'Itinerary',exact:true}).click();const outcomes=page.getByRole('region',{name:'Confirmed decision outcomes'});await expect(outcomes.getByRole('heading',{name:'Synthetic vegetarian restaurant',exact:true})).toBeVisible();await expect(outcomes.getByText('Not booked',{exact:true})).toBeVisible();
+});
+
+test('research keeps public options visible and labels a missing AI comparison',async({page})=>{
+ await fixtureLogin(page,'alice');const headers={Authorization:'Bearer test-alice'};
+ const response=await page.request.post('/api/backend/v1/plans',{headers,data:{title:'Research fallback '+crypto.randomUUID().slice(0,8),kind:'outing',start:'2027-04-16',end:'2027-04-16'}});expect(response.ok()).toBeTruthy();const plan=await response.json();
+ await page.route('**/research',route=>route.fulfill({json:{plan_id:plan.id,plan_revision:plan.revision,query:'Quiet dinner',sources:[{id:'plan-facts',title:'Current plan facts',text:'{}',retrieval_origin:'postgres'},{id:'external:1',title:'Quiet dinner listing',text:'Unverified public listing.',retrieval_origin:'public_search'}],options:[{id:'external:1',name:'Quiet dinner listing',details:'A public search result.',url:'https://example.com/dinner',source_ids:['external:1'],assessment:null}],steps:[{id:'assessment',label:'Compare options with group context',status:'unavailable',detail:'Public results remain available, but the evidence-based comparison could not be completed.'}],assessment_status:'unavailable',index_freshness:{status:'current',current_sources:0,indexed_sources:0,pending_sources:0,failed_sources:0},context_truncated:false}}));
+ await page.goto('/plans/'+plan.id);const place=page.getByRole('article').filter({has:page.getByRole('heading',{name:'Place',exact:true})}).first();await place.getByRole('button',{name:'Find options',exact:true}).click();const dialog=page.getByRole('dialog');await dialog.getByLabel('What are you looking for?',{exact:true}).fill('Quiet dinner');await dialog.getByLabel('Search location',{exact:true}).fill('Austin');await dialog.getByRole('button',{name:'Search with group context',exact:true}).click();
+ await expect(dialog.getByText('The AI comparison is unavailable right now. Public results are still shown, but they have not been checked against your group’s evidence.',{exact:true})).toBeVisible();await expect(dialog.getByRole('link',{name:'Explore Quiet dinner listing',exact:true})).toBeVisible();await expect(dialog.getByText('AI compared these options with your group',{exact:true})).toHaveCount(0);
 });
 
 async function fixtureLogin(page:Page,name:'alice'|'bob'){

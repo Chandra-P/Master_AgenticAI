@@ -13,10 +13,20 @@ def app_factory():
         return accounts[token]
     class BrowserAI(FakeAI):
         def retrieve(self,pid,query):
-            return repo.transact(lambda s:[{'id':x['id'],'version':x['version']} for x in s['sources'].values() if x['plan_id']==pid and not x['deleted']])
+            # Emulate vector retrieval only for sources whose current version
+            # has actually completed the test fixture's indexing job.
+            def hits(s):
+                indexed={(job.get('source_key'),job.get('version')) for job in s['jobs'].values() if job.get('status')=='done'}
+                return [{'id':x['id'],'version':x['version']} for x in s['sources'].values() if x['plan_id']==pid and not x['deleted'] and (pid+':'+x['id'],x['version']) in indexed]
+            return repo.transact(hits)
         def assess_group_fit(self,option,evidence):
             note=next((x for x in evidence if '_source_id' in x),None)
             return {'verdict':'needs_info','summary':'Review the saved group constraints and verify the proposed venue details.','matches':[{'text':'The option can be compared with the saved group notes.','source_ids':[note['id']]}] if note else [],'conflicts':[],'unknowns':['Confirm current menu details directly with the venue.']}
+        def assess_research_options(self,options,evidence,facts):
+            notes=[item for item in evidence if item['id'].startswith('saved:')]
+            if not notes:
+                return [{'option_id':option['id'],'verdict':'needs_info','summary':'Add a group preference to personalize this comparison.','matches':[],'conflicts':[],'unknowns':['No saved group preference was retrieved.']} for option in options]
+            return [{'option_id':option['id'],'verdict':'fits','summary':'This option matches a saved group preference for vegetarian food.','matches':[{'text':'The group note records vegetarian food as a preference.','source_ids':[notes[0]['id'],option['source_ids'][0]]}],'conflicts':[],'unknowns':['Confirm current menu and allergen details directly with the restaurant.']} for option in options]
         def generate_plan(self,prompt,today):
             return {'title':'Austin weekend draft','type':'trip','location':'Austin','start':None,'end':None,'participant_count':4,'suggested_tasks':['Confirm attendees','Choose lodging'],'suggested_itinerary':[{'title':'Draft neighborhood walk','time':'Afternoon','category':'Draft idea','location':'Austin — route to decide'}],'suggested_budget':{'amount':350,'basis':'per_person','currency':'USD','notes':'From the test request, not a price quote'},'open_questions':['Confirm travel dates']}
         def coordinate(self,context):

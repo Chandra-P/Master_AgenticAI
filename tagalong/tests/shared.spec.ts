@@ -126,6 +126,8 @@ test('group fit cites saved preferences and current budget without changing the 
  await page.getByLabel('Estimated cost per person',{exact:true}).fill('75');
  await page.getByRole('button',{name:'Check group fit',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Conflicts with the group',exact:true})).toBeVisible();
+ await expect(page.locator('.group-fit-source-origin').filter({hasText:'current saved Note'})).toBeVisible();
+ await expect(page.locator('.group-fit-source-origin').filter({hasText:'current plan facts'})).toBeVisible();
  await page.getByRole('button',{name:'Source: Group dinner preferences',exact:true}).click();
  await expect(page.getByText('Synthetic group preference: vegetarian dinner and a step-free entrance.',{exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Source: Current plan facts',exact:true}).click();

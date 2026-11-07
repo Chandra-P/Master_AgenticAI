@@ -36,6 +36,11 @@ def test_fit_forces_retrieval_includes_current_notes_and_does_not_write():
     r=check(c,h,p);assert r.status_code==200,r.text
     assert r.json()['sources'][0]['id']=='plan-facts'
     assert 'saved:menu' in {x['id'] for x in r.json()['sources']}
+    sources={x['id']:x for x in r.json()['sources']}
+    assert sources['plan-facts']['retrieval_origin']=='postgres'
+    assert sources['saved:menu']['retrieval_origin']=='saved_note'
+    assert sources['option-details']['retrieval_origin']=='user_input'
+    assert r.json()['index_freshness']['status']=='pending'
     assert ai.calls[0][0]=='retrieve'
     assert repo.state==before
 
@@ -82,8 +87,21 @@ def test_verified_history_is_retrieved_without_history_keyword():
     repo,ai,c,h,p=setup()
     repo.transact(lambda s:source(s,p['id'],'chat','Chat evidence','We prefer quiet places.'))
     ai.hits=[{'id':'chat','version':1,'chunk':0}]
-    assert check(c,h,p).status_code==200
+    response=check(c,h,p);assert response.status_code==200
     assert 'saved:chat' in {x['id'] for x in ai.calls[-1][2]}
+    assert next(x for x in response.json()['sources'] if x['id']=='saved:chat')['retrieval_origin']=='pinecone'
+
+
+def test_nonzero_retrieved_chunk_keeps_the_complete_indexed_text():
+    from tagalong.core import source
+    repo,ai,c,h,p=setup()
+    text='a'*6000+'b'*6000
+    repo.transact(lambda s:source(s,p['id'],'long-chat','Chat: alice',text))
+    ai.hits=[{'id':'long-chat','version':1,'chunk':1,'score':0.91}]
+    response=check(c,h,p)
+    assert response.status_code==200,response.text
+    retrieved=next(x for x in ai.calls[-1][2] if x['id']=='saved:long-chat')
+    assert retrieved['text']==text[6000:12000]
 
 
 def test_retrieval_outage_still_uses_notes_and_discloses_limit():
@@ -203,6 +221,28 @@ def test_retrieval_provider_uses_plan_namespace_and_short_no_retry_client(monkey
     assert captured['client']=={'timeout':8,'max_retries':0}
     assert captured['query']['namespace']=='tagalong:plan-a' and captured['query']['_request_timeout']==8
     assert captured['embedding']['dimensions']==768
+
+
+def test_retrieval_provider_keeps_highest_scoring_chunk_per_source(monkeypatch):
+    from tagalong.providers import ConnectedAI
+    from types import SimpleNamespace
+    captured={};provider=ConnectedAI.__new__(ConnectedAI)
+    matches=[
+        SimpleNamespace(id='chat:0',score=0.61,metadata={'source_id':'chat','version':4,'chunk':0}),
+        SimpleNamespace(id='chat:1',score=0.93,metadata={'source_id':'chat','version':4,'chunk':1}),
+        SimpleNamespace(id='note:0',score=0.81,metadata={'source_id':'note','version':2,'chunk':0}),
+    ]
+    def embed(**kwargs):return SimpleNamespace(data=[SimpleNamespace(embedding=[0.1])])
+    def query(**kwargs):captured.update(kwargs);return SimpleNamespace(matches=matches)
+    provider.client=SimpleNamespace(embeddings=SimpleNamespace(create=embed))
+    provider.index=SimpleNamespace(query=query)
+    monkeypatch.setenv('OPENAI_EMBEDDING_DIMENSIONS','768')
+    hits=provider.retrieve('plan-a','quiet step-free lodging')
+    assert hits==[
+        {'id':'chat','version':4,'chunk':1,'score':0.93},
+        {'id':'note','version':2,'chunk':0,'score':0.81},
+    ]
+    assert captured['namespace']=='tagalong:plan-a'
 
 
 def test_evidence_bounds_preserve_cost_and_valid_facts_json():

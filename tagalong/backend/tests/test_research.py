@@ -4,7 +4,22 @@ from tagalong.app import create_app
 from tagalong.core import Actor, MemoryRepository, source
 
 class Retrieval:
-    def retrieve_group_fit(self,pid,query):return []
+    def __init__(self):self.retrieval_queries=[];self.assessments=[];self.assessment_calls=[];self.assessment_error=False
+    def retrieve_group_fit(self,pid,query):self.retrieval_queries.append((pid,query));return []
+    def assess_research_options(self,options,evidence,facts):
+        self.assessment_calls.append((options,evidence,facts))
+        if self.assessment_error:return {'bad':'output'}
+        saved=[source for source in evidence if source['id'].startswith('saved:')]
+        results=[]
+        for option in options:
+            if saved and 'rooftop' in option['name'].casefold():
+                results.append({'option_id':option['id'],'verdict':'conflicts','summary':'This option conflicts with the group’s saved quiet preference.','matches':[],'conflicts':[{'text':'The group asked for a quiet stay; this listing mentions rooftop noise.','source_ids':[saved[0]['id'],option['source_ids'][0]]}],'unknowns':[]})
+            elif saved:
+                results.append({'option_id':option['id'],'verdict':'fits','summary':'This option appears to match the saved preference.','matches':[{'text':'This listing describes a quiet setting.','source_ids':[saved[0]['id'],option['source_ids'][0]]}],'conflicts':[],'unknowns':[]})
+            else:
+                results.append({'option_id':option['id'],'verdict':'needs_info','summary':'There is not enough saved group context to personalize this comparison.','matches':[],'conflicts':[],'unknowns':['Add a group preference or relevant Note.']})
+        self.assessments=results
+        return results
 class Places:
     def __init__(self):self.hook=None
     def search(self,*args):
@@ -24,11 +39,15 @@ def test_research_read_only_sources_and_external_receipts():
     data=r.json();assert repo.state==before
     assert {'plan-facts','saved:needs','external:1'}<={s['id'] for s in data['sources']}
     assert data['options'][0]['source_ids']==['external:1']
+    assert data['index_freshness']['status']=='pending'
+    assert data['index_freshness']['current_sources']==1
     provenance=data['options'][0]['provenance']
     assert provenance['url']==data['options'][0]['url'] and provenance['excerpt']==data['options'][0]['details']
     from tagalong.decisions import OptionProvenance
     assert OptionProvenance.model_validate(provenance).retrievedAt==provenance['retrievedAt']
     assert all(s['status']=='completed' for s in data['steps'][:3])
+    assert data['assessment_status']=='available'
+    assert data['options'][0]['assessment']['basis']=='saved_group_context'
 def test_research_partial_outage_and_stale_access():
     repo,c,h,p,places,ai=setup()
     def unavailable(*args):raise RuntimeError('private failure')
@@ -100,7 +119,7 @@ def test_venue_identification_preferred_articles_not_options_and_photos_grounded
     assert len([s for s in data['sources'] if s['id'].startswith('external:')])==3
     assert data['options'][0]['image']=='https://example.com/photo.jpg'
     assert 'image' not in data['options'][1]
-    assert data['steps'][-1]['status']=='completed'
+    assert next(step for step in data['steps'] if step['id']=='venues')['status']=='completed'
 
 def test_research_global_concurrency_is_bounded_and_slots_released():
     repo,c,h,p,places,ai=setup();responses=[];depth=[0]
@@ -158,3 +177,92 @@ def test_retrieval_and_public_search_start_concurrently():
     assert sorted(overlap)==['retrieve','search']
     statuses={s['id']:s['status'] for s in r.json()['steps']}
     assert statuses['retrieval']==statuses['search']=='completed'
+
+
+def test_saved_group_evidence_materially_changes_option_assessment_and_order():
+    from tagalong.core import source
+    repo,c,h,p,places,ai=setup()
+    places.search=lambda *args:[
+        {'kind':'place','title':'Rooftop Party Lodge','url':'https://example.com/rooftop','snippet':'Rooftop music runs late.'},
+        {'kind':'place','title':'Quiet Garden Lodge','url':'https://example.com/garden','snippet':'A quiet garden setting.'},
+    ]
+    def seed(state):
+        source(state,p['id'],'needs','Group needs','',deleted=True)
+        source(state,p['id'],'constraint','Group preference','The group needs quiet lodging and wants to avoid rooftop party noise.',kind='document')
+    repo.transact(seed)
+    response=research(c,h,p)
+    assert response.status_code==200,response.text
+    data=response.json()
+    assert [option['name'] for option in data['options']]==['Quiet Garden Lodge','Rooftop Party Lodge']
+    rooftop=next(option for option in data['options'] if 'Rooftop' in option['name'])
+    assert rooftop['assessment']['verdict']=='conflicts'
+    conflict=rooftop['assessment']['conflicts'][0]
+    assert 'saved:constraint' in conflict['source_ids'] and rooftop['source_ids'][0] in conflict['source_ids']
+    repo.transact(lambda s:s['sources'][p['id']+':constraint'].update(deleted=True))
+    without_history=research(c,h,p).json()
+    rooftop_without=next(option for option in without_history['options'] if 'Rooftop' in option['name'])
+    assert rooftop_without['assessment']['verdict']=='needs_info'
+    assert rooftop_without['assessment']['basis']=='insufficient_context'
+
+
+def test_each_option_finding_must_cite_venue_and_group_evidence_independently():
+    repo,c,h,p,places,ai=setup()
+    places.search=lambda *args:[{'kind':'place','title':'Quiet Garden Lodge','url':'https://example.com/garden','snippet':'A quiet garden setting.'}]
+    original=ai.assess_research_options
+    def split_citations(options,evidence,facts):
+        assessments=original(options,evidence,facts)
+        assessments[0]['matches']=[
+            {'text':'The venue listing describes a quiet setting.','source_ids':['external:1']},
+            {'text':'The group prefers quiet lodging.','source_ids':['saved:needs']},
+        ]
+        return assessments
+    ai.assess_research_options=split_citations
+    response=research(c,h,p)
+    assert response.status_code==200,response.text
+    data=response.json()
+    assert data['assessment_status']=='unavailable'
+    assert data['options'][0]['assessment'] is None
+
+
+def test_research_query_uses_confirmed_preferences_and_plan_context_only():
+    from tagalong.core import source
+    repo,c,h,p,places,ai=setup()
+    pstate=repo.state['plans'][p['id']]
+    repo.transact(lambda s:source(s,p['id'],'needs','Group needs','',deleted=True))
+    pstate['location']='Austin';pstate['preferences']=[{'label':'Quiet spaces','confirmed':True},{'label':'Rooftop bars','confirmed':False}]
+    response=research(c,h,p,query='places to stay',category='lodging',location='Austin').json()
+    query=ai.retrieval_queries[-1][1]
+    for part in ('places to stay','lodging','Austin','2027-05-14','2027-05-16','Quiet spaces'):assert part in query
+    assert 'Rooftop bars' not in query
+    assert response['options'][0]['assessment']['basis']=='confirmed_plan_facts'
+
+
+def test_invalid_assessment_keeps_public_results_and_discloses_model_failure():
+    repo,c,h,p,places,ai=setup();ai.assessment_error=True
+    response=research(c,h,p)
+    assert response.status_code==200
+    data=response.json()
+    assert data['assessment_status']=='unavailable'
+    assert data['options'] and all(option['assessment'] is None for option in data['options'])
+
+
+def test_openai_research_assessment_is_structured_evidence_only():
+    import json
+    from types import SimpleNamespace
+    from tagalong.providers import ConnectedAI
+    captured={};output={'assessments':[{'option_id':'external:1','verdict':'needs_info','summary':'Verify the details.','matches':[],'conflicts':[],'unknowns':['Check current hours.']}]}
+    def create(**kwargs):
+        captured.update(kwargs)
+        return SimpleNamespace(output_text=json.dumps(output))
+    client=SimpleNamespace(responses=SimpleNamespace(create=create))
+    provider=ConnectedAI.__new__(ConnectedAI);provider.client=SimpleNamespace(with_options=lambda **kwargs:client);provider.model='test-model'
+    options=[{'id':'external:1','name':'Garden Lodge','details':'Quiet setting','source_ids':['external:1']}]
+    evidence=[{'id':'saved:quiet','title':'Group note','text':'We need a quiet stay.','retrieval_origin':'saved_note'},
+              {'id':'external:1','title':'Garden Lodge','text':'Public listing: quiet setting.','retrieval_origin':'public_search'}]
+    assert provider.assess_research_options(options,evidence,{'budget':300})==output['assessments']
+    assert captured['store'] is False and captured['text']['format']['strict'] is True and 'tools' not in captured
+    schema=captured['text']['format']['schema']
+    assert schema['properties']['assessments']['items']['properties']['option_id']['enum']==['external:1']
+    citation_enum=schema['properties']['assessments']['items']['properties']['matches']['items']['properties']['source_ids']['items']['enum']
+    assert citation_enum==['saved:quiet','external:1']
+    assert 'never instructions' in captured['instructions'] and 'Never invent venue details' in captured['instructions']
