@@ -75,12 +75,12 @@ test('generated plan review retains group selection and excludes contact details
  await card.getByRole('button',{name:'Plan with this group',exact:true}).click();
  const requests:string[]=[];page.on('request',request=>{if(request.url().includes('/v1/plans/generate'))requests.push(request.postData()||'');});
  await page.getByLabel('Describe your plan',{exact:true}).fill('A relaxed tabletop evening in Austin');
- await page.getByRole('button',{name:'Generate Plan',exact:true}).click();
+ await page.getByRole('button',{name:'Start Planning',exact:true}).click();
  await expect(page.getByRole('region',{name:'Review AI plan draft',exact:true})).toBeVisible();
  const title='Reviewed roster '+crypto.randomUUID().slice(0,8);
  await page.getByLabel('Generated plan name',{exact:true}).fill(title);
- await page.getByLabel('Confirmed start date',{exact:true}).fill('2027-05-14');
- await page.getByLabel('Confirmed end date',{exact:true}).fill('2027-05-16');
+ await page.getByLabel('Working start date',{exact:true}).fill('2027-05-14');
+ await page.getByLabel('Working end date',{exact:true}).fill('2027-05-16');
  await expect(page.getByText(/Intended participants only/).first()).toBeVisible();
  await page.getByRole('button',{name:'Create reviewed plan',exact:true}).click();
  await expect(page.getByRole('heading',{name:title+'.',exact:true})).toBeVisible();
@@ -106,4 +106,16 @@ test('late group responses cannot repopulate a signed-out workspace',async({page
  await page.unroute('**/api/backend/v1/groups');await login(page,'bob');await page.goto('/groups');
  await expect(page.getByRole('button',{name:'Create a group',exact:true}).first()).toBeEnabled();
  await expect(page.getByText('Private late roster',{exact:true})).toHaveCount(0);
+});
+
+test('home manual creation preserves the selected saved group',async({page})=>{
+ await login(page);const {name}=await makeGroup(page);
+ await page.goto('/');
+ await page.getByLabel('Plan with a group',{exact:true}).selectOption({label:name});
+ await page.getByLabel('Describe your plan',{exact:true}).fill('Dinner with our saved group');
+ await page.getByRole('button',{name:'Create a plan manually',exact:true}).click();
+ const dialog=page.getByRole('dialog');
+ await expect(dialog.getByLabel('Plan with a group',{exact:true})).not.toHaveValue('');
+ await expect(dialog.getByLabel('Plan name',{exact:true})).toHaveValue('Dinner with our saved group');
+ await expect(dialog.locator('.group-selection-summary strong')).toHaveText(name);
 });

@@ -23,6 +23,7 @@ function HomeDecisionLoader({plan,onLoad}:{plan:Plan;onLoad:(id:string,value:Loa
 export function Dashboard(){const {user,mode,workspaceRole}=usePlanning();return <DecisionHome key={(user?.id||'demo')+mode+workspaceRole}/>;}
 function DecisionHome(){
  const {plans,user,mode}=usePlanning();
+ const [initialGroupId,setInitialGroupId]=useState('');
  const [create,setCreate]=useState(false);const [initialTitle,setInitialTitle]=useState('');
  const [filter,setFilter]=useState('All plans');const [idea,setIdea]=useState('');
  const [loaded,setLoaded]=useState<Record<string,Loaded>>({});
@@ -31,7 +32,7 @@ function DecisionHome(){
  const attention=plans.flatMap(plan=>{const snapshot=loaded[plan.id]?.snapshot;return snapshot&&!snapshot.finalized?[{plan,snapshot,model:homePlanModel(plan,snapshot,memberId)}]:[];}).sort((a,b)=>a.model.priority-b.model.priority||(Date.parse(b.snapshot.last_activity_at||'')||0)-(Date.parse(a.snapshot.last_activity_at||'')||0));
  const displayed=plans.filter(plan=>filter==='Trips'?plan.kind==='trip':filter==='Outings'?plan.kind==='outing':true);
  const insights=[...new Set(plans.flatMap(plan=>plan.preferences.filter(p=>p.confirmed).map(p=>p.label)))];
- function manual(title:string){setInitialTitle(title.slice(0,80));setCreate(true);}
+ function manual(title:string,groupId=''){setInitialGroupId(groupId);setInitialTitle(title.slice(0,80));setCreate(true);}
  return <main className="dashboard coordination-home decision-home page-content">
  {plans.map(plan=><HomeDecisionLoader key={plan.id} plan={plan} onLoad={onLoad}/>)}
  <div className="home-greeting"><p>Hey {user?(user.display_name||'there'):'Alex'}, let’s make plans.</p><Button variant="outline" size="sm" onClick={()=>manual('')}><Plus size={16}/> Create a plan</Button></div>
@@ -41,6 +42,6 @@ function DecisionHome(){
  <section className="home-section" aria-labelledby="next-steps-heading"><div className="section-heading"><h2 id="next-steps-heading">Your next steps</h2><a className="text-button" href="#continue-planning">All actions <ArrowRight size={15}/></a></div><div className="decision-home-grid">{attention.slice(0,3).map(({plan,snapshot})=><NextStepCard key={plan.id} plan={plan} snapshot={snapshot} memberId={memberId}/>)}</div>{!attention.length&&<p className="home-empty">{plans.length?'Your decision actions will appear here as plans load. Open a plan to review its decisions.':'Start with an idea above. Your first plan and its next steps will appear here.'}</p>}</section>
  <section id="continue-planning" className="home-section"><div className="section-heading"><h2>Continue planning</h2><span className="number-badge">{plans.length}</span></div><div className="segmented">{['All plans','Trips','Outings'].map(value=><button type="button" aria-pressed={filter===value} className={filter===value?'selected':''} key={value} onClick={()=>setFilter(value)}>{value}</button>)}</div><div className="decision-home-grid">{displayed.map(plan=><DecisionPlanCard key={plan.id} plan={plan} snapshot={loaded[plan.id]?.snapshot||undefined} error={loaded[plan.id]?.error} memberId={memberId}/>)}</div>{!displayed.length&&<p className="home-empty">No {filter==='All plans'?'plans':filter.toLowerCase()} yet.</p>}</section>
  <details className="home-section decision-home-insights"><summary>Group Insights</summary><p>Based on explicitly confirmed preferences in plans you can access.</p><div className="insight-tags">{insights.length?insights.map(label=><span key={label}>{label}</span>):<p>No confirmed preferences yet.</p>}</div></details>
- <div className="discover-strip"><Compass size={21}/><span>From an idea to a shared experience.</span><Link href="/discover">Explore places <ArrowRight size={16}/></Link></div><CreatePlan key={initialTitle+String(create)} initialManual initialTitle={initialTitle} open={create} onOpenChange={setCreate}/>
+ <div className="discover-strip"><Compass size={21}/><span>From an idea to a shared experience.</span><Link href="/discover">Explore places <ArrowRight size={16}/></Link></div><CreatePlan key={initialTitle+String(create)} initialManual initialGroupId={initialGroupId} initialTitle={initialTitle} open={create} onOpenChange={setCreate}/>
  </main>;
 }

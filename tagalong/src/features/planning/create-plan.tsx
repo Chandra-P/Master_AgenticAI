@@ -10,8 +10,8 @@ import {GroupPicker} from './group-picker';
 import {GroupEditor} from './group-editor';
 import type {PlanKind} from '@/services/types';
 
-function ManualCreatePlan({open,onOpenChange,initialGroupId='',initialTitle=''}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string;initialTitle?:string}) {
- const {groups,groupsReady,groupWarning,create,notify,mode,busy}=usePlanning();
+function ManualCreatePlan({open,onOpenChange,initialGroupId='',initialTitle='',onGroupChange}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string;initialTitle?:string;onGroupChange?:(id:string)=>void}) {
+ const {groups,groupsReady,create,notify,mode,busy}=usePlanning();
  const router=useRouter();
  const [kind,setKind]=useState<PlanKind>('outing');
  const [title,setTitle]=useState(initialTitle);
@@ -22,7 +22,7 @@ function ManualCreatePlan({open,onOpenChange,initialGroupId='',initialTitle=''}:
  const [creatingGroup,setCreatingGroup]=useState(false);
  const [error,setError]=useState('');
  const selectedGroup=groups.find(g=>g.id===groupId&&!g.archived);
- return <Dialog open={open} onOpenChange={value=>{if(!value)setCreatingGroup(false);onOpenChange(value);}} title={creatingGroup?'Your people, together.':'Good company starts here.'} description={creatingGroup?'Create a reusable demo group, then return to your plan.':'A little outing or a big adventure. Make room for both.'}>
+ return <Dialog open={open} onOpenChange={value=>{if(!value)setCreatingGroup(false);onOpenChange(value);}} title={creatingGroup?'Your people, together.':'Good company starts here.'} description={creatingGroup?'Create a reusable group, then return to your plan.':'A little outing or a big adventure. Make room for both.'}>
  {creatingGroup?<GroupEditor onCancel={()=>setCreatingGroup(false)} onSaved={group=>{setGroupId(group.id);onGroupChange?.(group.id);setCreatingGroup(false);}}/>:<form onSubmit={async e=>{
   e.preventDefault();if(!title.trim())return;
   try{
@@ -41,4 +41,4 @@ function ManualCreatePlan({open,onOpenChange,initialGroupId='',initialTitle=''}:
  </Dialog>;
 }
 
-export function CreatePlan({open,onOpenChange,initialGroupId='',initialTitle='',initialManual=false}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string;initialTitle?:string;initialManual?:boolean}){const {mode}=usePlanning();const [manual,setManual]=useState(initialManual);if(mode==='demo'||manual)return <ManualCreatePlan key={initialTitle} initialTitle={initialTitle} open={open} initialGroupId={mode==='demo'?initialGroupId:''} onOpenChange={value=>{onOpenChange(value);if(!value)setManual(false);}}/>;return <Dialog open={open} onOpenChange={onOpenChange} title="Good company starts here." description="Describe an outing or trip. Tagalong helps your group figure out the rest."><PlanGenerator onCreated={()=>onOpenChange(false)}/><button type="button" className="text-button generator-manual" onClick={()=>setManual(true)}>Create a plan manually</button></Dialog>;}
+export function CreatePlan({open,onOpenChange,initialGroupId='',initialTitle='',initialManual=false}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string;initialTitle?:string;initialManual?:boolean}){const {mode}=usePlanning();const [manual,setManual]=useState(initialManual);const [groupId,setGroupId]=useState(initialGroupId);if(mode==='demo'||manual)return <ManualCreatePlan key={initialTitle} initialTitle={initialTitle} open={open} initialGroupId={groupId} onGroupChange={setGroupId} onOpenChange={value=>{onOpenChange(value);if(!value)setManual(false);}}/>;return <Dialog open={open} onOpenChange={onOpenChange} title="Good company starts here." description="Describe an outing or trip. Tagalong helps your group figure out the rest."><PlanGenerator groupId={groupId} onGroupChange={setGroupId} onCreated={()=>onOpenChange(false)}/><button type="button" className="text-button generator-manual" onClick={()=>setManual(true)}>Create a plan manually</button></Dialog>;}
