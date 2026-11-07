@@ -1,4 +1,3 @@
-import './typing-suggestions.css';
 
 export function TypingSuggestions({enabled,onEnabled,suggestion,onAccept,model=false,status=''}:{enabled:boolean;onEnabled:(value:boolean)=>void;suggestion:string;onAccept:()=>void;model?:boolean;status?:string}) {
  return <div className="typing-suggestions">

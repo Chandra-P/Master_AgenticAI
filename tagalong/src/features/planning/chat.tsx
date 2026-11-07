@@ -1,5 +1,6 @@
 'use client';
 
+import {avatarTextColor} from '@/lib/avatar-contrast';
 import {useEffect, useRef, useState, type KeyboardEvent} from 'react';
 import Link from 'next/link';
 import {ArrowLeft, AtSign, Check, LayoutDashboard, Send, Sparkles} from 'lucide-react';
@@ -102,7 +103,7 @@ export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
         return <article key={message.id} className={'chat-message ' + (message.assistant ? 'assistant-message' : '')}>
           {message.assistant
             ? <span className="avatar ai-avatar"><Sparkles size={18}/></span>
-            : <span className="avatar" style={{background: member?.color || '#eccfc0'}}>{author.slice(0, 1)}</span>}
+            : <span className="avatar" style={{background: member?.color || '#eccfc0',color:avatarTextColor(member?.color || '#eccfc0')}}>{author.slice(0, 1)}</span>}
           <div className="message-content">
             <div className="message-byline">
               <strong>{author}{message.author === (user?.name || 'Alex') && <em>you</em>}</strong>

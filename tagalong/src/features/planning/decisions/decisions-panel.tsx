@@ -9,7 +9,6 @@ import {useDecisionSnapshot} from './use-decision-snapshot';
 import {ConsensusMeter} from './consensus-meter';
 import {DecisionCard} from './decision-card';
 import {DecisionNarrative} from './decision-narrative';
-import './decisions.css';
 export function DecisionsPanel({plan,onTab}:{plan:Plan;onTab:(tab:Tab)=>void}){
  const {mode,user,workspaceRole}=usePlanning();const {snapshot,refreshing,loading,error,pending,run,reload,loadComments,summarize}=useDecisionSnapshot(plan);
  const [add,setAdd]=useState(false),[drawer,setDrawer]=useState(false),[review,setReview]=useState(false),[reviewedRevision,setReviewedRevision]=useState<number|null>(null),[title,setTitle]=useState(''),[category,setCategory]=useState('other'),[options,setOptions]=useState(''),[required,setRequired]=useState(true),[notice,setNotice]=useState('');

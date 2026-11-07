@@ -10,7 +10,6 @@ import {publicWebUrl as publicLink} from '@/services/place-links';
 import {Button} from '@/components/ui/button';
 import {Dialog} from '@/components/ui/dialog';
 import {GroupFit} from './group-fit';
-import './place-cards.css';
 
 interface Place {id:string;kind:'place';title:string;url:string;snippet:string;address:string;location:string;category:string;image:string|null;image_source_url:string|null;map_url:string}
 type Category='places'|'restaurants'|'attractions';

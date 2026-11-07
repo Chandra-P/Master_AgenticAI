@@ -7,7 +7,6 @@ import {publicWebUrl} from '@/services/place-links';
 import {GroupFitService,type GroupFitOption,type GroupFitReason,type GroupFitResult} from '@/services/group-fit';
 import type {Plan} from '@/services/types';
 import {usePlanning} from './store';
-import './group-fit.css';
 
 export function GroupFit({plan,initialOption}:{plan:Plan;initialOption?:GroupFitOption}){
  const {mode,user,workspaceRole}=usePlanning();
