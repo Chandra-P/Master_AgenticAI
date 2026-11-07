@@ -13,6 +13,6 @@
 - [x] Reorganize plan generation around the idea first, explain the AI draft, highlight missing information, and offer one-click sourced suggestions without requiring every interest manually.
 - [x] Add a visible guided journey/next action to saved plans, retaining existing options, comments and consent rules.
 - [x] Verify layout, source handoffs and collaboration with meaningful desktop/mobile regression tests; run lint, types, build and required suites.
-- [ ] Review, preserve teammate changes, push and verify live release.
+- [x] Review, preserve teammate changes, push and verify live release.
 
 User direction: audit and fix similar layout issues and make AI assistance intuitive; prior instructions authorize autonomous implementation, testing and publication. Existing account data is retained. Live source availability remains best effort and clearly labeled.
