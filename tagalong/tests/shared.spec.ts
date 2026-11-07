@@ -13,6 +13,44 @@ async function login(page:Page,name:'alice'|'bob',role:'member'|'admin'='member'
  await expect(page.getByText('Current role: '+(role==='admin'?'Admin':'Member'),{exact:true})).toBeVisible();
 }
 
+test('decision consent and contextual comments persist across members and finalization is durable',async({page})=>{
+ test.setTimeout(120000);await login(page,'alice');
+ const alice={Authorization:'Bearer test-alice'},bob={Authorization:'Bearer test-bob'};
+ await page.request.get('/api/backend/v1/me',{headers:bob});
+ const created=await page.request.post('/api/backend/v1/plans',{headers:alice,data:{title:'Decision dinner '+crypto.randomUUID().slice(0,8),kind:'outing',start:'2027-05-14',end:'2027-05-14'}});
+ expect(created.ok()).toBeTruthy();const plan=await created.json();const base='/api/backend/v1/plans/'+plan.id;
+ expect((await page.request.get(base+'/decisions',{headers:bob})).status()).toBe(404);
+ expect((await page.request.post(base+'/members',{headers:alice,data:{email:'bob@example.test'}})).ok()).toBeTruthy();
+ let snapshot=await(await page.request.get(base+'/decisions',{headers:alice})).json();
+ expect(snapshot.score).toBe(0);expect(snapshot.finalized).toBe(false);
+ for(const initial of snapshot.decisions){
+  let decision=snapshot.decisions.find((d:{id:string})=>d.id===initial.id);
+  const edited=await page.request.patch(base+'/decisions/'+decision.id,{headers:alice,data:{expected_revision:snapshot.plan_revision,expected_version:decision.version,options:['Reviewed '+decision.title]}});expect(edited.ok()).toBeTruthy();snapshot=await edited.json();decision=snapshot.decisions.find((d:{id:string})=>d.id===initial.id);
+  const option=decision.options[0].id;
+  const response=await page.request.put(base+'/decisions/'+decision.id+'/response',{headers:alice,data:{expected_revision:snapshot.plan_revision,expected_version:decision.version,option_id:option,response:'support'}});expect(response.ok()).toBeTruthy();snapshot=await response.json();
+  const premature=await page.request.post(base+'/decisions/'+decision.id+'/confirm',{headers:alice,data:{expected_revision:snapshot.plan_revision,expected_version:decision.version,option_id:option}});expect(premature.status()).toBe(409);
+  const second=await page.request.put(base+'/decisions/'+decision.id+'/response',{headers:bob,data:{expected_revision:snapshot.plan_revision,expected_version:decision.version,option_id:option,response:'can_live_with'}});expect(second.ok()).toBeTruthy();snapshot=await second.json();
+  const confirmed=await page.request.post(base+'/decisions/'+decision.id+'/confirm',{headers:alice,data:{expected_revision:snapshot.plan_revision,expected_version:decision.version,option_id:option}});expect(confirmed.ok()).toBeTruthy();snapshot=await confirmed.json();
+ }
+ expect(snapshot.score).toBe(99);
+ const decision=snapshot.decisions[0];const text='Parking seems difficult downtown.';
+ const commented=await page.request.post(base+'/decisions/'+decision.id+'/comments',{headers:bob,data:{expected_revision:snapshot.plan_revision,expected_version:decision.version,text}});expect(commented.ok()).toBeTruthy();snapshot=await commented.json();
+ expect(snapshot.comments[0].authorId).toBe('bob');
+ const payload={expected_revision:snapshot.plan_revision,reviewed:true,idempotency_key:crypto.randomUUID()};
+ expect((await page.request.post(base+'/finalize',{headers:bob,data:payload})).status()).toBe(403);
+ const finalized=await page.request.post(base+'/finalize',{headers:alice,data:payload});expect(finalized.ok()).toBeTruthy();snapshot=await finalized.json();expect(snapshot.score).toBe(100);
+ expect((await(await page.request.post(base+'/finalize',{headers:alice,data:payload})).json()).finalization).toEqual(snapshot.finalization);
+ await page.goto('/plans/'+plan.id);await expect(page.getByRole('tab',{name:'Decisions',exact:true})).toHaveAttribute('aria-selected','true');
+ const card=page.getByRole('article').filter({has:page.getByRole('heading',{name:decision.title,exact:true})}).first();
+ await card.getByRole('button',{name:'Summarize decision',exact:true}).click();
+ await expect(card.getByRole('heading',{name:'AI decision summary',exact:true})).toBeVisible();
+ await card.getByText(/Evidence used/).click();
+ await expect(card.getByText('Decision: '+decision.title,{exact:true})).toBeVisible();
+ await page.reload();await expect(page.getByRole('progressbar',{name:'Group consensus'}).first()).toHaveAttribute('aria-valuenow','100');
+ const persisted=await(await page.request.get(base+'/decisions',{headers:bob})).json();expect(persisted.comments[0].text).toBe(text);
+ const reopened=await page.request.post(base+'/decisions/'+decision.id+'/reopen',{headers:alice,data:{expected_revision:snapshot.plan_revision,expected_version:decision.version}});expect(reopened.ok()).toBeTruthy();const next=await reopened.json();expect(next.finalized).toBe(false);expect(next.score).toBeLessThan(100);
+});
+
 test('real MCP demo books once, persists to the shared itinerary, and cancels without real reservations',async({page})=>{
  test.setTimeout(120000);
  await login(page,'alice');
@@ -63,7 +101,7 @@ test('connected typing suggests a continuation through the authenticated API wit
  const headers={Authorization:'Bearer test-alice'};
  const created=await page.request.post('/api/backend/v1/plans',{headers,data:{title:'Typing demo '+crypto.randomUUID().slice(0,8),kind:'outing',start:'2027-05-14',end:'2027-05-14'}});expect(created.ok()).toBeTruthy();const plan=await created.json();
  await page.goto('/plans/'+plan.id);
- const draft=page.getByLabel('Message your group');
+ await page.getByRole('tab',{name:'Chat',exact:true}).click();const draft=page.getByLabel('Message your group');
  const response=page.waitForResponse(r=>r.url().endsWith('/typing-suggestion')&&r.request().method()==='POST');
  await draft.fill('I want to explore');
  expect((await response).ok()).toBeTruthy();
@@ -118,20 +156,22 @@ test('natural-language generation creates a reviewed plan and proactively summar
  await login(page,'alice');await page.goto('/');
  await expect(page.getByRole('heading',{name:'Good company starts here.',exact:true})).toBeVisible();
  await page.getByLabel('Describe your plan').fill('Weekend trip for four friends near Austin under $350 per person');
- await page.getByRole('button',{name:'Generate Plan',exact:true}).click();
+ await page.getByRole('button',{name:'Start Planning',exact:true}).click();
  const review=page.getByRole('region',{name:'Review AI plan draft'});
  await expect(review).toBeVisible();
- await expect(review.getByLabel('Confirmed start date')).toHaveValue('');
+ await expect(review.getByLabel('Working start date')).toHaveValue('');
  await review.getByLabel('Generated plan name').fill(title);
- await review.getByLabel('Confirmed start date').fill('2027-05-14');await review.getByLabel('Confirmed end date').fill('2027-05-16');
+ await review.getByLabel('Working start date').fill('2027-05-14');await review.getByLabel('Working end date').fill('2027-05-16');
  await review.getByRole('button',{name:'Create reviewed plan',exact:true}).click();
  await expect(page.getByRole('heading',{name:title+'.',exact:true,level:1})).toBeVisible();
+ await expect(page.getByRole('tab',{name:'Decisions',exact:true})).toHaveAttribute('aria-selected','true');
+ await page.getByRole('tab',{name:'Chat',exact:true}).click();
  const coordination=page.getByRole('region',{name:'Plan coordination'});
  await expect(coordination.getByText('Waiting for votes',{exact:true})).toBeVisible();
  await expect(coordination).toContainText('The group is planning '+title+'.',{timeout:20000});
  await expect(page.getByText('Planning idea: Weekend trip for four friends near Austin under $350 per person',{exact:true})).toBeVisible();
- await page.goto('/');await expect(page.getByRole('heading',{name:'Continue Planning',exact:true})).toBeVisible();
- await expect(page.locator('.continue-card').filter({hasText:title})).toBeVisible();
+ await page.goto('/');await expect(page.getByRole('heading',{name:'Your next steps',exact:true})).toBeVisible();
+ await expect(page.locator('.decision-next-card').filter({hasText:title})).toBeVisible();
 });
 
 test('live discovery shows a clickable external source link and saves a dated venue',async({page})=>{
@@ -142,9 +182,7 @@ test('live discovery shows a clickable external source link and saves a dated ve
  await page.goto('/discover');await page.getByLabel('Destination',{exact:true}).fill('San Francisco');await page.getByLabel('Looking for').fill('vegetarian dinner');
  await page.getByRole('button',{name:'Update',exact:true}).click();
  const link=page.getByRole('link',{name:'Explore Synthetic vegetarian restaurant',exact:true});
- // The new Discover layout renders three skeleton cards while loading.
- await expect(link).toBeVisible();
- await expect(page.locator('.place-card:not(.place-skeleton)')).toBeVisible();await page.locator('.place-card:not(.place-skeleton)').screenshot({path:'test-results-shared/place-card-'+test.info().project.name+'.png'});
+ await expect(page.locator('article.place-card')).toBeVisible();await page.locator('article.place-card').screenshot({path:'test-results-shared/place-card-'+test.info().project.name+'.png'});
  await expect(link).toHaveAttribute('href','https://places.example.test/restaurant');
  await expect(link).toHaveAttribute('rel','noopener noreferrer');
  const opened=page.waitForEvent('popup');await link.click();const source=await opened;
@@ -224,7 +262,7 @@ test('two members share a plan, chat, vote, confirm an AI proposal and preserve 
   await login(alice,'alice');await login(bob,'bob');
   await alice.goto('/');
   await alice.getByRole('button',{name:'Create a plan',exact:true}).first().click();
-  await alice.getByRole('button',{name:'Create a plan manually',exact:true}).click();
+  await expect(alice.getByRole('dialog')).toBeVisible(); if(await alice.getByRole('button',{name:'Create a plan manually',exact:true}).isVisible())await alice.getByRole('button',{name:'Create a plan manually',exact:true}).click();
   await alice.getByRole('button',{name:'Trip',exact:true}).click();
   await alice.getByLabel('Plan name').fill('Shared coast '+crypto.randomUUID().slice(0,8));
   await alice.getByLabel('Start date').fill('2026-12-04');await alice.getByLabel('End date').fill('2026-12-06');
@@ -243,7 +281,7 @@ test('two members share a plan, chat, vote, confirm an AI proposal and preserve 
   await alice.getByRole('button',{name:'Save document'}).click();
   await expect(alice.getByText('Group food notes',{exact:true})).toBeVisible();
   await alice.getByRole('tab',{name:'Chat'}).click();
-  await alice.getByLabel('Message your group').fill('@Tagalong remember our food preferences');
+  await alice.getByRole('tab',{name:'Chat',exact:true}).click();await alice.getByLabel('Message your group').fill('@Tagalong remember our food preferences');
   await alice.getByRole('button',{name:'Send message'}).click();
   await expect(alice.locator('.message-bubble').filter({hasText:'Evidence considered'})).toBeVisible();
   await alice.getByText(/Sources \(/).click();

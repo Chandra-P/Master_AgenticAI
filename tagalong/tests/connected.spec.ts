@@ -9,10 +9,11 @@ test('revoked plan is removed from coordination cards and insights even if overv
  let revoked=false;
  const plan={id:'private-overview',title:'Revoked private weekend',kind:'trip',location:'Private location',date:'May 14',start:'2027-05-14',end:'2027-05-16',budget:350,image:'/images/coast.jpg',members:[{name:'overview',color:'#6366f1',user_id:user.id}],messages:[],preferences:[{label:'Private confirmed preference',confirmed:true}],polls:[],itinerary:[],tasks:[],revision:1,owner_id:user.id,role:'owner'};
  await page.route('**/api/backend/v1/plans',route=>route.fulfill({json:revoked?[]:[plan]}));
- await page.route('**/api/backend/v1/coordination/overview',route=>revoked?route.fulfill({status:503,json:{detail:'Unavailable'}}):route.fulfill({json:{plans:[{plan_id:plan.id,plan_revision:1,title:plan.title,status:'STALLED',health:30,next_step:'Private next action',reason:'Private reason',target_tab:'Chat',activity_ideas:[],provider_status:'live'}],group_insights:[{label:'Private confirmed preference',plan_count:1}],notice:''}}));
+ await page.route('**/api/backend/v1/plans/'+plan.id+'/decisions',route=>revoked?route.fulfill({status:503,json:{detail:'Unavailable'}}):route.fulfill({json:{plan_id:plan.id,plan_revision:1,decisions:[{id:'private-decision',planId:plan.id,title:'Private next action',category:'lodging',required:true,status:'awaiting_responses',version:1,options:[{id:'one',label:'Private option',sourceIds:[]}],eligibleMemberIds:[user.id],ballots:[],selectedOptionId:null,confirmation:null}],comments:[],score:0,finalized:false,finalization:null,last_activity_at:null}}));
  await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();await page.goto('/');
  await expect(page.getByText('Private next action',{exact:true}).first()).toBeVisible();
+ await page.getByText('Group Insights',{exact:true}).click();
  await expect(page.getByText('Private confirmed preference',{exact:true})).toBeVisible();
  revoked=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
  await expect(page.getByText('Private next action',{exact:true})).toHaveCount(0);

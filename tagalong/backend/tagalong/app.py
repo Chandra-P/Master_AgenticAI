@@ -148,7 +148,11 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
         return repo.transact(apply)
     @app.post('/v1/plans/{pid}/assistant',summary='Ask the assistant using current Notes and optional history')
     def assistant(pid:str,b:Chat,a=Depends(actor)):
-        plan=repo.transact(lambda s:copy.deepcopy(access(s,pid,a)))
+        def assistant_plan(s):
+            from .decisions import context as decision_context
+            plan=copy.deepcopy(access(s,pid,a));plan['decision_context']=decision_context(s,pid)
+            return plan
+        plan=repo.transact(assistant_plan)
         if not ai: fail(503,'AI providers are not configured')
         def charge(s):
             access(s,pid,a)
@@ -162,7 +166,7 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
             from .notes_context import notes_context, merge_evidence
             def snapshot_notes(s):
                 access(s,pid,a)
-                return notes_context([src for src in s['sources'].values() if src['plan_id']==pid and not src['deleted'] and src.get('kind')=='document'],b.message)
+                return notes_context([src for src in s['sources'].values() if src['plan_id']==pid and not src['deleted'] and src.get('kind') in ('document','decision','decision_comment')],b.message)
             notes,notes_status=repo.transact(snapshot_notes)
             def resolve_sources(matches):
                 def evidence(s):
@@ -234,6 +238,8 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
             if not item or item['deleted'] or item.get('kind','message')!='document': fail(404,'Document not found')
             source(s,pid,sid,item['title'],'',True); return {'status':'queued'}
         return repo.transact(delete)
+    from .decisions import install_decisions
+    install_decisions(app,repo,actor,ai)
     from .demo_bookings import install_demo_bookings
     install_demo_bookings(app,repo,actor)
     from .admin import install_admin

@@ -41,6 +41,8 @@ class PostgresRepository:
             state = row[0]
             before = copy.deepcopy(state)
             result = fn(state)
+            from .decisions import reconcile
+            reconcile(before,state)
             from .coordination import track_activity
             track_activity(before,state)
             if state == before:

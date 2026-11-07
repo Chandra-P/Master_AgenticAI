@@ -10,11 +10,11 @@ import {GroupPicker} from './group-picker';
 import {GroupEditor} from './group-editor';
 import type {PlanKind} from '@/services/types';
 
-function ManualCreatePlan({open,onOpenChange,initialGroupId='',onGroupChange}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string;onGroupChange?:(id:string)=>void}) {
- const {groups,groupsReady,create,notify,mode,busy}=usePlanning();
+function ManualCreatePlan({open,onOpenChange,initialGroupId='',initialTitle=''}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string;initialTitle?:string}) {
+ const {groups,groupsReady,groupWarning,create,notify,mode,busy}=usePlanning();
  const router=useRouter();
  const [kind,setKind]=useState<PlanKind>('outing');
- const [title,setTitle]=useState('');
+ const [title,setTitle]=useState(initialTitle);
  const [start,setStart]=useState('');
  const [end,setEnd]=useState('');
  const [participants,setParticipants]=useState('');
@@ -41,11 +41,4 @@ function ManualCreatePlan({open,onOpenChange,initialGroupId='',onGroupChange}:{o
  </Dialog>;
 }
 
-function CreatePlanFlow({open,onOpenChange,initialGroupId=''}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string}){
- const {mode}=usePlanning();const [manual,setManual]=useState(false);const [groupId,setGroupId]=useState(initialGroupId);
- if(mode==='demo'||manual)return <ManualCreatePlan open={open} initialGroupId={groupId} onGroupChange={setGroupId} onOpenChange={value=>{onOpenChange(value);if(!value)setManual(false);}}/>;
- return <Dialog open={open} onOpenChange={onOpenChange} title="Good company starts here." description="Describe an outing or trip. Tagalong helps your group figure out the rest."><PlanGenerator groupId={groupId} onGroupChange={setGroupId} onCreated={()=>onOpenChange(false)}/><button type="button" className="text-button generator-manual" onClick={()=>setManual(true)}>Create a plan manually</button></Dialog>;
-}
-export function CreatePlan(props:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string}){
- const {mode,user}=usePlanning();return <CreatePlanFlow key={mode+'-'+(user?.id||'demo')} {...props}/>;
-}
+export function CreatePlan({open,onOpenChange,initialGroupId='',initialTitle='',initialManual=false}:{open:boolean;onOpenChange:(open:boolean)=>void;initialGroupId?:string;initialTitle?:string;initialManual?:boolean}){const {mode}=usePlanning();const [manual,setManual]=useState(initialManual);if(mode==='demo'||manual)return <ManualCreatePlan key={initialTitle} initialTitle={initialTitle} open={open} initialGroupId={mode==='demo'?initialGroupId:''} onOpenChange={value=>{onOpenChange(value);if(!value)setManual(false);}}/>;return <Dialog open={open} onOpenChange={onOpenChange} title="Good company starts here." description="Describe an outing or trip. Tagalong helps your group figure out the rest."><PlanGenerator onCreated={()=>onOpenChange(false)}/><button type="button" className="text-button generator-manual" onClick={()=>setManual(true)}>Create a plan manually</button></Dialog>;}

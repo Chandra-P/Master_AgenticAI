@@ -19,7 +19,7 @@ def documents(s,pid):
 
 
 def fingerprint(s,pid):
-    facts={'plan':s['plans'][pid],'documents':[(x['id'],x['version']) for x in documents(s,pid)],'reference_date':datetime.now(timezone.utc).date().isoformat()}
+    facts={'decisions':s.get('decision_state',{}).get(pid),'plan':s['plans'][pid],'documents':[(x['id'],x['version']) for x in documents(s,pid)],'reference_date':datetime.now(timezone.utc).date().isoformat()}
     return hashlib.sha256(json.dumps(facts,sort_keys=True).encode()).hexdigest()
 
 
@@ -71,9 +71,14 @@ def context(s,pid):
     for m in p['messages']:m['text']=m['text'][:1200];m.pop('sources',None)
     docs=[{'id':d['id'],'title':d['title'],'text':d['text'][:3000]} for d in documents(s,pid)[:4]]
     approved=[x['label'] for x in p['preferences'] if x['confirmed']]
+    for decision in s.get('decision_state',{}).get(pid,{}).get('decisions',[]):
+        if decision['confirmation']:
+            selected=next((o['label'] for o in decision['options'] if o['id']==decision['selectedOptionId']),None)
+            if selected:approved.append(decision['title']+': '+selected)
     h=health(s,pid)
     p['preferences']=p['preferences'][:50]
-    result={'plan':p,'documents':docs,'reference_date':datetime.now(timezone.utc).date().isoformat(),'approved_decisions':approved[:30],'health':h,'allowed_next_steps':[h['next_step']]+[x['label'][:300] for x in p['tasks'] if not x['done']][:12],'context_truncated':trimmed}
+    from .decisions import context as decision_context
+    result={'decision_context':decision_context(s,pid),'plan':p,'documents':docs,'reference_date':datetime.now(timezone.utc).date().isoformat(),'approved_decisions':approved[:30],'health':h,'allowed_next_steps':[h['next_step']]+[x['label'][:300] for x in p['tasks'] if not x['done']][:12],'context_truncated':trimmed}
     for field in ('messages','polls','itinerary','tasks'):
         while len(json.dumps(result))>40000 and p[field]:p[field].pop(0);result['context_truncated']=True
     while len(json.dumps(result))>40000 and docs:docs.pop();result['context_truncated']=True
