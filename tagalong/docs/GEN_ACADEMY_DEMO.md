@@ -14,7 +14,11 @@ See [the live synthetic evaluation](evaluations/2026-11-06-group-fit-demo.md) an
 
 ## Before presenting
 
-From `tagalong`, run `node scripts/demo-preflight.mjs`. It performs read-only readiness checks and can wake idle services. Then sign in and open the prepared plan. A successful preflight is a point-in-time check; it does not prevent a free host from sleeping again. Always-on hosting requires the owner to select and fund an appropriate hosting plan. Keep the local MP4 available so judging does not depend on live hosting or network availability.
+From the public demo home, choose **See four friends plan an Austin weekend** to replay the fictional conversation, objections, option comparisons, votes, saved evidence excerpts and final itinerary without an account. This replay is explicitly scripted and does not make a live model or retrieval request.
+
+To demonstrate configured AI/RAG live, sign in, open the prepared Austin plan and choose **View demo story → Run live RAG and AI check**. The request uses configured providers and quota; the actual reply and returned citations appear in Chat. `Find options` and `Check group fit` are additional connected flows for live search/retrieval. Do not present the scripted replay as the live provider result.
+
+From `tagalong`, run `node scripts/demo-preflight.mjs`. It performs read-only readiness checks and can wake idle services. A successful preflight is a point-in-time check; it does not prevent a free host from sleeping again. Always-on hosting requires the owner to select and fund an appropriate hosting plan. Keep the local MP4 available so judging does not depend on live hosting or network availability.
 
 Use one focused narrative, show a source, change a constraint, and explain the authority boundary: models propose; people decide; backend rules enforce access and confirmation. Do not imply simulated bookings are live integrations or call a handful of synthetic evaluations a general accuracy score.
 

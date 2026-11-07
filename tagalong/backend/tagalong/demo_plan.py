@@ -200,6 +200,13 @@ def upgrade_demo_plan(state,actor,pid):
 
 
 def install_demo_plans(app, repo, actor):
+    @app.get('/v1/public/demo-stories/austin-four-friends')
+    def get_public_austin_demo():
+        """Read-only, fictional presentation story; contains no account or plan data."""
+        story = story_data('public-austin-demo')
+        story['messages'] = demo_dialogue(story)
+        return JSONResponse(story, headers={'Cache-Control':'public, max-age=300'})
+
     @app.post('/v1/demo-plans')
     def make_demo(body: DemoPlanRequest, current=Depends(actor)):
         return JSONResponse(repo.transact(lambda state:create_demo_plan(state,current,body)),headers={'Cache-Control':'no-store'})

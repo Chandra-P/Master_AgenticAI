@@ -72,6 +72,27 @@ def test_owner_scoped_idempotent_saved_story_without_forged_members_or_votes():
     assert client.get(story_url, headers={'Authorization':'Bearer viewer'}).status_code == 404
 
 
+def test_public_austin_story_is_read_only_and_contains_only_scripted_content():
+    import copy
+    repo, client = setup()
+    before = copy.deepcopy(repo.state)
+    response = client.get('/v1/public/demo-stories/austin-four-friends')
+    assert response.status_code == 200
+    assert response.headers['cache-control'] == 'public, max-age=300'
+    story = response.json()
+    assert story['planId'] == 'public-austin-demo'
+    assert story['scripted'] is True
+    assert story['disclosure'] == 'Fictional walkthrough · scripted AI and votes · no bookings'
+    assert [person['name'] for person in story['cast']] == ['Alex','Maya','Sam','Jordan']
+    assert len(story['messages']) >= 30
+    assert all(message['simulation'] is True for message in story['messages'])
+    assert all(message.get('user_id') is None for message in story['messages'])
+    assert len(story['choices']) == 5 and len(story['days']) == 3
+    assert all(source['id'].startswith('demo-') for source in story['sources'])
+    assert not story.get('liveCheck')
+    assert repo.state == before
+
+
 def test_template_and_request_are_bounded_and_suspension_is_enforced():
     repo, client = setup()
     owner = {'Authorization':'Bearer owner'}
