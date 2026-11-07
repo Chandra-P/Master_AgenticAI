@@ -361,6 +361,8 @@
 .group-privacy-note,.group-selection-summary small {font-size:.875rem;color:var(--ink-muted);line-height:1.6}
 .group-selection-summary strong,.group-selection-summary span {font-size:.9375rem}
 .group-create-inline {font-size:.9375rem;color:var(--accent-ink);min-height:36px;line-height:1.5}
+.group-picker-actions {display:flex;align-items:center;flex-wrap:wrap;column-gap:24px;row-gap:8px;margin-bottom:20px}
+.group-picker-actions>.group-create-inline {margin:0;max-width:100%;white-space:normal;text-align:left}
 .group-error {background:var(--danger-soft);color:var(--danger);border-color:#bc7974;font-size:1rem}
 .group-storage-warning {background:var(--sand-soft);border-color:#b48c49;color:#6c4b16;font-size:.9375rem}
 .group-remove-copy {font-size:1rem;color:var(--ink-muted)}
