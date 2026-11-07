@@ -24,6 +24,6 @@ The demo stays separate, with fictional Alex and browser-local `tagalong-groups-
 
 ## Team contribution and rollout
 
-Deployment baseline: `checkpoint/all-projects-2026-11-04`. The previous `895593a` implementation and `16932ce` integration provided demo-only groups; the new shared implementation is on `feat/shared-groups`. Submit a reviewed PR targeting the checkpoint branch, preserve its newer connected features, then coordinate frontend/API deployment with the service owner. Pushing only to main does not update that service. See [CONTRIBUTING.md](../CONTRIBUTING.md) and [approved plan](SHARED_GROUPS_PLAN.md).
+Deployment baseline: `checkpoint/all-projects-2026-11-04`. The previous `895593a` implementation and `16932ce` integration provided demo-only groups; the new shared implementation is on `feat/shared-groups`. The general team workflow now targets main, as documented in CONTRIBUTING.md. For this shared Groups change, the owner explicitly selected a PR targeting checkpoint as an exception. Preserve its newer connected features, then coordinate frontend/API deployment with the service owner after review. Pushing only to main does not update that service. See [CONTRIBUTING.md](../CONTRIBUTING.md) and [approved plan](SHARED_GROUPS_PLAN.md).
 
 Use the normal locked install and documented frontend/backend test commands. No application/test/deployment requires files inside the root workspace/ directory. Local fixtures simulate auth and providers; their passing results do not establish real Supabase or production database verification.

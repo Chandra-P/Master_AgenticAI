@@ -79,13 +79,19 @@ class KeenableSearch:
 
 class SearchRequest(BaseModel):
     model_config=ConfigDict(extra='forbid')
-    query:str=Field(min_length=2,max_length=250)
+    query:str=Field(default='',max_length=250)
     location:str=Field(min_length=2,max_length=150)
     category:Literal['restaurants','attractions','places']='places'
 
     @field_validator('query','location',mode='before')
     @classmethod
     def trimmed(cls,value):return ' '.join(value.split()) if isinstance(value,str) else value
+
+    @field_validator('query')
+    @classmethod
+    def meaningful(cls,value):
+        if value and len(value)<2:raise ValueError('Search terms must be at least 2 characters, or left empty for recommendations.')
+        return value
 
 
 def install_places(app,repo,actor,provider):

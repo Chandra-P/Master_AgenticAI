@@ -8,7 +8,7 @@ Connected chat uses the existing server-only `OPENAI_API_KEY` for short draft co
 
 ## Free pilot on existing Render services
 
-The reviewed deployment branch is `checkpoint/all-projects-2026-11-04`. Changes committed only on `main` require integration into that branch before they appear here. Restarting an older deployed build does not add another branch's code. The reusable Groups integration is browser-local demo functionality; see [Groups](GROUPS.md).
+The reviewed deployment branch is `checkpoint/all-projects-2026-11-04`. The latest integrated development code is on `main`; contributors should branch from and target pull requests to `main`. Git branch integration does not change Render settings. Changes committed only on `main` require integration into that branch before they appear here. Restarting an older deployed build does not add another branch's code. The reusable Groups integration is browser-local demo functionality; see [Groups](GROUPS.md).
 
 Before a presentation, run `node scripts/demo-preflight.mjs` from `tagalong`. It warms services and checks frontend connected configuration plus required API plan/assistant capabilities. It cannot keep a free service awake indefinitely. The [recorded demo guide](GEN_ACADEMY_DEMO.md) describes the local video backup and current measured evaluation. Safe connected GET requests retry at most once on transient failures; mutations never retry automatically.
 
