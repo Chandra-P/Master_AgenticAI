@@ -4,6 +4,18 @@ Tagalong now has four primary plan sections: **Overview, Decisions, Chat and Iti
 
 ## A complete option workflow
 
+### AI-guided starting point
+
+Describe the idea first. AI generation fills working details, draft tasks and activities, and can propose starter interests with a short explanation. The review shows what AI prepared and highlights missing city/dates. Name/type editing and the generated task/schedule details are secondary disclosures. You can change all working details before creating the plan.
+
+**Find ideas for me** searches a disclosed food/outdoors/arts mix when no interests are chosen. If the model proposed interests, they are selected as editable starting suggestions, not confirmed group preferences. Search is explicit and read-only; source links and actual lookup receipts remain visible.
+
+Saved plans show **Ask AI for the next step**. This makes a normal assistant request using current authorized plan context, saves its message/reply in Chat and navigates to that answer. It does not cast votes, confirm decisions or book. The local demo directs users to its explicitly simulated chat instead of claiming a connected provider call.
+
+Current memory remains plan-scoped. The app does not automatically learn a personal profile across past plans or expose other groups’ trips and budgets. Cross-plan preference reuse and anonymized examples would require a separate consent/access design.
+
+Responsive polish covers invitation and confirmation actions, group contact fields, long dialog/result actions and compact mobile group controls. Existing theme colors and typography are retained; source photo captions use readable text sizes.
+
 1. Open a decision, such as Lodging, Place or Activities.
 2. Choose **Add option** to enter a name, public website, estimated per-person cost and notes. The owner adds voting alternatives; members can use **Find options → Add your own → Suggest in comments**.
 3. Alternatively choose **Find options**, describe the need and enter a location. The request retrieves authorized saved group evidence and searches external sources for individual venues. Articles can support research but are not presented as selectable venue options.

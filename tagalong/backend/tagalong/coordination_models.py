@@ -33,6 +33,8 @@ class PlanDraft(Structured):
     suggested_itinerary:list[DraftActivity]=Field(max_length=12)
     suggested_budget:SuggestedBudget
     open_questions:list[str]=Field(max_length=10)
+    suggested_interests:list[Literal['Food','Outdoors','Music','Arts','Nightlife','Relaxed']]=Field(default_factory=list,max_length=4)
+    interest_reason:str=Field(default='',max_length=500)
 
     @field_validator('start','end')
     @classmethod

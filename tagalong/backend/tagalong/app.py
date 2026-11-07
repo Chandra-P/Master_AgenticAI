@@ -68,7 +68,7 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
         ready=bool(repo and authenticate and repo.health())
         status='ok' if ready else ('unavailable' if repo and authenticate else 'unconfigured')
         runner=app.state.ingestion_worker
-        return JSONResponse(status_code=200 if ready else 503,content={'assistant_citation_policy':'evidence-only','assistant_diagnostics':1,'status':status,'mode':'connected','indexing_mode':'embedded' if embedded_enabled else 'external','indexing_worker_running':bool(runner and runner.is_alive()),'capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':bool(places and ready),'calendar':False}})
+        return JSONResponse(status_code=200 if ready else 503,content={'assistant_citation_policy':'evidence-only','assistant_diagnostics':1,'planning_guidance':1,'status':status,'mode':'connected','indexing_mode':'embedded' if embedded_enabled else 'external','indexing_worker_running':bool(runner and runner.is_alive()),'capabilities':{'plans':ready,'assistant':bool(ai and ready),'documents':ready,'places':bool(places and ready),'calendar':False}})
     @app.get('/v1/me')
     def me(a=Depends(actor)):
         from .admin import is_admin

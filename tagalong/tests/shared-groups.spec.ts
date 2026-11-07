@@ -78,7 +78,7 @@ test('generated plan review retains group selection and excludes contact details
  await page.getByRole('button',{name:'Start Planning',exact:true}).click();
  await expect(page.getByRole('region',{name:'Review AI plan draft',exact:true})).toBeVisible();
  const title='Reviewed roster '+crypto.randomUUID().slice(0,8);
- await page.getByLabel('Generated plan name',{exact:true}).fill(title);
+ await page.getByText('Edit plan name and type',{exact:true}).click();await page.getByLabel('Generated plan name',{exact:true}).fill(title);
  await page.getByLabel('Working start date',{exact:true}).fill('2027-05-14');
  await page.getByLabel('Working end date',{exact:true}).fill('2027-05-16');
  await expect(page.getByText(/Intended participants only/).first()).toBeVisible();

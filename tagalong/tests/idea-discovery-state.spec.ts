@@ -1,7 +1,12 @@
 import {test,expect} from '@playwright/test';
-import {addDraftIdea,cityIdeaSuggestions,reviewedSuggestion,type IdeaSuggestion} from '../src/services/idea-discovery';
+import {addDraftIdea,cityIdeaSuggestions,reviewedSuggestion,hasIdeaCity,type IdeaSuggestion} from '../src/services/idea-discovery';
 
 const idea=(id:string):IdeaSuggestion=>({id,name:'Reviewed idea '+id,details:'Verify with the provider.',url:'https://example.com/'+id,source_ids:['source-'+id],category:'Place idea'});
+
+test('the guided summary and discovery agree on missing city placeholders',()=>{
+ for(const city of ['', 'to decide','Somewhere together','Location to decide','TBD','unknown'])expect(hasIdeaCity(city)).toBe(false);
+ expect(hasIdeaCity(' San Francisco ')).toBe(true);
+});
 
 test('reviewed idea selection deduplicates and stays within the eight-idea draft limit',()=>{
  let selected:IdeaSuggestion[]=[];

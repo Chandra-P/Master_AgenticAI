@@ -3,6 +3,7 @@ import {ConnectedService,type RequestScope} from './connected';
 import {publicWebUrl,safeActivityImage} from './place-links';
 
 export const ideaInterests=['Food','Outdoors','Music','Arts','Nightlife','Relaxed'] as const;
+export function hasIdeaCity(city:string){return !!city.trim()&&!/^(?:location to decide|somewhere(?: together)?|to decide|tbd|unknown)$/i.test(city.trim());}
 export interface CityIdea {provenance?:OptionProvenance;id:string;name:string;details:string;url:string;image?:string;source_ids:string[]}
 export interface CityIdeasResult {
  places:CityIdea[];events:(CityIdea&{date:string})[];

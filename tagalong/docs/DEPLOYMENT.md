@@ -4,6 +4,8 @@ For the decision-first release, deploy the matching API before the frontend and 
 
 The connected app runs as a Next.js web service, a FastAPI web service, and an ingestion worker. Supabase supplies Auth/Postgres/Realtime. OpenAI and Pinecone stay server-side. `render.yaml` describes the three hosting services; it has not been provisioned merely by committing it.
 
+The guided-planning release reports `planning_guidance: 1` on the API `/health` response. Verify this marker alongside the frontend's AI draft summary and next-step action when checking that both services have updated. Draft starter interests are backward compatible; no migration or new key is needed.
+
 ## Model typing suggestions
 
 Connected chat uses the existing server-only `OPENAI_API_KEY` for short draft continuations through `/v1/plans/{pid}/typing-suggestion`. It uses `OPENAI_MODEL` (default `gpt-4.1-mini`); optionally set `OPENAI_TYPING_MODEL` to override it. Deploy the frontend and API together. No new key, Pinecone index, worker or database migration is needed. Demo mode stays local. The typing toggle discloses that enabled connected suggestions send drafts to OpenAI after a pause; switching it off cancels pending client work. Do not log request bodies for this endpoint or add drafts to ingestion. See [typing behavior and limits](DISCOVERY_NOTES_TYPING.md).

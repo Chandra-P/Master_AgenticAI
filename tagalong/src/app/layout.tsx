@@ -8,6 +8,7 @@ import '@/features/planning/typing-suggestions.css';
 import '@/features/planning/group-fit.css';
 import './design-system.css';
 import './visual-refresh.css';
+import '@/features/planning/layout-polish.css';
 import {PlanningProvider} from '@/features/planning/store';
 import {Shell} from '@/components/shell';
 export const metadata:Metadata={title:'Tagalong — Good company starts here.',description:'Describe an outing or trip. Tagalong helps your group move from idea to decision to itinerary to experience.'};

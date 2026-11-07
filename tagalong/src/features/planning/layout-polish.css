@@ -1,0 +1,26 @@
+/* Contact fields should use the dialog width, without radio-label margins. */
+.group-editor label.field {margin-inline:0}
+.group-member-top>.icon-button {margin-top:8px}
+.group-card-tools {gap:6px}
+
+/* These controls are direct siblings rather than an action-row component. */
+section[aria-label='Private invitation link'] {display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+section[aria-label='Private invitation link']>h3,
+section[aria-label='Private invitation link']>p,
+section[aria-label='Private invitation link']>.field {flex-basis:100%;min-width:0;margin:0}
+.dialog-content form>.btn:has(+.btn) {margin-inline-end:12px;margin-bottom:10px}
+
+/* Long actions remain readable when the dialog or result card is narrow. */
+.dialog-content .btn,
+.research-options .btn,
+section[aria-label='Private invitation link']>.btn {max-width:100%;white-space:normal;text-align:center}
+.dialog-content .btn>svg,
+.research-options .btn>svg {flex-shrink:0}
+.research-options article {min-width:0;overflow-wrap:anywhere}
+.idea-discovery .idea-suggestions figcaption {font-size:13px;line-height:1.5}
+
+@media(max-width:700px) {
+ .group-card-actions>.btn {flex:1 1 100%}
+ .group-card-tools {gap:8px}
+ section[aria-label='Private invitation link']>.btn {flex:1 1 100%}
+}

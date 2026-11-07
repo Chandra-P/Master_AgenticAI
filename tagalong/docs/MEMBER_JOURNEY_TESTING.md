@@ -59,3 +59,11 @@ The full frontend run passed 162 cases; four redundant mobile visual runs are sk
 The complete shared-workspace run passed 52 cases, with four redundant mobile visual cases skipped. The three-member invitation → contextual comments → objection resolution → current-version voting → owner confirmation → finalization → reload journey passed on both desktop and mobile. Tests also retain the teammate Discover/Groups features and cover account isolation, owner transfer, private evidence, fake MCP bookings and admin/member separation.
 
 Public provider quality and organizer inventory are not established by synthetic place/event fixtures. The separately authorized saved account demo uses actual configured Pinecone/OpenAI calls for its recorded live check; scripted dialogue and votes remain visibly distinct from that proof.
+
+## Guided AI and layout audit follow-up
+
+The guided-flow changes passed 259 backend cases (one disposable-database case skipped) and 164 frontend cases (four duplicate mobile visual cases skipped). The repeated shared-workspace run passed 56 cases with four duplicate visual cases skipped. After adding a separate current-context requirement for final review, eight focused shared cases and ten frontend decision/final-review cases were rerun, covering both viewports and the complete three-member journey.
+
+The browser regression reproduces a plan-list response lagging behind the authoritative decision snapshot: current voting stays usable while final review requires matching plan context. The initial mobile failure exposed this interaction delay; it was corrected and the journey rerun successfully. Layout checks cover desktop, 390px and 320px widths, with no clipped actions, horizontal overflow or undersized text found in the guided draft. Existing visual audits cover the remaining app routes and dialogs.
+
+A separate live model check extracted supplied dates and budget and returned starter interests with an explanation. It used a fictional prompt and wrote no production plans. These checks do not establish cross-plan preference learning or improvements attributable to Pinecone; see the current plan-scoped retrieval boundaries in CONNECTED_JOURNEY.md.

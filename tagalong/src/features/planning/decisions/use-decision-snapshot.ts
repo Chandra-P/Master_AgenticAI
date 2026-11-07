@@ -67,6 +67,8 @@ export function useDecisionSnapshot(plan:Plan){
   return result;
  },[key,mode,service,memberId]);
  const visibleSnapshot=snapshotKey===key?snapshot:null;
- const refreshing=!!visibleSnapshot&&mode==='connected'&&visibleSnapshot.plan_revision!==plan.revision;
+ // The decision endpoint can be newer than the independently polled plan list.
+ // Only an older decision snapshot must wait; commands use its authoritative revision.
+ const refreshing=!!visibleSnapshot&&mode==='connected'&&visibleSnapshot.plan_revision<(plan.revision??0);
  return {snapshot:visibleSnapshot,refreshing,loading,error,pending:pending||refreshing,run,reload,loadComments,summarize};
 }

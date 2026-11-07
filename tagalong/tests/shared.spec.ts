@@ -161,7 +161,7 @@ test('natural-language generation creates a reviewed plan and proactively summar
  const review=page.getByRole('region',{name:'Review AI plan draft'});
  await expect(review).toBeVisible();
  await expect(review.getByLabel('Working start date')).toHaveValue('');
- await review.getByLabel('Generated plan name').fill(title);
+ await review.getByText('Edit plan name and type',{exact:true}).click();await review.getByLabel('Generated plan name').fill(title);
  await review.getByLabel('Working start date').fill('2027-05-14');await review.getByLabel('Working end date').fill('2027-05-16');
  await review.getByRole('button',{name:'Create reviewed plan',exact:true}).click();
  await expect(page.getByRole('heading',{name:title+'.',exact:true,level:1})).toBeVisible();
