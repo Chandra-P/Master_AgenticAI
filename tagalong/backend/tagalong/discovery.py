@@ -62,6 +62,7 @@ def extract_venues(pages,query,location,category):
 
 
 def discover(provider,query,location,category,extractor=None):
+    query=query or {'restaurants':'popular highly regarded local restaurants','attractions':'top must-visit attractions and things to do'}.get(category,'top attractions and best places to eat')
     rows=provider.search('official website '+query+(' menu' if category=='restaurants' else ''),location,category)
     candidates=[];hosts=set()
     for row in rows:

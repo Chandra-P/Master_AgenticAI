@@ -33,7 +33,7 @@ def test_search_requires_auth_bounds_inputs_and_limits_calls():
     payload={'query':'vegetarian dinner','location':'San Francisco','category':'restaurants'}
     assert c.post('/v1/places/search',json=payload).status_code==401
     headers={'Authorization':'Bearer account'}
-    assert c.post('/v1/places/search',headers=headers,json={**payload,'query':' '}).status_code==422
+    assert c.post('/v1/places/search',headers=headers,json={**payload,'query':'a'}).status_code==422
     for _ in range(10):
         r=c.post('/v1/places/search',headers=headers,json=payload)
         assert r.status_code==200

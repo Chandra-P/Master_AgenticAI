@@ -1,5 +1,11 @@
 # Tagalong verification and release status
 
+## Combined PR #3 and decision-first release — 2026-11-06
+
+The owner authorized integration, full combined tests and publication. Shyam's original `3dd344b` Discover commit is merged with redesign `7a75367`, retaining both histories. His four production Discover source files match PR #3 exactly; the existing screenshot test now waits for real restaurant articles rather than matching the new loading skeletons. Next.js regenerated its production route declarations during the build.
+
+Combined lint, TypeScript and production build passed; all 134 frontend tests and 204 backend tests passed (one gated SQL skip). All 26 shared-workspace tests passed on the combined source. Publication is approved and public capability verification is pending. No migration or new dependency is needed. Earlier release-candidate notes below describe their historical state before this approved integration.
+
 ## Decision-first release candidate — 2026-11-06
 
 Implemented the approved homepage and decision workflow on local branch `codex/decision-first-experience`. **Unpublished: no push or deployment has been performed for this release.** The design retains the existing palette/type/shell, adds next-action cards and consensus history, defaults plans to Decisions, persists contextual comments and versioned ballots, supports owner confirmation/finalization/reopening, and exposes bounded evidence-backed decision summaries on explicit request. See [Decision workflow](DECISION_WORKFLOW.md) for state, compatibility rules and release order.
