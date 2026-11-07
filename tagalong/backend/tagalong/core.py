@@ -31,6 +31,8 @@ class MemoryRepository:
             snapshot = copy.deepcopy(self.state)
             try:
                 result=fn(self.state)
+                from .decisions import reconcile
+                reconcile(snapshot,self.state)
                 from .coordination import track_activity
                 track_activity(snapshot,self.state)
                 return copy.deepcopy(result)
@@ -82,6 +84,7 @@ def create(s,a,b):
 def update(s,a,pid,incoming,revision):
     p=access(s,pid,a)
     if p['revision']!=revision: fail(409,'Plan changed; reload before retrying')
+    if any(key in incoming for key in ('decisions','decision_state','finalization','finalized','score','comments')): fail(403,'Decision state is server-controlled')
     projected=view(s,p,a)
     if incoming.get('role')!=projected['role']: fail(403,'Invalid role')
     for key in ('id','owner_id','members','preferences'):
@@ -89,6 +92,9 @@ def update(s,a,pid,incoming,revision):
     from .models import validate_snapshot, ValidationError
     try: validate_snapshot(incoming)
     except ValidationError: fail(422,'Invalid plan snapshot')
+    reservation_ids={b['itinerary_entry_id'] for b in s.get('demo_bookings',{}).values() if b['plan_id']==pid}
+    if [x for x in incoming.get('itinerary',[]) if x.get('id') in reservation_ids]!=[x for x in p['itinerary'] if x.get('id') in reservation_ids]:
+        fail(403,'Reservation itinerary entries are server-controlled')
     old={m['id']:m for m in p['messages']}; proposed=incoming.get('messages',[])
     if len({m.get('id') for m in proposed})!=len(proposed): fail(422,'Duplicate message IDs')
     for mid,m in old.items():

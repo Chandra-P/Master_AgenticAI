@@ -60,6 +60,8 @@ class FitOutput(BaseModel):
 def fit_evidence(s,pid,query,hits,option):
     p=s['plans'][pid]
     facts={key:p[key] for key in ('title','start','end','location','budget')}
+    from .decisions import context as decision_context
+    facts['decision_context']=decision_context(s,pid)
     facts['budget_basis']='per person; 0 means not set'
     preferences=[x['label'] for x in p['preferences'] if x['confirmed']]
     facts['confirmed_preferences']=preferences[:30]
@@ -93,6 +95,9 @@ def fit_evidence(s,pid,query,hits,option):
             item=copy.deepcopy(src);item['text']=item['text'][:1500]
             item['excerpt_truncated']=len(item['text'])<len(src['text'])
             recent.append(item)
+    decision_sources=[copy.deepcopy(src) for src in s['sources'].values() if src['plan_id']==pid and not src['deleted'] and src.get('kind') in ('decision','decision_comment')]
+    for item in decision_sources[-2:]:
+        item['text']=item['text'][:3000];item['excerpt_truncated']=len(item['text'])<len(s['sources'][pid+':'+item['id']]['text']);recent.append(item)
     selected=[]
     # Preserve semantic history while also including fresh, not-yet-indexed chat.
     for item in history[:2]+recent[-2:]+notes+history[2:]:

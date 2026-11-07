@@ -67,6 +67,9 @@ def booking_readiness(s, pid, a):
         blockers.append({'label': 'Choose a destination or meeting place', 'tab': 'Planning board'})
     if p.get('budget', 0) <= 0:
         blockers.append({'label': 'Set a working group budget', 'tab': 'Planning board'})
+    record=s.get('decision_state',{}).get(pid)
+    if record and record.get('engaged') and not record.get('finalization'):
+        blockers.append({'label':'Confirm required decisions and finalize the reviewed plan','tab':'Decisions'})
     approved = s.get('booking_decision_approvals', {}).get(pid, {}).get('fingerprint') == fingerprint
     return {'ready': not blockers and approved, 'blockers': blockers, 'decisions': decisions, 'approved': approved,
             'can_approve': p['owner_id'] == a.id and not blockers}

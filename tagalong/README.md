@@ -2,7 +2,9 @@
 
 **Good plans. Great company.**
 
-A group planning app with a browser-local demo and an authenticated shared workspace. Built with Next.js, FastAPI, Supabase Auth/Postgres/Realtime, LangGraph, OpenAI and Pinecone. The public app is at https://tagalong-web-clbe.onrender.com; verify each new release against both frontend and API rather than assuming a pushed commit is deployed.
+An AI-assisted group decision-making app that helps people move from an idea to consensus and a finalized plan, with a browser-local demo and authenticated shared workspace. Built with Next.js, FastAPI, Supabase Auth/Postgres/Realtime, LangGraph, OpenAI and Pinecone. The public app is at https://tagalong-web-clbe.onrender.com; verify each new release against both frontend and API rather than assuming a pushed commit is deployed.
+
+The decision-first experience adds action-oriented home cards, versioned decisions/responses, contextual comments, consent progress, owner confirmation/finalization and evidence-backed on-demand AI summaries. Its implementation and compatibility rules are documented in [Decision workflow](docs/DECISION_WORKFLOW.md). A score of 100% requires explicit finalization and never means a booking was made.
 
 ## Shared workspace
 
@@ -23,7 +25,7 @@ npm run dev
 
 Open http://localhost:3000. The dashboard is at `/`; the product landing page is at `/welcome`.
 
-In VS Code, clone `https://github.com/Chandra-P/Master_AgenticAI.git`, then open its `tagalong` folder. Use the reviewed application branch until its PR is merged.
+In VS Code, clone `https://github.com/Chandra-P/Master_AgenticAI.git`, then open its `tagalong` folder. Create feature branches from `main`; unpublished feature work is available only in its named local branch until released.
 
 ## Demo features
 

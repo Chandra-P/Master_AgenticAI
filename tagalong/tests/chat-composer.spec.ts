@@ -2,7 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 
 test('an old acceptance frame cannot move the caret in a later draft',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));
- await page.goto('/');await page.getByRole('link',{name:'Open Coastal weekend'}).click();
+ await page.goto('/');await page.getByRole('link',{name:'Open Coastal weekend'}).click();await page.getByRole('tab',{name:'Chat',exact:true}).click();
  const draft=page.getByLabel('Message your group');
  await draft.fill('Let');
  await page.evaluate(()=>{
@@ -23,7 +23,7 @@ test('an old acceptance frame cannot move the caret in a later draft',async({pag
 test('typing help explains local suggestions and hides completions while editing mid-draft',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));
  await page.goto('/');
- await page.getByRole('link',{name:'Open Coastal weekend'}).click();
+ await page.getByRole('link',{name:'Open Coastal weekend'}).click();await page.getByRole('tab',{name:'Chat',exact:true}).click();
  const draft=page.getByLabel('Message your group');
  await expect(page.getByText('Try “Let” or a planning word. Suggestions stay on this device.',{exact:true})).toBeVisible();
  await draft.fill('Let');
@@ -59,7 +59,7 @@ async function connectedChat(page:Page,onSuggestion:(draft:string,revision:numbe
  await page.getByLabel('Password',{exact:true}).fill('test-password-123');
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Signed in',exact:true})).toBeVisible();
- await page.goto('/plans/'+plan.id);
+ await page.goto('/plans/'+plan.id+'?tab=Chat');
  return page.getByLabel('Message your group');
 }
 
@@ -107,6 +107,7 @@ test('late model completion cannot replace an edited draft or survive leaving th
  await expect(draft).toHaveValue('Changed model draft');
  await page.getByRole('link',{name:'All plans',exact:true}).click();
  await page.getByRole('link',{name:'Open Typing model plan',exact:true}).click();
+ await page.getByRole('tab',{name:'Chat',exact:true}).click();
  await expect(draft).toHaveValue('');
  await expect(page.getByRole('button',{name:/Accept suggestion/})).toHaveCount(0);
 });

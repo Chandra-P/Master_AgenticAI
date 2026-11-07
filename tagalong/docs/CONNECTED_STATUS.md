@@ -1,5 +1,13 @@
 # Tagalong verification and release status
 
+## Decision-first release candidate — 2026-11-06
+
+Implemented the approved homepage and decision workflow on local branch `codex/decision-first-experience`. **Unpublished: no push or deployment has been performed for this release.** The design retains the existing palette/type/shell, adds next-action cards and consensus history, defaults plans to Decisions, persists contextual comments and versioned ballots, supports owner confirmation/finalization/reopening, and exposes bounded evidence-backed decision summaries on explicit request. See [Decision workflow](DECISION_WORKFLOW.md) for state, compatibility rules and release order.
+
+Fresh local checks: lint, TypeScript and production standalone build passed; 134 frontend tests passed across desktop/mobile; 204 backend tests passed with one gated SQL test skipped. All 26 shared-workspace release-candidate tests passed, including two-member consent/comments, durable finalization/reopening and explicit fake-provider AI decision summaries. Responsive screenshots at 320/390/768/1440px passed overflow checks and were visually inspected. Tests use synthetic members, transactional memory persistence and fake providers; these results do not establish live Supabase email, real Postgres/RLS or current production-provider behavior.
+
+Independent review findings were fixed and covered by regression tests: returned AI context, finalization retained across protected booking/cancellation records, actor/role-scoped narratives, malformed transport fallback and older comment-page retention. Existing legacy polls are preserved as unclassified decisions rather than converted to approvals; their booking workflow remains compatible until explicit decision mutations engage the new gate. No schema migration, dependency installation or paid provider call was used. During verification, Shyam pushed Discover commit `3dd344b` to the deployment branch and opened PR #3 against main. Its public Discover bundle markers were verified live while PR #3 remained open/unmerged. That separate change is not included in this local candidate; reconcile it before publication and do not overwrite the deployment branch.
+
 ## Reusable Groups integration — 2026-11-06
 
 ShyamK's `895593a` Groups commit is integrated into the current deployment branch while preserving authenticated planning, admin access, RAG and MCP booking demos. Groups are explicitly browser-local demo data; connected users see an explanation and can choose **Explore demo groups**. They do not create shared memberships or send invitations. See [Groups](GROUPS.md).

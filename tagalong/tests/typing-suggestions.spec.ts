@@ -39,7 +39,7 @@ test.describe('chat typing suggestions',()=>{
 test.beforeEach(async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));
  await page.goto('/');
- await page.getByRole('link',{name:'Open Coastal weekend'}).click();
+ await page.getByRole('link',{name:'Open Coastal weekend'}).click();await page.getByRole('tab',{name:'Chat',exact:true}).click();
  await expect(page.getByLabel('Message your group')).toBeVisible();
 });
 
@@ -102,6 +102,7 @@ test('uses plan context and clears the draft when moving to another plan',async(
  await expect(draft).toHaveValue('Thanks Maya!');
  await page.getByRole('link',{name:'All plans',exact:true}).click();
  await page.getByRole('link',{name:'Open Sunday supper club'}).click();
+ await page.getByRole('tab',{name:'Chat',exact:true}).click();
  await expect(draft).toHaveValue('');
  await expect(page.getByRole('button',{name:/Accept suggestion/})).toHaveCount(0);
  await draft.fill("Let's explore ");

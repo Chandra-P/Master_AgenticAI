@@ -1,7 +1,7 @@
-﻿import {test,expect} from '@playwright/test';
+import {test,expect} from '@playwright/test';
 test('chat makes the honest reservation demo discoverable without sending the draft',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('tagalong-workspace-mode','demo'));
- await page.goto('/');await page.getByRole('link',{name:'Open Coastal weekend'}).click();
+ await page.goto('/');await page.getByRole('link',{name:'Open Coastal weekend'}).click();await page.getByRole('tab',{name:'Chat',exact:true}).click();
  await page.getByLabel('Message your group').fill('private unsent draft');
  await page.getByRole('button',{name:'Try demo restaurant booking'}).click();
  await expect(page.getByRole('tab',{name:'Demo bookings'})).toHaveAttribute('aria-selected','true');

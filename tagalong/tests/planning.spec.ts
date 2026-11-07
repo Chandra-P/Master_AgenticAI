@@ -12,7 +12,7 @@ test('create a trip, chat with simulated AI, vote and review the live board',asy
  await page.getByLabel('Invite participants').fill('Maya, Sam');
  await page.getByRole('button',{name:'Create demo plan'}).click();
  await expect(page.getByRole('heading',{name:'Autumn friends escape',level:1})).toBeVisible();
- await page.getByLabel('Message your group').fill('@Tagalong suggest a relaxed weekend');
+ await page.getByRole('tab',{name:'Chat',exact:true}).click();await page.getByLabel('Message your group').fill('@Tagalong suggest a relaxed weekend');
  await page.getByRole('button',{name:'Send message'}).click();
  await expect(page.getByText('Simulated assistant', {exact:true}).first()).toBeVisible();
  await page.getByRole('tab',{name:'Planning board'}).click();

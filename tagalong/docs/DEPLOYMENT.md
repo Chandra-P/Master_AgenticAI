@@ -1,5 +1,7 @@
 # Deploying Tagalong
 
+For the decision-first release, deploy the matching API before the frontend and verify both with real member accounts. No SQL migration or new provider is required; versioned decision state uses the existing transactional JSON repository. See [Decision workflow](DECISION_WORKFLOW.md) and [release verification](CONNECTED_STATUS.md). Local release candidates are not published until the owner requests it.
+
 The connected app runs as a Next.js web service, a FastAPI web service, and an ingestion worker. Supabase supplies Auth/Postgres/Realtime. OpenAI and Pinecone stay server-side. `render.yaml` describes the three hosting services; it has not been provisioned merely by committing it.
 
 ## Model typing suggestions
