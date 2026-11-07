@@ -1,4 +1,4 @@
-import {ConnectedService} from './connected';
+import {ApiError,ConnectedService} from './connected';
 
 export type DecisionResponse='support'|'can_live_with'|'object'|'abstain';
 export type DecisionStatus='needs_options'|'awaiting_responses'|'needs_discussion'|'ready_to_confirm'|'confirmed'|'reopened';
@@ -25,16 +25,39 @@ export type DecisionCommand=
  |{kind:'reopenPlan'};
 
 export const decisionStatusLabel=(status:DecisionStatus)=>({needs_options:'Needs options',awaiting_responses:'Awaiting responses',needs_discussion:'Needs discussion',ready_to_confirm:'Ready to confirm',confirmed:'Confirmed',reopened:'Reopened'}[status]);
+interface DecisionRequestContext {memberId?:string;isCurrent?:()=>boolean}
+const requestScope=(context:DecisionRequestContext)=>({userId:context.memberId,isCurrent:context.isCurrent});
 
 export class DecisionService {
  constructor(private api:ConnectedService){}
- async load(planId:string){return validateDecisionSnapshot(await this.api.request<unknown>('/v1/plans/'+encodeURIComponent(planId)+'/decisions'),planId);}
- comments(planId:string,decisionId:string,offset=0){return this.api.request<DecisionComment[]>('/v1/plans/'+encodeURIComponent(planId)+'/decisions/'+encodeURIComponent(decisionId)+'/comments?offset='+offset+'&limit=50');}
- summarize(snapshot:DecisionSnapshot,decisionId:string){
+ async load(planId:string,context:DecisionRequestContext={}){return validateDecisionSnapshot(await this.api.request<unknown>('/v1/plans/'+encodeURIComponent(planId)+'/decisions',undefined,requestScope(context)),planId);}
+ comments(planId:string,decisionId:string,offset=0,context:DecisionRequestContext={}){return this.api.request<DecisionComment[]>('/v1/plans/'+encodeURIComponent(planId)+'/decisions/'+encodeURIComponent(decisionId)+'/comments?offset='+offset+'&limit=50',undefined,requestScope(context));}
+ summarize(snapshot:DecisionSnapshot,decisionId:string,context:DecisionRequestContext={}){
   const decision=snapshot.decisions.find(d=>d.id===decisionId);if(!decision)throw new Error('Decision not found.');
-  return this.api.request<DecisionSummary>('/v1/plans/'+encodeURIComponent(snapshot.plan_id)+'/decisions/'+encodeURIComponent(decisionId)+'/summary',{method:'POST',body:JSON.stringify({expected_revision:snapshot.plan_revision,expected_version:decision.version})});
+  return this.api.request<DecisionSummary>('/v1/plans/'+encodeURIComponent(snapshot.plan_id)+'/decisions/'+encodeURIComponent(decisionId)+'/summary',{method:'POST',body:JSON.stringify({expected_revision:snapshot.plan_revision,expected_version:decision.version})},requestScope(context));
  }
- async execute(snapshot:DecisionSnapshot,command:DecisionCommand){
+ async execute(snapshot:DecisionSnapshot,command:DecisionCommand,context:DecisionRequestContext={}){
+  const current=context.isCurrent||(()=>true);
+  if(!current())throw new Error('The workspace changed. Review the current plan before saving.');
+  try{return await this.write(snapshot,command,context);}
+  catch(error){
+   // A 409 guarantees this command was not applied. Never retry uncertain writes.
+   if(!(error instanceof ApiError)||error.status!==409||!context.isCurrent||(command.kind!=='respond'&&command.kind!=='comment'))throw error;
+   const latest=await this.load(snapshot.plan_id,context);
+   if(!current())throw new Error('The workspace changed. Review the current plan before saving.');
+   const previous=snapshot.decisions.find(d=>d.id===command.decisionId),decision=latest.decisions.find(d=>d.id===command.decisionId);
+   if(!previous||!decision||decision.version!==previous.version||decision.eligibleMemberIds.length!==previous.eligibleMemberIds.length||previous.eligibleMemberIds.some(id=>!decision.eligibleMemberIds.includes(id)))throw new Error('This decision changed. Review its latest options before saving.');
+   if(command.kind==='respond'){
+    const member=context.memberId;
+    if(!member||!decision.eligibleMemberIds.includes(member)||latest.finalized||decision.status==='confirmed')throw new Error('This decision changed. Review the current responses before saving.');
+    const oldVote=previous.ballots.find(b=>b.memberId===member),newVote=decision.ballots.find(b=>b.memberId===member);
+    if(oldVote?.response!==newVote?.response||oldVote?.optionId!==newVote?.optionId||oldVote?.decisionVersion!==newVote?.decisionVersion)throw new Error('Your response changed on another device. Review it before saving.');
+   }
+   // Exactly one rebase; the server still validates both current revisions.
+   return this.write(latest,command,context);
+  }
+ }
+ private async write(snapshot:DecisionSnapshot,command:DecisionCommand,context:DecisionRequestContext){
   const base='/v1/plans/'+encodeURIComponent(snapshot.plan_id);
   const data:Record<string,unknown>={expected_revision:snapshot.plan_revision};
   let path=base+'/decisions';let method='POST';
@@ -53,7 +76,7 @@ export class DecisionService {
    case 'finalize':path=base+'/finalize';Object.assign(data,{idempotency_key:command.idempotencyKey,reviewed:command.reviewed});break;
    case 'reopenPlan':path=base+'/reopen';break;
   }
-  return validateDecisionSnapshot(await this.api.request<unknown>(path,{method,body:JSON.stringify(data)}),snapshot.plan_id);
+  return validateDecisionSnapshot(await this.api.request<unknown>(path,{method,body:JSON.stringify(data)},requestScope(context)),snapshot.plan_id);
  }
 }
 

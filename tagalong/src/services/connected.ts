@@ -17,17 +17,21 @@ export function getAuth(config:PublicConfig) {
   return client;
 }
 export class ApiError extends Error {constructor(message:string,public status:number){super(message);}}
+export interface RequestScope {userId?:string;isCurrent?:()=>boolean}
 export class ConnectedService {
   constructor(private auth:SupabaseClient) {}
-  async request<T>(path:string,options:RequestInit={}):Promise<T> {
+  async request<T>(path:string,options:RequestInit={},scope?:RequestScope):Promise<T> {
     const {data:{session},error}=await this.auth.auth.getSession();
     if(error || !session) throw new ApiError('Your session ended. Please sign in again.',401);
+    const assertScope=()=>{if(scope&&((scope.userId&&session.user.id!==scope.userId)||(scope.isCurrent&&!scope.isCurrent())))throw new ApiError('Your account or workspace changed. Review the current plan before saving.',401);};
+    assertScope();
     const timeout=AbortSignal.timeout(65_000);
     const signal=options.signal?AbortSignal.any([options.signal,timeout]):timeout;
     const read=(options.method||'GET').toUpperCase()==='GET';
     const unavailable='Shared workspace is temporarily unavailable. Please wait a moment and try again.';
     for(let attempt=0;attempt<2;attempt++){
       signal.throwIfAborted();
+      assertScope();
       let result:Response;
       try{
         result=await fetch('/api/backend'+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,'X-Workspace-Mode':readWorkspaceRole(session.user.id),...options.headers},signal});

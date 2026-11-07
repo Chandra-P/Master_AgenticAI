@@ -6,7 +6,7 @@ from tests.test_workflows import FakeAI
 def app_factory():
     repo=MemoryRepository()
     repo.state['app_admins']={'alice':{'granted_by':'explicit_test_fixture'}}
-    accounts={'test-alice':Actor('alice','alice@example.test','alice'),'test-bob':Actor('bob','bob@example.test','bob')}
+    accounts={'test-alice':Actor('alice','alice@example.test','alice'),'test-bob':Actor('bob','bob@example.test','bob'),'test-carol':Actor('carol','carol@example.test','carol')}
     def authenticate(token):
         from tagalong.core import fail
         if token not in accounts: fail(401,'Invalid test session')
