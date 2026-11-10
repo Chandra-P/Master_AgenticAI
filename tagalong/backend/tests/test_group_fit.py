@@ -92,6 +92,19 @@ def test_verified_history_is_retrieved_without_history_keyword():
     assert next(x for x in response.json()['sources'] if x['id']=='saved:chat')['retrieval_origin']=='pinecone'
 
 
+def test_verified_history_accepts_integral_float_chunk_metadata_from_vector_store():
+    repo,ai,c,h,p=setup()
+    repo.transact(lambda s:source(s,p['id'],'chat','Chat evidence','We prefer a quiet vegetarian dinner.'))
+    ai.hits=[{'id':'chat','version':1.0,'chunk':0.0}]
+
+    response=check(c,h,p)
+
+    assert response.status_code==200,response.text
+    retrieved=next(x for x in response.json()['sources'] if x['id']=='saved:chat')
+    assert retrieved['retrieval_origin']=='pinecone'
+    assert retrieved['text']=='We prefer a quiet vegetarian dinner.'
+
+
 def test_nonzero_retrieved_chunk_keeps_the_complete_indexed_text():
     from tagalong.core import source
     repo,ai,c,h,p=setup()

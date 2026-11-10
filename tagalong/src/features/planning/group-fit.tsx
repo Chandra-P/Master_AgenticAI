@@ -20,7 +20,7 @@ function GroupFitForm({plan,initialOption}:{plan:Plan;initialOption?:GroupFitOpt
  const [url,setUrl]=useState(initialOption?.url||'');
  const [cost,setCost]=useState(initialOption?.estimated_cost_per_person?.toString()||'');
  const [result,setResult]=useState<GroupFitResult|null>(null);
- const [busy,setBusy]=useState(false),[error,setError]=useState(''),[expanded,setExpanded]=useState<string|null>(null);
+ const [busy,setBusy]=useState(false),[error,setError]=useState('');
  const sequence=useRef(0),controller=useRef<AbortController|null>(null),pending=useRef(false);
  const sourcePrefix=useId();
  const detailsId=sourcePrefix+'-option-details';
@@ -30,7 +30,7 @@ function GroupFitForm({plan,initialOption}:{plan:Plan;initialOption?:GroupFitOpt
 
  function invalidate(){
   sequence.current++;controller.current?.abort();controller.current=null;pending.current=false;
-  setBusy(false);setResult(null);setError('');setExpanded(null);
+  setBusy(false);setResult(null);setError('');
  }
 
  async function assess(){
@@ -55,28 +55,32 @@ function GroupFitForm({plan,initialOption}:{plan:Plan;initialOption?:GroupFitOpt
 
  function showSource(event:MouseEvent<HTMLAnchorElement>,id:string){
   if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
-  event.preventDefault();setExpanded(id);
+  event.preventDefault();
   const index=result?.sources.findIndex(source=>source.id===id)??-1;
-  requestAnimationFrame(()=>document.getElementById(sourcePrefix+'-'+index)?.scrollIntoView({behavior:'smooth',block:'nearest'}));
+  const section=document.getElementById(sourcePrefix+'-evidence');
+  const item=document.getElementById(sourcePrefix+'-'+index);
+  if(section instanceof HTMLDetailsElement)section.open=true;
+  if(item instanceof HTMLDetailsElement)item.open=true;
+  requestAnimationFrame(()=>item?.scrollIntoView({behavior:'smooth',block:'nearest'}));
  }
 
  function reasons(items:GroupFitReason[]){return <ul>{items.map((item,index)=><li key={index}><p>{item.text}</p><div className="group-fit-citations">{item.source_ids.map(id=>{
   const sourceIndex=result?.sources.findIndex(source=>source.id===id)??-1;
   const source=result?.sources[sourceIndex];
-  return source?<a key={id} href={'#'+sourcePrefix+'-'+sourceIndex} onClick={event=>showSource(event,id)}>View source: {source.title}</a>:null;
+  return source?<a key={id} href={'#'+sourcePrefix+'-'+sourceIndex} aria-label={'Evidence '+(sourceIndex+1)+': '+source.title} title={source.title} onClick={event=>showSource(event,id)}>Evidence {sourceIndex+1}</a>:null;
  })}</div></li>)}</ul>;}
 
  return <section className="tab-content group-fit-panel">
   <div className="eyebrow">DECIDE WITH CONTEXT</div>
   <h2>Does this option fit our group?</h2>
-  <p>Compare an option with current plan facts, saved Notes, and relevant conversation evidence. This is advice for the group to review, not an approval or booking.</p>
+  <p>See how this option fits your group’s recorded needs.</p>
   {!connected?<p>Sign in to a shared plan to check an option against your group’s sources. <Link href="/account">Open your account</Link></p>:<>
    <form onSubmit={event=>{event.preventDefault();void assess();}} className="group-fit-form">
     <label className="field">Option name<input required maxLength={160} value={name} onChange={event=>{invalidate();setName(event.target.value);}} placeholder="Restaurant, activity, or travel option"/></label>
     <div className="field"><label htmlFor={detailsId}>Option details or menu</label><textarea id={detailsId} maxLength={6000} value={details} onChange={event=>{invalidate();setDetails(event.target.value);}} rows={5} placeholder="Paste the menu, accessibility details, or information you want checked."/></div>
     <div className="group-fit-inputs"><label className="field">Estimated cost per person<input type="number" min={0} step="0.01" value={cost} onChange={event=>{invalidate();setCost(event.target.value);}} placeholder="Optional estimate"/></label>
     <label className="field">Option website (optional)<input type="url" maxLength={2048} value={url} onChange={event=>{invalidate();setUrl(event.target.value);}} placeholder="https://venue.example/menu"/></label></div>
-    <p className="muted">Your option and selected plan evidence are sent to OpenAI. Option details are user-provided and unverified; website links are not fetched. Add a menu in Notes or paste its text here. Current hours, availability, accessibility, and allergen handling still need direct confirmation.</p>
+    <details className="group-fit-disclosure"><summary>What the AI checks</summary><p>Your option is compared with saved group context and plan facts. Website links are not fetched; venue details, prices, hours, access and allergy handling need direct confirmation.</p></details>
     <Button type="submit" disabled={busy}>{busy?'Checking your group’s context…':'Check group fit'}</Button>
    </form>
    {busy&&<p role="status">Retrieving group evidence and checking this option…</p>}
@@ -84,20 +88,22 @@ function GroupFitForm({plan,initialOption}:{plan:Plan;initialOption?:GroupFitOpt
    {result&&<div className="group-fit-result" aria-live="polite">
     <h3>{result.verdict==='fits'?'Fits the recorded constraints':result.verdict==='conflicts'?'Conflicts with the group':'More information needed'}</h3>
     <p>{result.summary}</p>
+    <div className="group-fit-agent-trace" aria-label="AI work used"><span>{result.retrieval_status==='unavailable'?'Pinecone RAG unavailable':`Pinecone RAG · ${result.sources.filter(source=>source.retrieval_origin==='pinecone').length} ${result.sources.filter(source=>source.retrieval_origin==='pinecone').length===1?'source':'sources'}`}</span><span>OpenAI group-fit check</span><span>Group decides</span></div>
     {result.retrieval_status==='unavailable'&&<p className="group-fit-notice">Historical retrieval was unavailable. This check uses the current plan facts and any available saved Notes; it may miss earlier discussion.</p>}
     {result.index_freshness&&result.index_freshness.status!=='current'&&<p className="group-fit-notice" role="status">{result.index_freshness.status==='pending'?'Some saved sources are waiting to be indexed.':'Some saved sources could not be indexed.'} Current Notes and plan facts are included; older discussion may be missing ({result.index_freshness.indexed_sources} of {result.index_freshness.current_sources} current sources indexed).</p>}
     {result.context_truncated&&<p className="group-fit-notice">Only selected evidence excerpts were considered. Review the original sources for full context.</p>}
-    {result.matches.length>0&&<section><h4>What fits</h4>{reasons(result.matches)}</section>}
-    {result.conflicts.length>0&&<section><h4>What conflicts</h4>{reasons(result.conflicts)}</section>}
-    {result.unknowns.length>0&&<section><h4>What to check next</h4><ul>{result.unknowns.map((item,index)=><li key={index}>{item}</li>)}</ul></section>}
-    <section className="group-fit-sources"><h4>Sources used</h4><p>Current plan facts are authoritative. Menus, messages, and option details are evidence to review, not guarantees about a venue.</p>
-     {result.sources.length===0&&<p>No supporting source excerpts were returned. Add a Note or more option details and check again.</p>}
-     {result.sources.map((source,index)=><article id={sourcePrefix+'-'+index} key={source.id}>
-      <button type="button" aria-expanded={expanded===source.id} aria-controls={sourcePrefix+'-text-'+index} onClick={()=>setExpanded(expanded===source.id?null:source.id)}>Source: {source.title}</button><small className="group-fit-source-origin">{originLabel(source.retrieval_origin)}</small>
-      {expanded===source.id&&<p id={sourcePrefix+'-text-'+index}>{source.text}</p>}
-     </article>)}
-    </section>
-    <p className="muted">Nothing was added to the itinerary and no decision was changed. Discuss the result, update missing details, or create a poll before deciding.</p>
+    {(result.matches.length+result.conflicts.length+result.unknowns.length)>0&&<details className="group-fit-findings"><summary>Review findings · {result.matches.length+result.conflicts.length+result.unknowns.length}</summary>
+     {result.matches.length>0&&<section><h4>What fits</h4>{reasons(result.matches)}</section>}
+     {result.conflicts.length>0&&<section><h4>What conflicts</h4>{reasons(result.conflicts)}</section>}
+     {result.unknowns.length>0&&<section><h4>What to check next</h4><ul>{result.unknowns.map((item,index)=><li key={index}>{item}</li>)}</ul></section>}
+    </details>}
+    {result.sources.length===0?<p className="group-fit-empty-evidence">No group evidence found. Add a Note or option details.</p>:<details className="group-fit-sources" id={sourcePrefix+'-evidence'}><summary>Evidence used · {result.sources.length}</summary><p>Plan facts are authoritative. Saved messages and menus are evidence to review, not guarantees.</p>
+     {result.sources.map((source,index)=><details id={sourcePrefix+'-'+index} key={source.id}>
+      <summary><span>Evidence {index+1} · {source.title}</span><small className="group-fit-source-origin">{originLabel(source.retrieval_origin)}</small></summary>
+      <p id={sourcePrefix+'-text-'+index}>{source.text}</p>
+     </details>)}
+    </details>}
+    <p className="muted group-fit-next-step">No plan changes made. Review the evidence, then decide together.</p>
    </div>}
   </>}
  </section>;

@@ -3,6 +3,7 @@ import copy,hashlib,json
 from collections import Counter
 from datetime import datetime,timezone,date
 from .core import now,visible
+from .task_rules import distinct_task_records
 
 
 def track_activity(before,state):
@@ -36,7 +37,8 @@ def health(s,pid,clock=None):
         if len(votes)<len(names) or not votes or tied:open_polls.append({'id':poll['id'],'question':poll['question'],'remaining':max(0,len(names)-len(votes)),'tied':tied})
     has_dates=bool(p.get('start') and p.get('end'))
     has_location=bool(p.get('location','').strip()) and not any(x in p.get('location','').lower() for x in ('to decide','somewhere together'))
-    undone=[t['label'] for t in p['tasks'] if not t['done']]
+    tasks=distinct_task_records(p['tasks'])
+    undone=[t['label'] for t in tasks if not t['done']]
     questions=[]
     if not has_dates:questions.append('Choose dates')
     if open_polls:questions.append('Resolve '+str(len(open_polls))+' open poll(s); leading votes are not confirmed decisions')

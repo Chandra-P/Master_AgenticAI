@@ -20,6 +20,11 @@ test.beforeEach(async({page})=>{await page.addInitScript(()=>localStorage.setIte
 test('idea chips preserve a reviewed demo creation path',async({page})=>{
  await page.goto('/');
  await expect(page.getByText('Turn group chats into plans.',{exact:true})).toBeVisible();
+ const agentFlow=page.getByRole('region',{name:'AI planning flow'});
+ await expect(agentFlow).toBeVisible();
+ await expect(agentFlow.getByText('Search tool',{exact:true})).toBeVisible();
+ await expect(agentFlow.getByText('Pinecone RAG',{exact:true})).toBeVisible();
+ await expect(agentFlow.getByText('Group decides',{exact:true})).toBeVisible();
  const idea=page.getByRole('textbox',{name:'Describe your plan'});
  await expect(idea).toHaveAttribute('placeholder','Weekend trip to Austin with 6 friends');
  await page.getByRole('button',{name:'Dinner Friday night for 8 people',exact:true}).click();

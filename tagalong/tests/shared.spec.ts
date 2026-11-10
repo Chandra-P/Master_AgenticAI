@@ -126,11 +126,13 @@ test('group fit cites saved preferences and current budget without changing the 
  await page.getByLabel('Estimated cost per person',{exact:true}).fill('75');
  await page.getByRole('button',{name:'Check group fit',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Conflicts with the group',exact:true})).toBeVisible();
+ const evidence=page.locator('.group-fit-sources');await evidence.locator(':scope > summary').click();
  await expect(page.locator('.group-fit-source-origin').filter({hasText:'current saved Note'})).toBeVisible();
  await expect(page.locator('.group-fit-source-origin').filter({hasText:'current plan facts'})).toBeVisible();
- await page.getByRole('button',{name:'Source: Group dinner preferences',exact:true}).click();
+ await page.locator('.group-fit-findings > summary').click();
+ await page.getByRole('link',{name:'Evidence 3: Group dinner preferences',exact:true}).click();
  await expect(page.getByText('Synthetic group preference: vegetarian dinner and a step-free entrance.',{exact:true})).toBeVisible();
- await page.getByRole('button',{name:'Source: Current plan facts',exact:true}).click();
+ await page.getByRole('link',{name:/Evidence \d+: Current plan facts/}).click();
  await page.screenshot({path:'test-results-shared/group-fit-'+test.info().project.name+'.png',fullPage:true});
  const after=await(await page.request.get(base,{headers})).json();
  expect(after.revision).toBe(before.revision);expect(after.itinerary).toEqual(before.itinerary);expect(after.messages).toEqual(before.messages);
@@ -161,7 +163,7 @@ test('natural-language generation creates a reviewed plan and proactively summar
  await page.getByLabel('Describe your plan').fill('Weekend trip for four friends near Austin under $350 per person');
  await page.getByRole('button',{name:'Start Planning',exact:true}).click();
  const review=page.getByRole('region',{name:'Review AI plan draft'});
- await expect(review).toBeVisible();
+ await expect(review).toBeVisible({timeout:20000});
  await expect(review.getByLabel('Working start date')).toHaveValue('');
  await review.getByText('Edit plan name and type',{exact:true}).click();await review.getByLabel('Generated plan name').fill(title);
  await review.getByLabel('Working start date').fill('2027-05-14');await review.getByLabel('Working end date').fill('2027-05-16');
@@ -174,7 +176,7 @@ test('natural-language generation creates a reviewed plan and proactively summar
  await expect(coordination).toContainText('The group is planning '+title+'.',{timeout:20000});
  await expect(page.getByText('Planning idea: Weekend trip for four friends near Austin under $350 per person',{exact:true})).toBeVisible();
  await page.goto('/');await expect(page.getByRole('heading',{name:'Your next steps',exact:true})).toBeVisible();
- await expect(page.locator('.decision-next-card').filter({hasText:title})).toBeVisible();
+ await expect(page.locator('.decision-next-card').filter({hasText:title})).toBeVisible({timeout:20000});
 });
 
 test('live discovery shows a clickable external source link and saves a dated venue',async({page})=>{

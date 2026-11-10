@@ -8,6 +8,7 @@ from .core import access,create,update,view,visible,uid,now,fail
 from .models import Create
 from .coordination_models import Generate,AcceptDraft,PlanDraft,SummaryOutput,RecommendationOutput
 from .coordination import context,fingerprint,health,snapshot
+from .task_rules import distinct_planning_tasks
 
 
 def refresh(repo,a,pid,ai,token):
@@ -74,7 +75,9 @@ def install_coordination(app,repo,actor,ai):
             if record['count']>=30:fail(429,'Plan generation limit reached. Please try later or create a plan manually.')
             record['count']+=1;limits[a.id]=record
         repo.transact(allowance)
-        try:draft=PlanDraft.model_validate(ai.generate_plan(b.prompt,b.local_date)).model_dump()
+        try:
+            draft=PlanDraft.model_validate(ai.generate_plan(b.prompt,b.local_date)).model_dump()
+            draft['suggested_tasks']=distinct_planning_tasks(draft['suggested_tasks'])
         except Exception:fail(502,'AI could not produce a valid plan draft. Please retry or create a plan manually.')
         def save(s):
             from .core import register
@@ -100,7 +103,7 @@ def install_coordination(app,repo,actor,ai):
             p=create(s,a,Create(title=b.title,kind=b.kind,start=b.start,end=b.end,group_id=b.group_id,expected_group_revision=b.expected_group_revision,share_with_group=b.share_with_group))
             p['location']=b.location;p['budget']=b.budget_per_person or 0
             p['messages']=[{'id':uid(),'author':a.name,'user_id':a.id,'text':'Planning idea: '+item.get('prompt',b.title),'time':now()}]
-            p['tasks']=[{'label':x,'done':False} for x in d.suggested_tasks]
+            p['tasks']=[{'label':x,'done':False} for x in distinct_planning_tasks(d.suggested_tasks)]
             p['itinerary']=[{'id':uid(),**activity.model_dump()} for activity in d.suggested_itinerary]
             for suggestion in b.reviewed_suggestions:
                 activity={'id':uid(),'title':suggestion.title,'time':'Draft - time to agree','category':suggestion.category,'location':b.location,'source_url':suggestion.url}

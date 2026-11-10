@@ -11,6 +11,8 @@ import {fictionalCast} from '@/services/demo-plan';
 import {FindOptionsButton} from './research/option-workbench';
 import {TypingSuggestions} from './typing-suggestions';
 import {useTypingSuggestions} from './use-typing-suggestions';
+import {useDecisionSnapshot} from './decisions/use-decision-snapshot';
+import {ConfirmedChoices} from './confirmed-choices';
 
 export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
   const {sendMessage, mode, user, config, workspaceRole} = usePlanning();
@@ -26,6 +28,7 @@ export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
   const oldCount = useRef(plan.messages.length);
   const conversationRef=useRef<HTMLDivElement>(null);
   const demoStory=plan.demo_template==='austin-four-friends';
+  const {snapshot:decisionSnapshot}=useDecisionSnapshot(plan);
   useEffect(()=>{if(demoStory&&conversationRef.current)conversationRef.current.scrollTop=0;},[demoStory,plan.id]);
   const completion = useTypingSuggestions({
     plan, text, enabled: suggestionsEnabled && caretAtEnd && !isComposing && dismissed !== text && !thinking,
@@ -98,7 +101,7 @@ export function Chat({plan, onTab}: {plan: Plan; onTab: (tab: Tab) => void}) {
       <a className="text-button" href={'#plan-ideas-'+plan.id}>Get city ideas and events</a><FindOptionsButton plan={plan}/><span className="chat-demo">{mode === 'demo' ? 'Demo conversation' : 'Group conversation'}</span>
       {mode === 'demo' && <Link className="text-button" href="/account">Use live AI in shared workspace</Link>}
     </div>
-    {demoStory&&<div className="demo-conversation-intro"><strong>Four friends planning together</strong><p>Alex, Maya, Sam and Jordan are fictional adults. Follow their ideas, objections and compromises below. Scripted dialogue and votes are separate from real members and the live AI check.</p><div className="journey-buttons"><Button variant="outline" onClick={()=>conversationRef.current?.scrollTo({top:0,behavior:'smooth'})}>Replay from the first idea</Button><Button variant="outline" onClick={()=>onTab('Decisions')}>See their options and votes</Button><Button variant="outline" onClick={()=>onTab('Itinerary')}>See the final itinerary</Button></div></div>}<div className="chat-messages" ref={conversationRef}>
+    {demoStory&&<div className="demo-conversation-intro"><strong>Four friends planning together</strong><p>Alex, Maya, Sam and Jordan are fictional adults. Follow their ideas, objections and compromises below. Scripted dialogue and votes are separate from real members and the live AI check.</p><div className="journey-buttons"><Button variant="outline" onClick={()=>conversationRef.current?.scrollTo({top:0,behavior:'smooth'})}>Replay from the first idea</Button><Button variant="outline" onClick={()=>onTab('Decisions')}>See their options and votes</Button><Button variant="outline" onClick={()=>onTab('Itinerary')}>See the final itinerary</Button></div></div>}<ConfirmedChoices snapshot={decisionSnapshot} onTab={onTab} compact/><div className="chat-messages" ref={conversationRef}>
       <div className="chat-date"><span/>THE BEGINNING OF SOMETHING GOOD<span/></div>
       {plan.messages.map(message => {
         const member = plan.members.find(person => message.user_id

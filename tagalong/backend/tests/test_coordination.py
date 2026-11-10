@@ -32,6 +32,40 @@ def test_natural_language_draft_is_reviewed_before_plan_creation():
     assert c.post('/v1/plans/from-draft',headers=a,json=payload).json()['id']==created.json()['id']
 
 
+def test_generated_tasks_do_not_repeat_core_decisions():
+    class Repetitive(AI):
+        def generate_plan(self,prompt,today):
+            result=super().generate_plan(prompt,today)
+            result['suggested_tasks']=['Agree a budget','Finalize budget','Confirm attendees','Choose destination']
+            return result
+    repo,c,a=setup(Repetitive())
+    draft=c.post('/v1/plans/generate',headers=a,json={'prompt':'Weekend in Austin','local_date':datetime.now(timezone.utc).date().isoformat()}).json()
+    assert draft['draft']['suggested_tasks']==['Confirm attendees']
+    created=c.post('/v1/plans/from-draft',headers=a,json={'draft_id':draft['draft_id'],'title':'Austin weekend','kind':'trip','location':'Austin','start':'2027-05-14','end':'2027-05-16'})
+    assert created.status_code==200
+    labels=[task['label'] for task in created.json()['tasks']]
+    assert labels==['Confirm attendees']
+
+
+def test_new_plans_do_not_repeat_default_budget_and_place_decisions_as_tasks():
+    repo,c,a=setup()
+    plan=c.post('/v1/plans',headers=a,json={'title':'New trip','kind':'trip','start':'2027-05-14','end':'2027-05-16'}).json()
+    snapshot=c.get('/v1/plans/'+plan['id']+'/decisions',headers=a).json()
+    categories={decision['category'] for decision in snapshot['decisions']}
+    assert {'budget','destination'}<=categories
+    assert not any('budget' in task['label'].casefold() or 'meeting place' in task['label'].casefold() for task in plan['tasks'])
+
+
+def test_legacy_duplicate_decision_tasks_are_hidden_and_do_not_block_progress():
+    repo,c,a=setup()
+    plan=c.post('/v1/plans',headers=a,json={'title':'Older plan','kind':'trip','start':'2027-05-14','end':'2027-05-16'}).json()
+    repo.state['plans'][plan['id']]['tasks']=[{'label':'Agree a budget','done':False},{'label':'Finalize budget','done':False},{'label':'Confirm attendees','done':False}]
+    visible=c.get('/v1/plans/'+plan['id'],headers=a).json()
+    assert [task['label'] for task in visible['tasks']]==['Confirm attendees']
+    status=c.get('/v1/plans/'+plan['id']+'/coordination',headers=a).json()
+    assert 'Complete 1 remaining task(s)' in status['blockers']
+
+
 def test_coordination_is_stored_private_and_not_free_form():
     repo,c,a=setup()
     p=c.post('/v1/plans',headers=a,json={'title':'Weekend','kind':'trip','start':'2027-05-14','end':'2027-05-16'}).json()

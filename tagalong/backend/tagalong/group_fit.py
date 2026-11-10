@@ -1,6 +1,7 @@
 """Read-only group-fit assessment over authoritative facts and verified RAG evidence."""
 import copy
 import json
+import math
 import threading
 import time
 from typing import Literal
@@ -84,6 +85,9 @@ def fit_evidence(s,pid,query,hits,option):
         if not src or src['plan_id']!=pid or src['deleted'] or src['version']!=hit.get('version'):continue
         if any(x['id']==src['id'] for x in history):continue
         chunk=hit.get('chunk',0)
+        # Pinecone metadata may return numeric values as floats (for example
+        # 0.0). Accept only finite, integral floats before using them as offsets.
+        if type(chunk) is float and math.isfinite(chunk) and chunk.is_integer():chunk=int(chunk)
         if type(chunk) is not int or chunk<0:continue
         item=copy.deepcopy(src);item['text']=src['text'][chunk*6000:(chunk+1)*6000];item['retrieval_origin']='pinecone'
         if not item['text']:continue

@@ -10,7 +10,7 @@ async function setup(page:Page,hold=false){
  await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-owner',refresh_token:'refresh',token_type:'bearer',expires_in:3600,user}}));
  await page.route('**/api/backend/v1/**',async route=>{
   const path=new URL(route.request().url()).pathname;
-  if(path.endsWith('/group-fit')){requests++;expect(route.request().postDataJSON().expected_revision).toBe(3);if(hold)await gate;await route.fulfill({json:{verdict:'conflicts',summary:'This dinner exceeds the working budget.',matches:[{text:'Vegetarian dishes are listed.',source_ids:['menu']}],conflicts:[{text:'The estimate is above the group budget.',source_ids:['plan-facts']}],unknowns:['Confirm current availability directly with the venue.'],sources:[{id:'menu',title:'Saved menu',text:'Vegetarian dinner costs $55 per person.'},{id:'plan-facts',title:'Current plan facts',text:'Budget per person: $40.'}],retrieval_status:'unavailable',context_truncated:true}}).catch(()=>{});return;}
+  if(path.endsWith('/group-fit')){requests++;expect(route.request().postDataJSON().expected_revision).toBe(3);if(hold)await gate;await route.fulfill({json:{verdict:'conflicts',summary:'This dinner exceeds the working budget.',matches:[{text:'Vegetarian dishes are listed.',source_ids:['menu']}],conflicts:[{text:'The estimate is above the group budget.',source_ids:['plan-facts']}],unknowns:['Confirm current availability directly with the venue.'],sources:[{id:'menu',title:'Saved menu',text:'Vegetarian dinner costs $55 per person.',retrieval_origin:'pinecone'},{id:'plan-facts',title:'Current plan facts',text:'Budget per person: $40.',retrieval_origin:'postgres'}],retrieval_status:'available',context_truncated:true}}).catch(()=>{});return;}
   const json=path.endsWith('/me')?{id:user.id,email:user.email,name:'Owner',workspace_mode:'member'}:path.endsWith('/plans')?[plan]:path.endsWith('/coordination')?{plan_id:plan.id,plan_revision:3,status:'ACTIVE',health:30,next_step:'Review plan',reason:'Working plan.',target_tab:'Planning board',summary:'Working plan.',decisions_made:[],open_questions:[],provider_status:'unavailable'}:[];
   await route.fulfill({json});
  });
@@ -24,10 +24,12 @@ test('group fit shows sourced conflicts and uncertainty without saving an activi
  await page.getByLabel('Option name',{exact:true}).fill('Dinner option');await page.getByLabel('Option details or menu',{exact:true}).fill('Vegetarian dinner, $55 each.');await page.getByLabel('Estimated cost per person',{exact:true}).fill('55');
  await page.getByRole('button',{name:'Check group fit',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Conflicts with the group',exact:true})).toBeVisible();
+ await page.getByText('Review findings · 3',{exact:true}).click();
  await expect(page.getByText('The estimate is above the group budget.',{exact:true})).toBeVisible();
- await page.getByRole('button',{name:'Source: Saved menu',exact:true}).click();
+  await expect(page.getByText('Pinecone RAG · 1 source',{exact:true})).toBeVisible();
+  await expect(page.getByText('OpenAI group-fit check',{exact:true})).toBeVisible();
+ await page.getByRole('link',{name:/Evidence 1:/}).click();
  await expect(page.getByText('Vegetarian dinner costs $55 per person.',{exact:true})).toBeVisible();
- await expect(page.getByText(/Historical retrieval was unavailable/)).toBeVisible();
  await expect(page.getByText(/Only selected evidence excerpts/)).toBeVisible();
  await page.locator('.group-fit-panel').screenshot({path:'test-results/group-fit-'+test.info().project.name+'.png'});
  expect(state.requests()).toBe(1);
@@ -48,7 +50,7 @@ test('demo group fit explains that shared sources require sign-in',async({page})
 test('missing evidence remains an uncertain result rather than a recommendation',async({page})=>{
  await setup(page);await page.route('**/api/backend/v1/plans/fit-plan/group-fit',route=>route.fulfill({json:{verdict:'needs_info',summary:'There is not enough evidence to recommend this option.',matches:[],conflicts:[],unknowns:['Add a current menu and confirm member constraints.'],sources:[],retrieval_status:'unavailable',context_truncated:false}}));
  await page.getByLabel('Option name',{exact:true}).fill('An unverified option');await page.getByRole('button',{name:'Check group fit',exact:true}).click();
- await expect(page.getByRole('heading',{name:'More information needed',exact:true})).toBeVisible();await expect(page.getByText('No supporting source excerpts were returned. Add a Note or more option details and check again.',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:/Source:/})).toHaveCount(0);
+ await expect(page.getByRole('heading',{name:'More information needed',exact:true})).toBeVisible();await expect(page.getByText('No group evidence found. Add a Note or option details.',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:/Source:/})).toHaveCount(0);
 });
 
 test('a discovered place opens a prefilled group-fit check before any action is saved',async({page})=>{

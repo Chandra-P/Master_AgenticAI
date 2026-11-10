@@ -54,8 +54,9 @@ test('connected tools, expanded evidence and owner dialogs adapt across screen s
  await page.getByText('Synthetic venue note',{exact:true}).click();await inspectVisual(page,info,'390-expanded-note');
  await openSection(page,'Group fit');await page.getByLabel('Option name',{exact:true}).fill('Synthetic dinner');
  await page.getByLabel('Option details or menu',{exact:true}).fill('A synthetic vegetarian menu.');await page.getByRole('button',{name:'Check group fit',exact:true}).click();
- await expect(page.getByRole('heading',{name:'Sources used',exact:true})).toBeVisible();await inspectVisual(page,info,'390-fit-result');
- await page.getByRole('button',{name:/^Source:/}).first().click();await inspectVisual(page,info,'390-fit-source');
+ const evidence=page.locator('.group-fit-sources');await expect(evidence).toBeVisible();await expect(evidence.locator(':scope > summary')).toContainText('Evidence used');await inspectVisual(page,info,'390-fit-result');
+ await evidence.locator(':scope > summary').click();
+ await evidence.locator(':scope > details > summary').first().click();await inspectVisual(page,info,'390-fit-source');
 });
 
 test('admin overview, private review and story replay stay readable',async({page},info)=>{
