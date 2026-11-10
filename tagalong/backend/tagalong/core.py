@@ -14,12 +14,14 @@ class Actor:
     name: str
     display_name: str | None = None
     workspace_mode: str = 'member'
+    email_verified: bool = False
 
 def identity(data):
     email = data.get('email') or ''
     preferred=(data.get('user_metadata') or {}).get('display_name')
     preferred=' '.join(preferred.split())[:50] if isinstance(preferred,str) else None
-    return Actor(data['id'], email, email.split('@')[0][:30]+'-'+hashlib.sha256(data['id'].encode()).hexdigest()[:10], preferred or None)
+    return Actor(data['id'], email, email.split('@')[0][:30]+'-'+hashlib.sha256(data['id'].encode()).hexdigest()[:10], preferred or None,
+                 email_verified=bool(email and data.get('email_confirmed_at')))
 
 class MemoryRepository:
     def __init__(self):
@@ -86,6 +88,9 @@ def create(s,a,b):
     p={'id':pid,'title':b.title,'kind':b.kind,'location':'Location to decide','date':date_label,'start':b.start,'end':b.end,'budget':0,'image':'/images/coast.jpg' if b.kind=='trip' else '/images/restaurant.jpg','members':[{'name':a.name,'color':'#6366f1','user_id':a.id}], 'messages':[],'preferences':[],'polls':[{'id':uid(),'question':'Which date range works best?' if start!=end else 'Which date works best?','options':options,'votes':{},'datePoll':True}],'itinerary':[],'tasks':[{'label':'Set a group budget','done':False},{'label':'Choose a meeting place','done':False}],'revision':1,'owner_id':a.id}
     if group is not None:p['group']=group
     s['plans'][pid]=p; s['members'][pid]=[a.id]
+    if b.share_with_group:
+        from .plan_group_sharing import approve
+        approve(s,a,p,b.group_id,b.expected_group_revision)
     return view(s,p,a)
 
 def update(s,a,pid,incoming,revision):

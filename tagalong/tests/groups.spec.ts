@@ -9,6 +9,8 @@ test.beforeEach(async({page})=>{await page.addInitScript(()=>localStorage.setIte
 // Each test uses a fresh browser context and synthetic adult details only.
 test('create a custom group, retain optional details, and preserve existing plans',async({page})=>{
  await openGroups(page);
+ await expect(page.getByRole('button',{name:/^View group /})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Share with members',exact:true})).toHaveCount(0);
  const before=await page.evaluate(()=>localStorage.getItem('tagalong-demo-v1'));
  const dialog=await startEditor(page);
  await dialog.getByRole('button',{name:'Custom',exact:true}).click();

@@ -39,6 +39,8 @@ def install_plan_management(app,repo,actor):
             if s.get('suspended_users',{}).get(b.user_id):fail(409,'Cannot transfer to a suspended account')
             if any(pid in run['plan_ids'] for run in s.get('qa_runs',{}).values()) and b.user_id not in s.get('app_admins',{}):fail(422,'QA review plans require an administrator as owner')
             p['owner_id']=b.user_id;p['revision']+=1
+            for grant in s.get('plan_group_grants',{}).get(pid,{}).values():
+                if grant['status']=='pending':grant['status']='revoked'
             s.setdefault('invitations',{}).pop(pid,None)
             event(s,a,pid,'transfer_owner',b.user_id)
             return view(s,p,a)

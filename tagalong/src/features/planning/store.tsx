@@ -14,6 +14,7 @@ import {loadGroups,makeGroup,saveGroups,validateGroup,groupOwner} from '@/servic
 
 interface Store {
  groups:Group[];groupsReady:boolean;groupWarning:string;
+ readGroup:(id:string)=>Promise<Group>;setGroupSharing:(id:string,shared:boolean,revision?:number)=>Promise<Group>;
  saveGroup:(draft:GroupDraft,id?:string,revision?:number)=>Promise<{group?:Group;error?:string}>;
  archiveGroup:(id:string,archived:boolean,revision?:number)=>Promise<void>;removeGroup:(id:string,revision?:number)=>Promise<void>;reloadGroups:()=>Promise<void>;
  addDiscoveredPlace:(planId:string,activity:Activity)=>Promise<void>;
@@ -76,9 +77,27 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    const api=service.current,current=generation.current,request=++groupReads.current;
    if(!api)return;
    try{const next=await api.groups();if(current!==generation.current||request!==groupReads.current)return;groupsRef.current=next;setGroups(next);setGroupWarning('');}
-   catch(cause){if(current!==generation.current||request!==groupReads.current)return;setGroupWarning(cause instanceof Error?cause.message:'Could not load your groups.');}
+   catch(cause){if(current!==generation.current||request!==groupReads.current)return;groupsRef.current=[];setGroups([]);setGroupWarning(cause instanceof Error?cause.message:'Could not load your groups.');}
    finally{if(current===generation.current&&request===groupReads.current)setGroupsReady(true);}
  },[]);
+ const readGroup=useCallback(async(id:string)=>{
+   const api=service.current,current=generation.current;
+   if(!api)throw new Error('Sign in to view this group.');
+   const group=await api.group(id,{userId:identity.current??undefined,isCurrent:()=>current===generation.current});
+   if(current!==generation.current)throw new Error('Workspace changed.');
+   return group;
+ },[]);
+ async function setGroupSharing(id:string,shared:boolean,revision?:number){
+   if(mode!=='connected'||!user)throw new Error('Sign in to share a group.');
+   const old=groupsRef.current.find(g=>g.id===id&&g.ownerId===user.id);
+   if(!old)throw new Error('Only the owner can share this group.');
+   try{return await execute(async valid=>{
+     const group=await service.current!.groupSharing({...old,revision:revision??old.revision},shared);
+     if(!valid())throw new Error('Workspace changed.');
+     ++groupReads.current;const next=groupsRef.current.map(g=>g.id===id?group:g);groupsRef.current=next;setGroups(next);
+     setNotice(shared?'Group shared with matching verified accounts. No messages were sent.':'Group sharing stopped.');return group;
+   });}catch(cause){await reloadGroups();throw cause;}
+ }
  useEffect(()=>{
    if(!config)return;let active=true;
    queueMicrotask(()=>{
@@ -95,7 +114,8 @@ export function PlanningProvider({children}:{children:ReactNode}) {
    const current=groupsRef.current,old=id?current.find(g=>g.id===id):undefined;
    if(id&&!old)return {error:'This group is no longer available.'};
    const owner=mode==='demo'?groupOwner:{id:user!.id,preferredName:(user!.display_name||user!.name).slice(0,40),color:'#edc6b3'};
-   const error=validateGroup(draft,current,id,owner);if(error)return {error};
+   if(mode==='connected'&&old&&old.ownerId!==user!.id)return {error:'Only the owner can edit this group.'};
+   const error=validateGroup(draft,mode==='demo'?current:current.filter(g=>g.ownerId===user!.id),id,owner);if(error)return {error};
    if(mode==='demo'){const group={...makeGroup(draft,id),archived:old?.archived??false};persistGroups(id?current.map(g=>g.id===id?group:g):[group,...current],id?'Group updated. Existing plans stay as they are.':'Your group is ready. No invitations were sent.');return {group};}
    try{return await execute(async valid=>{
      const group=await service.current!.saveGroup(draft,old,revision);if(!valid())throw new Error('Workspace changed.');
@@ -164,6 +184,6 @@ export function PlanningProvider({children}:{children:ReactNode}) {
  async function addDocument(id:string,title:string,text:string){await execute(async valid=>{await service.current!.addDocument(id,title,text);if(valid())setNotice('Saved to Notes. Available to the assistant now; historical search indexing continues in the background.');});}
  async function removeDocument(id:string,sourceId:string){await execute(async valid=>{await service.current!.removeDocument(id,sourceId);if(valid())setNotice('Document removed from retrieval.');});}
  async function revoke(id:string,userId:string){await execute(async valid=>{const api=service.current!;await api.revoke(id,userId);if(!valid())return;const plan=await api.plan(id);if(valid())replace(plansRef.current.map(p=>p.id===id?plan:p));});}
- return <Context.Provider value={{groups:groupsScope===mode+':'+(user?.id||'')?groups:[],groupsReady:groupsReady&&groupsScope===mode+':'+(user?.id||''),groupWarning:groupsScope===mode+':'+(user?.id||'')?groupWarning:'',saveGroup,archiveGroup,removeGroup,reloadGroups,addDiscoveredPlace,passwordRecovery,createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
+ return <Context.Provider value={{groups:groupsScope===mode+':'+(user?.id||'')?groups:[],groupsReady:groupsReady&&groupsScope===mode+':'+(user?.id||''),groupWarning:groupsScope===mode+':'+(user?.id||'')?groupWarning:'',readGroup,setGroupSharing,saveGroup,archiveGroup,removeGroup,reloadGroups,addDiscoveredPlace,passwordRecovery,createGeneratedPlan,deletePlan,transferOwner,workspaceRole,chooseWorkspaceRole,plans,ready,mode,config,user,error,busy:pending>0,notice,notify:setNotice,setMode,reload,create,update,sendMessage,confirmPreference,share,signOut,revoke,documents,addDocument,removeDocument,proposals:id=>service.current?.proposals(id)??Promise.resolve([])}}>{children}<div className={'toast '+(notice?'shown':'')} role="status">{notice}</div></Context.Provider>;
 }
 export function usePlanning(){const store=useContext(Context);if(!store)throw new Error('PlanningProvider is required');return store;}

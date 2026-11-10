@@ -1,8 +1,9 @@
-"""Owner-private reusable adult rosters. Contacts never grant plan access."""
+"""Reusable adult rosters with explicit, view-only sharing. Never grants plan access."""
+import copy
 import re
 from fastapi import Depends
 from fastapi.responses import JSONResponse
-from pydantic import Field, StrictInt, field_validator, model_validator
+from pydantic import Field, StrictBool, StrictInt, field_validator, model_validator
 from .models import Item
 from .core import fail, now, uid
 
@@ -65,6 +66,34 @@ class GroupDelete(Item):
     expected_revision: StrictInt = Field(ge=1)
 
 
+class GroupSharing(GroupDelete):
+    shared: StrictBool
+
+
+def can_view(group, actor):
+    return group['ownerId'] == actor.id or (
+        group.get('shared', False) and actor.email_verified and bool(actor.email.strip())
+        and any((m.get('email') or '').strip().casefold() == actor.email.strip().casefold()
+                for m in group['members'] if m['id'] != group['ownerId']))
+
+
+def group_view(group, actor):
+    result = copy.deepcopy(group)
+    result['role'] = 'owner' if group['ownerId'] == actor.id else 'member'
+    result['shared'] = group.get('shared', False)
+    result['ownerName'] = next((m['preferredName'] for m in group['members'] if m['id'] == group['ownerId']), 'Group owner')
+    if result['role'] == 'member':
+        result['members'] = [{key: m[key] for key in ('id', 'preferredName', 'color')} for m in group['members']]
+    return result
+
+
+def read_group(state, actor, group_id):
+    group = state.get('groups', {}).get(group_id)
+    if not group or not can_view(group, actor):
+        fail(404, 'Group not found')
+    return group_view(group, actor)
+
+
 def access_group(state, actor, group_id, revision=None):
     group = state.get('groups', {}).get(group_id)
     if not group or group['ownerId'] != actor.id:
@@ -88,7 +117,8 @@ def save_group(state, actor, body, group_id=None):
     # Contact IDs are opaque roster IDs, never memberships or trusted account IDs.
     group = {'id': old['id'] if old else uid(), 'name': body.name, 'theme': body.theme,
              'ownerId': actor.id, 'members': [m.model_dump(exclude_none=True) for m in body.members],
-             'archived': body.archived if old else False, 'revision': old['revision'] + 1 if old else 1}
+             'archived': body.archived if old else False, 'revision': old['revision'] + 1 if old else 1,
+             'shared': old.get('shared', False) if old else False}
     groups[group['id']] = group
     record_event(state, actor, group['id'], 'update' if old else 'create')
     return group
@@ -116,20 +146,31 @@ def install_groups(app, repo, actor):
     @app.get('/v1/groups')
     def listing(a=Depends(actor)):
         return JSONResponse(repo.transact(lambda s: sorted(
-            (g for g in s.get('groups', {}).values() if g['ownerId'] == a.id),
+            (group_view(g, a) for g in s.get('groups', {}).values() if can_view(g, a)),
             key=lambda g: (g['name'].casefold(), g['id']))), headers={'Cache-Control': 'no-store'})
 
     @app.get('/v1/groups/{group_id}')
     def read(group_id: str, a=Depends(actor)):
-        return JSONResponse(repo.transact(lambda s: access_group(s, a, group_id)), headers={'Cache-Control': 'no-store'})
+        return JSONResponse(repo.transact(lambda s: read_group(s, a, group_id)), headers={'Cache-Control': 'no-store'})
+
+    @app.post('/v1/groups/{group_id}/sharing')
+    def sharing(group_id: str, body: GroupSharing, a=Depends(actor)):
+        def change(state):
+            group = access_group(state, a, group_id, body.expected_revision)
+            if group.get('shared', False) != body.shared:
+                group['shared'] = body.shared
+                group['revision'] += 1
+                record_event(state, a, group_id, 'share' if body.shared else 'unshare')
+            return group_view(group, a)
+        return repo.transact(change)
 
     @app.post('/v1/groups')
     def create(body: GroupDraft, a=Depends(actor)):
-        return repo.transact(lambda s: save_group(s, a, body))
+        return repo.transact(lambda s: group_view(save_group(s, a, body), a))
 
     @app.patch('/v1/groups/{group_id}')
     def edit(group_id: str, body: GroupEdit, a=Depends(actor)):
-        return repo.transact(lambda s: save_group(s, a, body, group_id))
+        return repo.transact(lambda s: group_view(save_group(s, a, body, group_id), a))
 
     @app.delete('/v1/groups/{group_id}')
     def remove(group_id: str, body: GroupDelete, a=Depends(actor)):

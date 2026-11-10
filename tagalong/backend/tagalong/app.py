@@ -59,10 +59,16 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
         def authorize(s):
             register(s,a)
             if workspace_mode=='admin' and a.id not in s.get('app_admins',{}): fail(403,'App administrator access required')
+            from .plan_group_sharing import redeem
+            redeem(s,a)
         repo.transact(authorize)
         return a
     from .groups import install_groups
     install_groups(app,repo,actor)
+    from .plan_group_sharing import install_plan_group_sharing
+    from .notifications import install_notifications
+    install_plan_group_sharing(app,repo,actor)
+    install_notifications(app,repo,actor)
     @app.get('/health')
     def health():
         ready=bool(repo and authenticate and repo.health())
@@ -127,6 +133,8 @@ def create_app(repo=None,authenticate=None,ai=None,places=None):
             if user_id==p['owner_id']: fail(409,'The owner cannot be removed')
             if user_id not in s['members'][pid]: fail(404,'Member not found')
             s['members'][pid].remove(user_id)
+            from .plan_group_sharing import revoke_member_grants
+            revoke_member_grants(s,pid,user_id)
             p['members']=[m for m in p['members'] if m.get('user_id')!=user_id]
             p['revision']+=1
             return {'status':'removed'}
