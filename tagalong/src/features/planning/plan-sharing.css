@@ -1,0 +1,12 @@
+.plan-share-review,.plan-group-sharing{border-top:1px solid var(--line);margin:18px 0;padding-top:16px;font-size:var(--text-meta);line-height:1.7;overflow-wrap:anywhere}
+.plan-share-review>label{display:flex;align-items:center;gap:10px;font-weight:600}
+.plan-share-review input{width:18px;height:18px;flex-shrink:0;accent-color:var(--accent-ink)}
+.plan-share-review p,.plan-group-sharing>p{color:var(--muted);margin:8px 0}
+.plan-share-review ul{padding-left:20px}
+.plan-recipient-list,.plan-notification-list{list-style:none;padding:0;margin:16px 0}
+.plan-recipient-list li{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.plan-notification-list li{display:flex;flex-direction:column;gap:8px;padding:16px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.plan-notification-list li>div{display:flex;flex-wrap:wrap;gap:10px}
+.plan-notification-list small{color:var(--muted)}
+.plan-notifications-button{position:relative;flex-shrink:0}
+.plan-notifications-button>span{position:absolute;top:-5px;right:-4px;border-radius:10px;background:var(--accent-ink);color:var(--surface);font-size:var(--text-badge);padding:0 4px;min-width:16px;text-align:center}

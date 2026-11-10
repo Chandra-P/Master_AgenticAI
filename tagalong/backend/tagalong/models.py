@@ -38,11 +38,14 @@ class DateFields(Item):
 class GroupSelection(Item):
     group_id: str | None = Field(default=None, min_length=1, max_length=128)
     expected_group_revision: int | None = Field(default=None, ge=1, strict=True)
+    share_with_group: StrictBool = False
 
     @model_validator(mode='after')
     def paired_group_selection(self):
         if (self.group_id is None) != (self.expected_group_revision is None):
             raise ValueError('Group and its current revision are required together')
+        if self.share_with_group and not self.group_id:
+            raise ValueError('Select a group before approving plan sharing')
         return self
 
 

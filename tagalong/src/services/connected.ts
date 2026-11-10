@@ -62,10 +62,12 @@ export class ConnectedService {
   plans(){return this.request<Plan[]>('/v1/plans');}
   plan(id:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id));}
   groups(){return this.request<Group[]>('/v1/groups');}
+  group(id:string,scope?:RequestScope){return this.request<Group>('/v1/groups/'+encodeURIComponent(id),{},scope);}
+  groupSharing(group:Group,shared:boolean){return this.request<Group>('/v1/groups/'+encodeURIComponent(group.id)+'/sharing',{method:'POST',body:JSON.stringify({shared,expected_revision:group.revision})});}
   saveGroup(draft:GroupDraft,group?:Group,revision?:number){return this.request<Group>(group?'/v1/groups/'+encodeURIComponent(group.id):'/v1/groups',{method:group?'PATCH':'POST',body:JSON.stringify(group?{...draft,archived:group.archived,expected_revision:revision??group.revision}:draft)});}
   archiveGroup(group:Group,archived:boolean,revision?:number){return this.request<Group>('/v1/groups/'+encodeURIComponent(group.id),{method:'PATCH',body:JSON.stringify({name:group.name,theme:group.theme,members:group.members,archived,expected_revision:revision??group.revision})});}
   removeGroup(group:Group,revision?:number){return this.request<{status:string}>('/v1/groups/'+encodeURIComponent(group.id),{method:'DELETE',body:JSON.stringify({expected_revision:revision??group.revision})});}
-  create(input:CreatePlanInput){const {groupId,expectedGroupRevision,...fields}=input;return this.request<Plan>('/v1/plans',{method:'POST',body:JSON.stringify({...fields,...(groupId?{group_id:groupId,expected_group_revision:expectedGroupRevision}:{})})});}
+  create(input:CreatePlanInput){const {groupId,expectedGroupRevision,shareWithGroup,...fields}=input;return this.request<Plan>('/v1/plans',{method:'POST',body:JSON.stringify({...fields,...(groupId?{group_id:groupId,expected_group_revision:expectedGroupRevision,share_with_group:shareWithGroup??false}:{})})});}
   deletePlan(id:string,revision:number,confirmation:string){return this.request<{status:string}>('/v1/plans/'+encodeURIComponent(id),{method:'DELETE',body:JSON.stringify({expected_revision:revision,confirmation})});}
   transferOwner(id:string,revision:number,userId:string){return this.request<Plan>('/v1/plans/'+encodeURIComponent(id)+'/owner',{method:'POST',body:JSON.stringify({expected_revision:revision,user_id:userId})});}
   save(plan:Plan,revision:number,previous:Plan){const patches=createPlanPatches(previous,plan);return patches.length?this.request<Plan>('/v1/plans/'+encodeURIComponent(plan.id),{method:'PATCH',body:JSON.stringify({patches,expected_revision:revision})}):Promise.resolve(previous);}

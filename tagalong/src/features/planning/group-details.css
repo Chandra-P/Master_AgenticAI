@@ -1,0 +1,12 @@
+.group-card-connected{position:relative}
+.group-card-open{position:absolute;inset:0;z-index:1;border:0;border-radius:inherit;background:transparent;cursor:pointer}
+.group-card-open:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.group-card-connected .group-card-actions{position:relative;z-index:2;pointer-events:none}
+.group-card-connected .group-card-actions button{pointer-events:auto}
+.group-details h3{font-size:var(--text-section);line-height:1.4;margin:8px 0;overflow-wrap:anywhere}
+.group-details h4{font-size:var(--text-card);margin:20px 0 10px}
+.group-details-members{list-style:none;padding:0;margin:0}
+.group-details-members li{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.group-details-members li>.muted{flex-basis:100%;font-size:var(--text-meta)}
+.group-sharing{border-top:1px solid var(--line);margin-top:18px}
+.group-sharing p{font-size:var(--text-meta);line-height:1.7;color:var(--muted)}

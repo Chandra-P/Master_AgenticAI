@@ -91,9 +91,13 @@ def install_coordination(app,repo,actor,ai):
         def save(s):
             item=s.get('plan_drafts',{}).get(b.draft_id)
             if not item or item['owner_id']!=a.id or item['expires_at']<time.time():fail(404,'Draft not found or expired; generate a new one')
-            if item['created_plan_id']:return view(s,access(s,item['created_plan_id'],a),a)
+            sharing={'enabled':b.share_with_group,'group_id':b.group_id,'revision':b.expected_group_revision}
+            if item['created_plan_id']:
+                old=item.get('accepted_sharing',{'enabled':False})
+                if (b.share_with_group or old['enabled']) and old!=sharing:fail(409,'This draft was already accepted with different sharing approval')
+                return view(s,access(s,item['created_plan_id'],a),a)
             d=PlanDraft.model_validate(item['draft'])
-            p=create(s,a,Create(title=b.title,kind=b.kind,start=b.start,end=b.end,group_id=b.group_id,expected_group_revision=b.expected_group_revision))
+            p=create(s,a,Create(title=b.title,kind=b.kind,start=b.start,end=b.end,group_id=b.group_id,expected_group_revision=b.expected_group_revision,share_with_group=b.share_with_group))
             p['location']=b.location;p['budget']=b.budget_per_person or 0
             p['messages']=[{'id':uid(),'author':a.name,'user_id':a.id,'text':'Planning idea: '+item.get('prompt',b.title),'time':now()}]
             p['tasks']=[{'label':x,'done':False} for x in d.suggested_tasks]
@@ -103,7 +107,7 @@ def install_coordination(app,repo,actor,ai):
                 if suggestion.day:activity['day']=suggestion.day
                 if suggestion.image:activity.update(image=suggestion.image,image_source_url=suggestion.url)
                 p['itinerary'].append(activity)
-            saved=update(s,a,p['id'],p,p['revision']);item['created_plan_id']=p['id']
+            saved=update(s,a,p['id'],p,p['revision']);item['created_plan_id']=p['id'];item['accepted_sharing']=sharing
             if b.reviewed_suggestions:
                 from .core import source
                 text='Explicitly reviewed draft ideas. Public sources remain unverified; confirm event dates, hours and availability. These are not bookings.\n'

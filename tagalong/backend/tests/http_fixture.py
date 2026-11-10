@@ -7,6 +7,8 @@ def app_factory():
     repo=MemoryRepository()
     repo.state['app_admins']={'alice':{'granted_by':'explicit_test_fixture'}}
     accounts={'test-alice':Actor('alice','alice@example.test','alice'),'test-bob':Actor('bob','bob@example.test','bob'),'test-carol':Actor('carol','carol@example.test','carol')}
+    for account in accounts.values():
+        account.email_verified=True  # Explicit synthetic verified accounts, never production auth.
     def authenticate(token):
         from tagalong.core import fail
         if token not in accounts: fail(401,'Invalid test session')
