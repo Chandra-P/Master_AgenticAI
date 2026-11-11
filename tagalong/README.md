@@ -12,7 +12,22 @@ Screenshots below show Tagalong's responsive planning experience. The Austin hom
 
 ### Austin weekend plan
 
-The Austin example pairs an AI-assisted plan starter with a saved four-friends demo walkthrough.
+The Austin example pairs an AI-assisted plan starter with a saved four-friends demo walkthrough. The public walkthrough is a scripted replay with fictional participants and saved evidence; it does not run a live model or retrieval request, and nothing is booked.
+
+![Tagalong home screen with the Austin weekend planning prompt and four-friends demo entry](docs/images/austin-weekend-planning.jpg)
+
+#### Four friends, one Austin weekend
+
+The guided story shows the conversation kickoff, the saved evidence used to illustrate the compromise, proposed options with venue references, and the shared three-day itinerary. The lodging amount and venue details are fictional or unverified.
+
+| Start the plan | Saved evidence in the scripted compromise |
+| --- | --- |
+| ![Fictional friends begin their Austin weekend plan in the guided demo](docs/images/austin-demo-kickoff.png) | ![Scripted AI compromise with saved fictional group evidence and source IDs](docs/images/austin-demo-rag-evidence.png) |
+
+| Proposed options | Shared itinerary draft |
+| --- | --- |
+| ![Austin destination, dates, and a proposed lodging option with its photo and reference link](docs/images/austin-demo-options-votes.png) | ![Proposed three-day Austin itinerary marked as a draft and not booked](docs/images/austin-demo-itinerary.png) |
+
 
 ![Tagalong home screen with the Austin weekend planning prompt and four-friends demo entry](docs/images/austin-weekend-planning.jpg)
 
