@@ -8,7 +8,7 @@ The decision-first experience adds action-oriented home cards, versioned decisio
 
 ## Product tour
 
-Screenshots below show Tagalong's responsive demo experience with synthetic plans and participants. Assistant content in the browser-local demo is simulated; the connected workspace uses the configured AI services.
+Screenshots below show Tagalong's responsive planning experience. The Austin home-screen screenshot was supplied for this example and reflects an account-specific workspace. The guided four-friends story uses fictional, scripted participants. Assistant content in the browser-local demo is simulated; the connected workspace uses the configured AI services.
 
 ### Austin weekend plan
 
