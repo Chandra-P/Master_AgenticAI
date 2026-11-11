@@ -18,6 +18,16 @@ export function getAuth(config:PublicConfig) {
 }
 export class ApiError extends Error {constructor(message:string,public status:number){super(message);}}
 export interface RequestScope {userId?:string;isCurrent?:()=>boolean}
+const READ_RETRY_DELAYS_MS=[1000,3000,7000,12000,20000] as const;
+function waitForRetry(delay:number,signal:AbortSignal){
+ return new Promise<void>((resolve,reject)=>{
+  if(signal.aborted){reject(signal.reason??new DOMException('Aborted','AbortError'));return;}
+  const finish=()=>{signal.removeEventListener('abort',abort);resolve();};
+  const timer=setTimeout(finish,delay);
+  const abort=()=>{clearTimeout(timer);signal.removeEventListener('abort',abort);reject(signal.reason??new DOMException('Aborted','AbortError'));};
+  signal.addEventListener('abort',abort,{once:true});
+ });
+}
 export class ConnectedService {
   constructor(private auth:SupabaseClient) {}
   async request<T>(path:string,options:RequestInit={},scope?:RequestScope):Promise<T> {
@@ -29,7 +39,8 @@ export class ConnectedService {
     const signal=options.signal?AbortSignal.any([options.signal,timeout]):timeout;
     const read=(options.method||'GET').toUpperCase()==='GET';
     const unavailable='Shared workspace is temporarily unavailable. Please wait a moment and try again.';
-    for(let attempt=0;attempt<2;attempt++){
+    const maxAttempts=read?READ_RETRY_DELAYS_MS.length+1:1;
+    for(let attempt=0;attempt<maxAttempts;attempt++){
       signal.throwIfAborted();
       assertScope();
       let result:Response;
@@ -37,17 +48,18 @@ export class ConnectedService {
         result=await fetch('/api/backend'+path,{...options,headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token,'X-Workspace-Mode':readWorkspaceRole(session.user.id),...options.headers},signal});
       }catch(error){
         if(signal.aborted)throw error;
-        if(read&&attempt===0)continue;
+        if(read&&attempt<READ_RETRY_DELAYS_MS.length){await waitForRetry(READ_RETRY_DELAYS_MS[attempt],signal);continue;}
         throw new ApiError(unavailable,503);
       }
-      if(read&&attempt===0&&[502,503,504].includes(result.status)){
+      if(read&&attempt<READ_RETRY_DELAYS_MS.length&&[502,503,504].includes(result.status)){
         await result.body?.cancel().catch(()=>{});
+        await waitForRetry(READ_RETRY_DELAYS_MS[attempt],signal);
         continue;
       }
       let data:unknown;
       try{data=await result.json();}catch{
         if(signal.aborted)signal.throwIfAborted();
-        if(read&&attempt===0&&result.ok)continue;
+        if(read&&attempt===0&&result.ok){await waitForRetry(READ_RETRY_DELAYS_MS[attempt],signal);continue;}
         throw new ApiError(unavailable,result.ok?503:result.status);
       }
       if(!result.ok){
@@ -84,3 +96,4 @@ export class ConnectedService {
   addDocument(id:string,title:string,text:string){return this.request<{id:string;status:string}>('/v1/plans/'+encodeURIComponent(id)+'/documents',{method:'POST',body:JSON.stringify({title,text,content_type:'text/plain'})});}
   removeDocument(id:string,sourceId:string){return this.request<{status:string}>('/v1/plans/'+encodeURIComponent(id)+'/documents/'+encodeURIComponent(sourceId),{method:'DELETE'});}
 }
+

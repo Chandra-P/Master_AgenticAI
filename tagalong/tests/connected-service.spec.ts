@@ -18,6 +18,17 @@ test('read retries once after a temporary HTML response, while writes never retr
  }finally{globalThis.fetch=original;}
 });
 
+test('read retries wait between transient failures so a waking API can recover',async()=>{
+ const original=globalThis.fetch;
+ try{
+  let calls=0;const started=Date.now();
+  globalThis.fetch=async()=>++calls<3?new Response('<html>Starting</html>',{status:503}):Response.json({ready:true});
+  await expect(new ConnectedService(auth).request('/v1/me')).resolves.toEqual({ready:true});
+  expect(calls).toBe(3);
+  expect(Date.now()-started).toBeGreaterThanOrEqual(3900);
+ }finally{globalThis.fetch=original;}
+});
+
 test('malformed successful responses fail clearly after at most one read retry',async()=>{
  const original=globalThis.fetch;
  try{
@@ -27,3 +38,4 @@ test('malformed successful responses fail clearly after at most one read retry',
   expect(calls).toBe(2);
  }finally{globalThis.fetch=original;}
 });
+
