@@ -35,19 +35,25 @@ The guided story shows the conversation kickoff, the saved evidence used to illu
 
 The home screen turns a rough idea into a plan draft and highlights groups that need a response.
 
-![Tagalong home dashboard with the plan starter, next steps, and plan cards](docs/ui-refresh/after/home-1440.png)
+![Tagalong home dashboard with the plan starter, next steps, and plan cards](docs/images/Home.png)
 
 ### Group conversation and shared context
 
 Chat keeps the conversation alongside the current plan details, suggestions, and next actions.
 
-![Tagalong group chat with the plan summary and suggested next steps](docs/ui-refresh/after/chat-1440.png)
+![Tagalong group chat with the plan summary and suggested next steps](docs/images/chat.png)
 
 ### Draft itinerary
 
 The itinerary organizes proposed activities by day and clearly marks them as unbooked drafts.
 
-![Tagalong itinerary with a day-by-day draft schedule](docs/ui-refresh/after/itinerary-1440.png)
+![Tagalong itinerary with a day-by-day draft schedule](docs/images/itinerary.png)
+
+### Discover places and add them to a plan
+
+Discover helps the group find places to eat and things to do in a destination. Each result links to the venue’s official website when available and offers **Find on Maps** to check its location. Use **Add to plan** to choose a shared plan, date, and time and save the place to its draft itinerary. Saved places retain their website and Maps links so the group can review the details together. Adding a place creates a draft activity, not a booking.
+
+![Tagalong Discover results with official venue websites, Maps links, and Add to plan actions](docs/images/Discover.png)
 
 <details>
 <summary>Mobile screenshots</summary>
