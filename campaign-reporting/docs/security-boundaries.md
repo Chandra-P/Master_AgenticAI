@@ -1,0 +1,13 @@
+# Security boundaries and production gaps
+
+Raw synthetic sources live in ignored runtime/sources, never in HTML or model context. The local SQLite harness uses application scope checks; it is not a security boundary against a user with filesystem access. Local demo identity is simulated and visibly labeled. Never expose DEMO_MODE to a network.
+
+Authenticated UI uses Streamlit OIDC plus a server-side email/client allowlist. Configure OIDC secrets outside Git. Production requires scoped Postgres identities: reporting_client() maps authenticated database session_user through an owner-managed service_bindings table. Users cannot choose their own client via an editable session variable. Raw source tables have no narrative grant. The narrative view has explicit client filtering and an approved-field projection. Provision separate LOGIN roles inheriting the appropriate NOLOGIN service group; do not give them owner/superuser/BYPASSRLS privileges. Mapping and credentials are operator responsibilities.
+
+Tool parameters never grant permission. Source text and reviewer feedback cannot authorize tools. Narrative tools return aggregate schemas only; errors log categories rather than raw messages. HTML escapes narrative and embeds only allowlisted aggregate fields with script-safe JSON. Content Security Policy blocks network requests and remote assets. Fictional maps use no third-party tiles.
+
+The POC-wide OpenAI ledger is $5 total, persisted across runs and retries. Requests reserve a conservative maximum before sending; ambiguous failures keep reservations; no automatic SDK retries or top-ups. Live calls require explicit enablement, secure API credentials, selected model and recently verified prices. No API usage has been exercised in automated tests. A process with direct ledger write access is trusted; production requires centralized transactionally protected budget service/database and separate operator permissions.
+
+Telemetry hides inputs/outputs and arbitrary metadata by construction. LangSmith export must be explicitly configured after canary tests and project retention/access review. No LangSmith export has run. Capture no source rows, keys, addresses, reviewer feedback or unrestricted provider error text. Audit writes are in the transaction that changes approval/delivery; audit failure rolls back state.
+
+Before real data: verify Postgres permissions and identity delegation, evaluate LLM outputs, provision corporate SSO, TLS, secrets management, backups/restore tests, retention, encrypted storage, rate limits, dependency scanning and incident alerts. This POC does not claim those deployment controls have been completed.

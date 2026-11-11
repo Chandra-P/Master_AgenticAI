@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Campaign Success | {{ brand }}</title><style>{{ css|safe }}</style></head>
+<body>
+<header><div class="top wrap"><a class="brand" href="#cover"><span class="mark">CU</span><span id="brand">{{ brand }}</span></a>
+<div class="period-control"><label for="period">REPORTING VIEW</label><select id="period">
+<option value="30">30 day</option><option value="60">60 day</option><option value="90">90 day</option><option value="120">120 day</option><option value="F">Final</option>
+</select></div></div>
+<nav aria-label="Report sections"><div class="wrap">
+<a href="#s_goal">The Goal</a><a href="#s_happening">What Is Happening</a><a href="#s_early">Early Signals</a>
+<a href="#s_land">Where We Land</a><a href="#s_recs">Recommendation</a><a href="#s_exec">Executive Summary</a><a href="#s_appx">Appendix</a>
+</div></nav></header>
+<div class="synthetic">SYNTHETIC CAMPAIGN · Fictional clients and records · No real customer data · Version {{ version }}</div>
+<main>
+<div class="hero" id="cover"><div class="wrap"><div class="eyebrow">CHECKING ENGINE / CAMPAIGN PERFORMANCE</div>
+<h1>Campaign<br>Success</h1><p class="date" id="read-date"></p>
+<div class="hero-lines"><p><span>THE RESULT</span><strong id="hero-result"></strong></p>
+<p><span>THE OUTLOOK</span><strong id="hero-outlook"></strong></p>
+<p><span>THE DECISION</span><strong>Review the evidence before changing the campaign.</strong></p></div>
+<a class="cta" href="#s_exec">Open the executive summary →</a></div></div>
+<section id="s_goal"><div class="section-head"><div class="wrap"><div class="eyebrow">01 · THE GOAL</div><h2>Three commitments. One consistent measure of success.</h2></div></div>
+<div class="wrap band"><div class="stats" id="goal-cards"></div><div class="note">Checking counts distinct qualifying accounts, including accounts opened by existing members. New members are distinct matchback-classified members opening any product. These are separate commitments.</div>
+<div class="timeline" id="timeline"></div></div></section>
+<section id="s_happening"><div class="section-head"><div class="wrap"><div class="eyebrow">02 · WHAT IS HAPPENING</div><h2>What the core file confirms at this reporting date.</h2></div></div>
+<div class="wrap band"><div class="stats" id="actual-cards"></div><div class="exhibit"><h3>Measured progress against the campaign commitment</h3>
+<div id="progress"></div><div class="rail"><b>FACT</b><p id="happening-fact"></p><b>INTERPRETATION</b><p>Compare observed results with the historical completion pattern. A matched exposure is not proof of causation.</p></div></div>
+<details><summary>What this reporting date can tell you</summary><p id="read-guidance"></p></details></div></section>
+<section id="s_early"><div class="section-head"><div class="wrap"><div class="eyebrow">03 · EARLY SIGNALS</div><h2>Where the response is coming from.</h2></div></div>
+<div class="wrap band"><div class="exhibit"><h3>Branch-area response</h3><p>Fictional schematic. Every marker uses the selected period's computed branch aggregates.</p>
+<div class="tabs" role="group" aria-label="Map measure"><button class="active" data-map="accounts">Accounts opened</button><button data-map="balance">New balances</button><button data-map="response_rate">Response rate</button></div>
+<svg id="branch-map" viewBox="0 0 900 430" role="img" aria-label="Fictional branch performance map"></svg>
+<div id="map-detail" aria-live="polite">Select a branch marker to inspect its results.</div></div>
+<div class="exhibit"><h3>Each branch's share of response against its share of the audience</h3>
+<div class="tabs" role="group" aria-label="Fair share measure"><button class="active" data-share="accounts">Accounts</button><button data-share="balance">Balances</button><button data-share="both">Both measures</button></div>
+<div id="fair-share"></div><p class="note">1.0× means response share equals audience share. Balance means the recorded opening snapshot balance, not revenue or incremental value.</p></div></div></section>
+<section id="s_land"><div class="section-head"><div class="wrap"><div class="eyebrow">04 · WHERE WE LAND</div><h2>A range that closes as the campaign matures.</h2></div></div>
+<div class="wrap band"><div class="stats" id="forecast-cards"></div><div class="exhibit"><h3>Checking accounts: observed count and projected finish</h3>
+<svg id="forecast-chart" viewBox="0 0 900 360" role="img" aria-label="Checking account forecast range"></svg>
+<p class="note">The range uses empirical completion fractions from synthetic historical campaigns with matching digital support. It is a scenario range, not a statistically calibrated confidence interval.</p></div>
+<div class="rail"><b>METHOD AND LIMITATIONS</b><p id="method"></p></div></div></section>
+<section id="s_recs"><div class="section-head"><div class="wrap"><div class="eyebrow">05 · THE RECOMMENDATION</div><h2>Make the next decision from evidence.</h2></div></div>
+<div class="wrap band"><div class="decision"><span class="eyebrow">FOR ANALYST REVIEW</span><h3 id="recommendation-title"></h3><p id="recommendation"></p>
+<p class="note">Recommendations do not change spend, contact customers or send messages. Those actions require separate human authorization.</p></div></div></section>
+<section id="s_exec"><div class="section-head"><div class="wrap"><div class="eyebrow">06 · EXECUTIVE SUMMARY</div><h2>The campaign, ready for your leadership meeting.</h2></div></div>
+<div class="wrap band"><div class="stats" id="executive-cards"></div><div class="exhibit"><h3>Facts, interpretation and next action</h3>
+<p id="executive-facts"></p><p id="narrative"></p><p id="executive-action"></p><div class="note" id="correction"></div></div>
+<button id="print-report">Print this report</button></div></section>
+<section id="s_appx"><div class="section-head"><div class="wrap"><div class="eyebrow">07 · APPENDIX</div><h2>Open the evidence behind the story.</h2></div></div>
+<div class="wrap band">
+<details><summary>A · What this reporting date can tell you</summary><p id="appendix-read"></p></details>
+<details><summary>B · Accounts by ZIP code</summary><div class="table-scroll"><table id="zip-table"></table></div></details>
+<details><summary>C · The mail piece</summary><div class="mail-piece"><span>{{ brand }} · FICTIONAL CREATIVE</span><h3>A fresh start for everyday banking.</h3><p>Explore a Checking account built around your next chapter.</p><small>Illustrative creative only. No actual product offer, rate, incentive or terms are asserted.</small></div></details>
+<details><summary>D · Branch area detail</summary><div class="table-scroll"><table id="branch-table"></table></div></details>
+<details><summary>E · Mail calendar</summary><div id="mail-calendar"></div></details>
+<details><summary>F · Checking product mix</summary><div class="table-scroll"><table id="mix-table"></table></div></details>
+<details><summary>G · Campaign HALO contributions</summary><p id="halo"></p><div class="note">HALO here means new members who opened other products without a qualifying Checking opening. It is a member set difference, never an added Checking account count.</div></details>
+<details><summary>H · Campaign channel breakout</summary><div class="table-scroll"><table id="channel-table"></table></div><p>Categories are mutually exclusive and reconcile to Checking totals. Both means qualifying DM and TU matches. Digital Only does not prove the household was never mailed.</p></details>
+<details><summary>I · What every word means</summary><dl><dt>Open and funded</dt><dd>Account-open date qualifies and the account appears in the funded core extract. No deposit date is invented.</dd><dt>New member</dt><dd>Classified by upstream matchback comparison with the pre-campaign member file.</dd><dt>CPA</dt><dd>Full campaign budget divided by qualifying Checking accounts, available only from day 120 once every component launched.</dd><dt>DM tracking</dt><dd>In-home date excluded, following 60 calendar days included.</dd><dt>Projection</dt><dd>Deterministic estimate based on synthetic historical completion fractions.</dd></dl></details>
+<details><summary>J · Sources and lineage</summary><div id="sources"></div></details>
+</div></section></main>
+<footer><div class="wrap">Synthetic campaign reporting · Local demonstration · All figures derived from generated fixtures.<a href="#cover">Back to top ↑</a></div></footer>
+<script id="report-data" type="application/json">{{ data|safe }}</script><script>{{ js|safe }}</script>
+</body></html>

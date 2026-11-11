@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "campaign-reporting"
+version = "0.1.0"
+description = "Synthetic, reviewed campaign reporting for Juniper Valley Credit Union"
+requires-python = ">=3.12"
+dependencies = [
+  "pydantic>=2.12,<3", "psycopg[binary]>=3.2,<4",
+  "langgraph>=1.0,<2", "langgraph-checkpoint-sqlite>=3.1,<4",
+  "langgraph-checkpoint-postgres>=3,<4", "streamlit>=1.57,<2",
+  "openai>=2,<3", "langsmith>=0.4,<1",
+  "opentelemetry-sdk>=1.38,<2", "jinja2>=3.1.6,<4"
+]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "playwright>=1.55,<2", "ruff>=0.14,<1"]
+
+[project.scripts]
+campaign-report = "campaign_reporting.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/campaign_reporting"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = ["postgres: requires a provisioned local Postgres", "browser: requires installed Chromium"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.uv]

@@ -1,0 +1,20 @@
+# Optional database profile; Docker is not required for the SQLite demo.
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: campaign_reporting
+      POSTGRES_USER: campaign_owner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a local database password outside source control}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - reporting-data:/var/lib/postgresql
+      - ./db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campaign_owner -d campaign_reporting"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+volumes:
+  reporting-data:
