@@ -6,6 +6,37 @@ An AI-assisted group decision-making app that helps people move from an idea to 
 
 The decision-first experience adds action-oriented home cards, versioned decisions/responses, contextual comments, consent progress, owner confirmation/finalization and evidence-backed on-demand AI summaries. Its implementation and compatibility rules are documented in [Decision workflow](docs/DECISION_WORKFLOW.md). A score of 100% requires explicit finalization and never means a booking was made.
 
+## Product tour
+
+Screenshots below show Tagalong's responsive demo experience with synthetic plans and participants. Assistant content in the browser-local demo is simulated; the connected workspace uses the configured AI services.
+
+### Home and planning momentum
+
+The home screen turns a rough idea into a plan draft and highlights groups that need a response.
+
+![Tagalong home dashboard with the plan starter, next steps, and plan cards](docs/ui-refresh/after/home-1440.png)
+
+### Group conversation and shared context
+
+Chat keeps the conversation alongside the current plan details, suggestions, and next actions.
+
+![Tagalong group chat with the plan summary and suggested next steps](docs/ui-refresh/after/chat-1440.png)
+
+### Draft itinerary
+
+The itinerary organizes proposed activities by day and clearly marks them as unbooked drafts.
+
+![Tagalong itinerary with a day-by-day draft schedule](docs/ui-refresh/after/itinerary-1440.png)
+
+<details>
+<summary>Mobile screenshots</summary>
+
+| Home | Group chat | Itinerary |
+| --- | --- | --- |
+| ![Tagalong mobile home screen](docs/ui-refresh/after/home-390.png) | ![Tagalong mobile group chat](docs/ui-refresh/after/chat-390.png) | ![Tagalong mobile itinerary](docs/ui-refresh/after/itinerary-390.png) |
+
+</details>
+
 ## Shared workspace
 
 Sign in at `/account` when Supabase and the API are configured. Create shared plans, add existing signed-in accounts by email, chat, vote, paste text documents, request grounded assistant suggestions, confirm proposed preferences, and revoke membership. Changes use revision checks to avoid overwriting concurrent edits. Sources are restricted to the plan and validated against current document versions. OpenAI suggestions cannot execute reservations or calendar actions.
