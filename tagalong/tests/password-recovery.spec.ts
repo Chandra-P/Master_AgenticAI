@@ -13,7 +13,7 @@ test('forgot password does not display an unrelated shared workspace failure',as
  const user={id:'reset-test',email:'person@example.test',aud:'authenticated',role:'authenticated',app_metadata:{},user_metadata:{},created_at:'2026-01-01T00:00:00Z'};
  await page.route('**/api/config',route=>route.fulfill({json:config}));
  await page.route('https://tagalong-test.supabase.co/auth/v1/**',route=>route.fulfill({json:{access_token:'test-reset',refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,user}}));
- await page.route('**/api/backend/**',route=>route.fulfill({status:503,contentType:'text/html',body:'Unavailable'}));
+ await page.route('**/api/backend/**',route=>route.fulfill({status:503,json:{detail:'Shared workspace is temporarily unavailable. Please wait a moment and try again.'}}));
  await page.goto('/account');await page.getByLabel('Email address').fill(user.email);await page.getByLabel('Password',{exact:true}).fill('test-password-123');await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await expect(page.getByRole('alert').filter({hasText:'Shared workspace is temporarily unavailable. Please wait a moment and try again.'})).toBeVisible();
  await page.getByRole('button',{name:'Forgot password?',exact:true}).click();
@@ -64,3 +64,4 @@ test('recovery with unavailable authentication shows an actionable error',async(
  await expect(page.getByText('Password recovery is unavailable. Please reload or try again later.',{exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'Save new password',exact:true})).toHaveCount(0);
 });
+

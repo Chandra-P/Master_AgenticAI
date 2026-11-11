@@ -51,7 +51,11 @@ export class ConnectedService {
         if(read&&attempt<READ_RETRY_DELAYS_MS.length){await waitForRetry(READ_RETRY_DELAYS_MS[attempt],signal);continue;}
         throw new ApiError(unavailable,503);
       }
-      if(read&&attempt<READ_RETRY_DELAYS_MS.length&&[502,503,504].includes(result.status)){
+      const contentType=result.headers.get('content-type')?.toLowerCase()||'';
+      const isGatewayFailure=[502,503,504].includes(result.status);
+      // Render's cold-start proxy returns HTML for transient gateway failures.
+      // JSON 5xx responses came from the API itself, so surface them immediately.
+      if(read&&attempt<READ_RETRY_DELAYS_MS.length&&isGatewayFailure&&!contentType.includes('json')){
         await result.body?.cancel().catch(()=>{});
         await waitForRetry(READ_RETRY_DELAYS_MS[attempt],signal);
         continue;
