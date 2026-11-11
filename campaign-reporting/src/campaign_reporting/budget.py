@@ -4,6 +4,10 @@ from decimal import ROUND_CEILING, Decimal
 from pathlib import Path
 
 
+class BudgetExceeded(ValueError):
+    """The shared POC ledger cannot cover a new maximum-cost reservation."""
+
+
 class BudgetLedger:
     """One persistent POC-wide ledger; unresolved requests keep their maximum reservation."""
 
@@ -32,7 +36,7 @@ class BudgetLedger:
             conn.execute("BEGIN IMMEDIATE")
             used = conn.execute("SELECT COALESCE(SUM(micros),0) FROM reservations").fetchone()[0]
             if used + amount > 5000000:
-                raise ValueError("POC budget exhausted")
+                raise BudgetExceeded("POC budget exhausted")
             identity = str(uuid.uuid4())
             conn.execute("INSERT INTO reservations VALUES (?,?,0)", (identity, amount))
         return identity

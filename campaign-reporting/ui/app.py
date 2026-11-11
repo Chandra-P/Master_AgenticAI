@@ -10,6 +10,7 @@ import streamlit as st
 from campaign_reporting.budget import BudgetLedger
 from campaign_reporting.contracts import canonical
 from campaign_reporting.delivery import publish_report, render_report
+from campaign_reporting.evaluation.ui import render_evals_panel
 from campaign_reporting.narrative import resume_review, start_review
 from campaign_reporting.repository import ActorContext, Repository
 from campaign_reporting.runs import prepare_run
@@ -70,8 +71,15 @@ rows = repo.list_runs(actor)
 run = rows[0] if rows else None
 st.subheader(cfg.brand)
 st.caption(f"Digital {cfg.digital_start}–{cfg.digital_end} · Mailings {cfg.in_home[0]} and {cfg.in_home[1]}")
-config_tab, facts_tab, review_tab, report_tab, observe_tab = st.tabs(
-    ["1 · Success Plan", "2 · Computed facts", "3 · Analyst review", "4 · Report", "5 · Observability"]
+config_tab, facts_tab, review_tab, report_tab, observe_tab, eval_tab = st.tabs(
+    [
+        "1 · Success Plan",
+        "2 · Computed facts",
+        "3 · Analyst review",
+        "4 · Report",
+        "5 · Observability",
+        "6 · Evals",
+    ]
 )
 
 with config_tab:
@@ -194,3 +202,6 @@ with observe_tab:
     st.caption(
         "Offline calls are application-invoked. LangSmith export is opt-in; no model execution is implied."
     )
+
+with eval_tab:
+    render_evals_panel(runtime, actor, Path(__file__).resolve().parents[1] / "evals")

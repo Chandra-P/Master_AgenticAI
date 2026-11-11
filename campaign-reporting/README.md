@@ -65,6 +65,19 @@ Local `runtime/telemetry.jsonl` records application-invoked tool names, run IDs,
 
 ## Verification
 
+The **6 · Evals** tab runs a $0 API benchmark for the selected development client, shows scoped results/cost/latency, and saves human rubric annotations. Offline checks never count as live AI accuracy. Client/year/period/scenario slices, dimension scores and repetition consistency expose coverage gaps.
+
+The versioned dataset contains 264 cases: 250 report-period cases across 50 fictional clients, six narrative edge cases and eight independently specified calculation oracles. Clients are split 25 development / 10 validation / 15 locked test; all periods for a client stay together. Semantic references remain proposed until domain review. See [rubric](docs/evals-rubric.md) and [design](docs/evals-design.md).
+
+```powershell
+.\.venv\Scripts\python.exe scripts/run_evals.py --mode offline
+.\.venv\Scripts\python.exe scripts/offline_eval_checks.py
+```
+
+Replay accepts JSONL with `case_id` and `output` and is labeled cached evidence. Live mode is explicit, shares the persistent $5 POC ledger, and blocks without secure configuration/current pricing. No live model or paid judge has been evaluated. Never put keys in command arguments or chat. Final test execution requires `--split test --allow-heldout --candidate-id <frozen-candidate>` and records exposure. Paired release review also requires `--compare-with <baseline> --oracle-experiment <matching-passing-oracle-run>`; missing annotations, repetitions, cost or oracle evidence cannot pass. Eligibility requires human release review and never publishes a report.
+
+The manual-only GitHub workflow requires an existing self-hosted `campaign-reporting` runner. Its Python eval step prohibits outbound socket connections. It has not run remotely; automatic PR checks await runner/billing confirmation. Human calibration, clustered confidence intervals and remote LangSmith experiment export remain future work.
+
 ```powershell
 New-Item -ItemType Directory -Path runtime -Force
 .\.venv\Scripts\python.exe -m pytest -q --basetemp=runtime/pytest

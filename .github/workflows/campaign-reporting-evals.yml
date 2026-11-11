@@ -1,0 +1,36 @@
+name: Campaign reporting local eval checks
+
+# Manual-only until runner/billing limits are confirmed. No automatic hosted spending.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-checks:
+    runs-on: [self-hosted, campaign-reporting]
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: campaign-reporting
+    env:
+      ENABLE_OPENAI: "0"
+      OPENAI_API_KEY: ""
+      LANGSMITH_TRACING: "false"
+      LANGSMITH_API_KEY: ""
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install locked project dependencies on the existing runner
+        run: uv sync --locked
+      - name: Prepare disposable local test directory
+        run: uv run python -c "from pathlib import Path; Path('runtime').mkdir(exist_ok=True)"
+      - name: Test dataset, graders, accounting and privacy without provider calls
+        run: uv run python scripts/offline_eval_checks.py
+      - name: Check source
+        run: uv run ruff check src tests ui dags scripts
+
+# A green check validates the evaluation harness, not live-model quality or release eligibility.
+# Requires an existing runner with Python 3.12+, uv, and the campaign-reporting label.

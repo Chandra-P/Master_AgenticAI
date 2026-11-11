@@ -25,7 +25,11 @@ class ReportTools:
         return self._read(
             run_id,
             "get_metrics",
-            lambda r: {"periods": r["facts"], "checking_accounts": r["facts"]["F"]["checking_accounts"]},
+            lambda r: {
+                "periods": r["facts"],
+                "checking_accounts": r["facts"]["F"]["checking_accounts"],
+                "goals": {"checking": r["config"]["checking_goal"], "members": r["config"]["member_goal"]},
+            },
         )
 
     def get_rules_context(self, run_id):
