@@ -5,6 +5,7 @@ Uses MemoryRepository plans and short-lived, unique Pinecone namespaces. Never u
 production database, real plans, or ingestion worker; synthetic vectors are deleted.
 """
 import copy
+import argparse
 import hashlib
 import json
 import os
@@ -33,6 +34,7 @@ from tagalong.group_fit import FitOutput
 from tagalong.rag_evaluation import (cleanup_synthetic_sources, create_synthetic_source,
                                      compare_ablation_responses, mark_synthetic_source_indexed, remove_synthetic_source,
                                      wait_for_pinecone_sources)
+from tagalong.ragas_eval import build_ragas_sample, score_with_ragas_sync
 
 
 CASES = [
@@ -130,7 +132,7 @@ def live_checks(provider):
     measured=MeasuredAI(provider);repo=MemoryRepository()
     app=create_app(repo,lambda token:Actor('synthetic-evaluator','evaluator@example.test','Synthetic evaluator'),measured)
     client=TestClient(app);headers={'Authorization':'Bearer synthetic-evaluation'}
-    results=[];cleanup_failures=[]
+    results=[];cleanup_failures=[];measured.ragas_rows=[]
     for case in CASES:
         measured.measurements={};seeded=[];preflight=None;preflight_error=None
         created=client.post('/v1/plans',headers=headers,json={'title':'Synthetic RAG evaluation: '+case['id'],'kind':'outing','start':'2027-05-14','end':'2027-05-14'})
@@ -152,6 +154,8 @@ def live_checks(provider):
         response=client.post('/v1/plans/'+pid+'/group-fit',headers=headers,json={'expected_revision':plan['revision'],'option':case['option']})
         elapsed=round(time.perf_counter()-started,3)
         body=response.json()
+        if response.status_code == 200:
+            measured.ragas_rows.append(build_ragas_sample(case, body.get('sources', []), body))
         checks=response_checks(response,body,expected_source_id)
         result={'case':case['id'],'expected_verdict':case['expected'],'http_status':response.status_code,
                 'expected_pinecone_source_id':expected_source_id,
@@ -219,12 +223,19 @@ def live_pinecone_ablation(provider):
         cleanup_failures.extend(sid for sid in more_failures if sid not in cleanup_failures)
 
 
-def main():
+def main(argv=None):
+    parser=argparse.ArgumentParser(description='Run synthetic Group Fit retrieval evaluation.')
+    parser.add_argument('--ragas',action='store_true',help='Opt in to additional live Ragas scoring (extra OpenAI model and embedding calls).')
+    parser.add_argument('--ragas-judge-model',default=os.getenv('RAGAS_JUDGE_MODEL','gpt-4o-mini'))
+    parser.add_argument('--ragas-embedding-model',default=os.getenv('RAGAS_EMBEDDING_MODEL','text-embedding-3-small'))
+    args=parser.parse_args(argv)
+    if args.ragas and not os.getenv('OPENAI_API_KEY'):
+        parser.error('--ragas requires OPENAI_API_KEY')
     run_started=datetime.now(timezone.utc)
     started=run_started.isoformat()
     rules=rule_checks()
     provider=ConnectedAI()
-    _,_,_,_,live,case_cleanup_failures=live_checks(provider)
+    _,_,_,measured,live,case_cleanup_failures=live_checks(provider)
     try:
         ablation,ablation_cleanup_failures=live_pinecone_ablation(provider)
         ablation_error=None
@@ -236,12 +247,20 @@ def main():
     retrieved_in_prompt=sum(x.get('expected_pinecone_source_in_prompt',False) for x in live)
     latencies=[x['latency_seconds'] for x in live if isinstance(x.get('latency_seconds'),(int,float))]
     cleanup_failures=case_cleanup_failures+ablation_cleanup_failures
+    ragas_evaluation=None;ragas_error_type=None
+    if args.ragas:
+        try:
+            ragas_evaluation=score_with_ragas_sync(
+                measured.ragas_rows,os.getenv('OPENAI_API_KEY'),
+                args.ragas_judge_model,args.ragas_embedding_model)
+        except Exception as error:
+            ragas_error_type=type(error).__name__
     artifact={
         'title':'Tagalong Group Fit synthetic Pinecone retrieval evaluation',
         'started_at_utc':started,'completed_at_utc':datetime.now(timezone.utc).isoformat(),
         'model':provider.model,
         'scope':'Synthetic MemoryRepository plans only. Positive cases upsert synthetic message evidence into random plan namespaces, verify it appears in Pinecone semantic top-k, then call the real Group Fit endpoint and OpenAI model. Synthetic vectors are deleted after each case. No production database, real plan, account, or index namespace is used.',
-        'source_sha256':{str(path.relative_to(BACKEND)):hashlib.sha256(path.read_bytes()).hexdigest() for path in [BACKEND/'tagalong/group_fit.py',BACKEND/'tagalong/providers.py',BACKEND/'tagalong/rag_evaluation.py',BACKEND/'scripts/evaluate_group_fit.py',BACKEND/'tests/test_group_fit.py']},
+        'source_sha256':{str(path.relative_to(BACKEND)):hashlib.sha256(path.read_bytes()).hexdigest() for path in [BACKEND/'tagalong/group_fit.py',BACKEND/'tagalong/providers.py',BACKEND/'tagalong/rag_evaluation.py',BACKEND/'tagalong/ragas_eval.py',BACKEND/'scripts/evaluate_group_fit.py',BACKEND/'tests/test_group_fit.py']},
         'rule_evaluation':rules,
         'live_evaluation':{'case_count':len(live),
             'validated_responses':sum(x.get('validated_response',False) for x in live),
@@ -250,6 +269,9 @@ def main():
             'expected_sources_in_model_prompt':retrieved_in_prompt,
             'unchanged_state_cases':sum(x.get('plan_state_unchanged',False) for x in live),'cases':live},
         'live_ablation':ablation,'live_ablation_error_type':ablation_error,
+        'ragas_evaluation':{'enabled':args.ragas,'judge_model':args.ragas_judge_model if args.ragas else None,
+            'embedding_model':args.ragas_embedding_model if args.ragas else None,
+            'result':ragas_evaluation,'error_type':ragas_error_type},
         'cleanup_failed_source_ids':cleanup_failures,
         'limitations':['This is a small synthetic demonstration, not a representative quality benchmark.',
             'The live ablation tests whether a uniquely indexed synthetic group message is retrieved, cited, and changes the assessment findings when removed. Safety uncertainty can correctly keep the verdict at needs_info in both runs; one pair does not establish broad retrieval precision or recall.',
@@ -275,6 +297,13 @@ def main():
         f"Evidence materially changed the response: {ablation.get('evidence_materially_changed_response') if ablation else 'not completed'} (the Pinecone-sourced group match is cited only when evidence is present).",
         f"With evidence: `{ablation.get('with_retrieved_evidence',{}).get('observed_verdict','not completed') if ablation else 'not completed'}`; after removal: `{ablation.get('after_removal',{}).get('observed_verdict','not completed') if ablation else 'not completed'}`.",
         f"Ablation error type: `{ablation_error or 'none'}`. Cleanup failures: `{cleanup_failures or 'none'}`.",'','## Limits','']
+    lines+=['','## Ragas scoring','',
+        ('Not run. Enable with `--ragas`; this adds OpenAI judge and embedding calls.' if not args.ragas else
+         f"Status: `{(ragas_evaluation or {}).get('status', 'failed')}`. Judge: `{args.ragas_judge_model}`; embeddings: `{args.ragas_embedding_model}`; error type: `{ragas_error_type or 'none'}`."),
+        'Ragas Faithfulness uses the complete evidence passed to generation. Context Precision and Context Recall use only Pinecone-retrieved context, with the synthetic scenario preference as reference. The missing-evidence case has no reference and is skipped for those retrieval metrics. Scores are diagnostic on a tiny synthetic set, not a production-quality benchmark.','']
+    if ragas_evaluation:
+        lines+=['| Metric | Mean | Scored cases | Errors |','|---|---:|---:|---:|']
+        lines.extend(f"| {name} | {stats['mean'] if stats['mean'] is not None else '—'} | {stats['scored_cases']} | {stats['errors']} |" for name,stats in ragas_evaluation['aggregate'].items())
     lines.extend('- '+item for item in artifact['limitations'])
     lines+=['','See the adjacent JSON for per-case query hits, evidence origins, source IDs, responses, timings, and code hashes.']
     stem.with_suffix('.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
@@ -285,11 +314,13 @@ def main():
     pass_run=(rules['exit_code']==0 and artifact['live_evaluation']['validated_responses']==len(live)
         and artifact['live_evaluation']['expected_verdict_matches']==len(live)
         and retrieved_top_k==seeded_cases and retrieved_in_prompt==seeded_cases
-        and ablation_pass and not cleanup_failures)
+        and ablation_pass and not cleanup_failures
+        and (not args.ragas or bool(ragas_evaluation and ragas_evaluation.get('status')=='completed')))
     print(json.dumps({'artifacts':str(stem),'rules_passed':rules['passed'],'rules_total':rules['total'],
         'live_validated':artifact['live_evaluation']['validated_responses'],'live_cases':len(live),
         'retrieval_sources_found':retrieved_top_k,'retrieval_cases':seeded_cases,
         'ablation_passed':ablation_pass,'cleanup_failures':cleanup_failures,
+        'ragas_enabled':args.ragas,'ragas_status':(ragas_evaluation or {}).get('status','failed' if args.ragas else 'disabled'),
         'median_seconds':round(statistics.median(latencies),3) if latencies else None}))
     return 0 if pass_run else 1
 

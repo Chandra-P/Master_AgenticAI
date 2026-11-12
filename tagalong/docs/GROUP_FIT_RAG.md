@@ -29,6 +29,32 @@ The live synthetic evaluation is recorded in [`2026-11-10T052146Z-group-fit-rag-
 
 The live evaluation also exposed and fixed a production retrieval edge case: Pinecone returns numeric metadata such as `chunk` as a float (`0.0`), while the source resolver previously accepted only integers and silently dropped the source. The resolver now accepts finite integral floats and rejects fractional, non-finite, negative, and non-integer values. A regression test covers the Pinecone metadata format.
 
+### Optional Ragas scoring
+
+The synthetic evaluator can optionally score its successful Group Fit responses with Ragas. Ragas is isolated in the backend `evaluation` dependency group; it is not imported by the API server and does not add production runtime cost. Install that group from `tagalong/backend`:
+
+```powershell
+uv sync --group dev --group evaluation
+```
+
+Run the existing synthetic live evaluation and opt into additional Ragas judge calls:
+
+```powershell
+uv run --env-file PATH_TO_ENV_FILE --group dev --group evaluation python scripts/evaluate_group_fit.py --ragas
+```
+
+`--ragas` adds OpenAI evaluator-model calls and embeddings, so it can incur extra usage. Defaults are `gpt-4o-mini` and `text-embedding-3-small`; override with `--ragas-judge-model`, `--ragas-embedding-model`, `RAGAS_JUDGE_MODEL`, or `RAGAS_EMBEDDING_MODEL`. The configured `OPENAI_API_KEY` must be available to the command. Without the flag, no Ragas model calls occur.
+
+The report records Faithfulness against all evidence included in the model prompt, Answer Relevancy against the synthetic user request, and Context Precision/Recall against only the Pinecone-retrieved passages. The synthetic case's agreed group constraints are the reference for retrieval metrics; cases without a synthetic reference are skipped for those two metrics. The report includes per-case scores, aggregates, and only sanitized error types. It writes a timestamped JSON/Markdown artifact under `docs/evaluations/`. This is a small opt-in diagnostic sample, not an offline benchmark, a calibrated judge, or a release gate. It evaluates model answers only after the existing retrieval and Group Fit checks; it does not change app behavior.
+
+Credential-free unit coverage is available with:
+
+```powershell
+cd tagalong/backend
+$env:PYTEST_DISABLE_PLUGIN_AUTOLOAD='1'
+.\.venv\Scripts\python.exe -m pytest tests\test_ragas_eval.py -q -p no:cacheprovider
+```
+
 Summaries, votes, consensus, plan progress and current decisions continue to use structured Postgres data and their dedicated workflows. They are not called RAG just because the app also has Pinecone. Do not use vector retrieval to calculate a tally, decide whether a preference is confirmed, or establish factual state.
 
 ### Feature-by-feature classification
